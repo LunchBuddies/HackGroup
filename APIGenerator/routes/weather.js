@@ -22,12 +22,16 @@ router.get('/', function(request, response) {
 	forecast.get(request.query.lat, request.query.long, function (err, res, data) {
 	  if (err) throw err;
 	  // console.log (data);
-	  console.log('res: ' + util.inspect(res));
-	  console.log('data: ' + util.inspect(data));
+	  // console.log('res: ' + util.inspect(res));
+	  // console.log('data: ' + util.inspect(data));
 
 
 	  response.send(data);
 	});
 });
 
+router.post('/', function(request, response) {
+
+	response.send('Good to go');
+});
 module.exports = router;

@@ -9,10 +9,12 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var users = require('./routes/user');
+var weather = require('./routes/weather');
 
 var app = express();
 
 var env = process.env.NODE_ENV || 'development';
+app.locals.FORECAST_API_KEY = '718c660a33c66f01a02342befd0f3d2e';
 app.locals.ENV = env;
 app.locals.ENV_DEVELOPMENT = env == 'development';
 
@@ -32,6 +34,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/weather', weather);
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -39,7 +42,7 @@ app.use(function(req, res, next) {
     err.status = 404;
     next(err);
 });
-
+ 
 /// error handlers
 
 // development error handler

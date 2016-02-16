@@ -32,6 +32,15 @@ router.get('/', function(request, response) {
 
 router.post('/', function(request, response) {
 
-	response.send('Good to go');
+	// response.send('Good to go');
+	forecast.get(request.body.lat, request.body.long, function (err, res, data) {
+	  if (err) throw err;
+	  // console.log (data);
+	  // console.log('res: ' + util.inspect(res));
+	  // console.log('data: ' + util.inspect(data));
+
+
+	  response.send(data);
+	});
 });
 module.exports = router;

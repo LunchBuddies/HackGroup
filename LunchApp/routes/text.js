@@ -18,7 +18,9 @@ var users = [
 
 var confirmedAttendees = [];
 
-var promptTime = '00 18 13 * * 0-6';
+var confirmedAttendeesTest = ['+16026164854','+14802367962','+19723658656'];
+
+var promptTime = '00 59 13 * * 0-6';
 var confirmationTime = '00 012 03 * * 0-6'
 
 var promptMessage = 'Are you in for lunch at noon? Yes or No';
@@ -28,7 +30,9 @@ var confirmationMessage = 'Confirmed, see you at noon!';
 new CronJob({
  cronTime: promptTime,
  onTick: function(){
-    sendGroupTexts(users, promptMessage)
+    //sendGroupTexts(users, promptMessage)
+    generateOtherAttendeesString('+14802367962')
+
 },
 start: true,
 timeZone: 'America/Los_Angeles'
@@ -53,6 +57,44 @@ function lookUpName(phoneNumber)
             return users[counter].name;
    }
 
+}
+
+function generateOtherAttendeesString(phoneNumber)
+{
+    var senderMessageName=[];
+    var interestedPhones=[];
+    var message;
+
+    for (counter=0;counter<confirmedAttendeesTest.length;counter++)
+   {
+     var tempPhone=confirmedAttendeesTest[counter].phone;
+            
+     if(phoneNumber.localeCompare(tempPhone)!=0)
+     {
+            var data = {phone:tempPhone};
+            interestedPhones.push(data);
+     }
+   }
+
+   for (attendeeCounter=0;attendeeCounter<interestedPhones.length;attendeeCounter++)
+   {
+        var checkPhone= interestedPhones[attendeeCounter].phone;
+        console.log(checkPhone);
+
+    /* for (counter=0;counter<users.length;counter++)
+       {
+         var storedphone=users[counter].phone;
+                
+         if(checkPhone.localeCompare(storedphone)==0)
+                {
+                    senderMessageName.push(users[counter].name);
+                    break;
+                }
+       }
+*/
+   }
+
+  // console.log(senderMessageName.join());
 }
 
 

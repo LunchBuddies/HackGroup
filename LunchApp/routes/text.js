@@ -164,3 +164,4 @@ function sendText(phoneNumber, message, retry){
 }
 
 module.exports = router;
+// Nick is annoying

@@ -47,14 +47,14 @@ start: true,
 timeZone: 'America/Los_Angeles'
 });
 
-function lookUpName(phoneNumber)
+function lookUpName(phoneNumber, userList)
 {
-  for (counter=0;counter<users.length;counter++)
+  for (counter=0;counter<userList.length;counter++)
    {
-     var storedphone=users[counter].phone;
+     var storedphone=userList[counter].phone;
             
      if(phoneNumber.localeCompare(storedphone)==0)
-            return users[counter].name;
+            return userList[counter].name;
    }
 
 }

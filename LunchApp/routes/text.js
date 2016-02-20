@@ -6,43 +6,43 @@ var CronJob = require('cron').CronJob;
 var numbers = ['+19723658656'];
 // var numbers = [ '+17174601902', '+19723658656', '+16026164854', '+14802367962']
 
+sendPromptText();
 //basic cron job
-new CronJob(
-    {
+new CronJob({
     cronTime: '00 38 23 * * 1-5', 
     onTick: sendPromptText, 
     start: false,
-    timeZone: 'America/Los_Angeles'}
-    );
+    timeZone: 'America/Los_Angeles'
+});
 
 
 function sendPromptText(){
     console.log('Executing Send Prompt Text'); //The function will send the initial text message
 
-//     for (i = 0; i < numbers.length; i++) { 
-//     console.log ('Send to ' + numbers[i]);
-//     client.sendMessage( {
+    // for (i = 0; i < numbers.length; i++) { 
+    //     console.log ('Send to ' + numbers[i]);
+    //     client.sendMessage( {
 
-//         to: numbers[i], // Any number Twilio can deliver to
-//         from: '+14693400518', // A number you bought from Twilio and can use for outbound communication
-//         body: 'Pepperoni Pizza is the best!' // body of the SMS message
+    //         to: numbers[i], // Any number Twilio can deliver to
+    //         from: '+14693400518', // A number you bought from Twilio and can use for outbound communication
+    //         body: 'Pepperoni Pizza is the best!' // body of the SMS message
 
-//     }, function(err, responseData) { //this function is executed when a response is received from Twilio
-//         if (!err) { // "err" is an error received during the request, if any
+    //     }, function(err, responseData) { //this function is executed when a response is received from Twilio
+    //         if (!err) { // "err" is an error received during the request, if any
 
-//             // "responseData" is a JavaScript object containing data received from Twilio.
-//             // A sample response from sending an SMS message is here (click "JSON" to see how the data appears in JavaScript):
-//             // http://www.twilio.com/docs/api/rest/sending-sms#example-1
+    //             // "responseData" is a JavaScript object containing data received from Twilio.
+    //             // A sample response from sending an SMS message is here (click "JSON" to see how the data appears in JavaScript):
+    //             // http://www.twilio.com/docs/api/rest/sending-sms#example-1
 
-//             console.log(responseData.from); // outputs "+14506667788"
-//             console.log(responseData.body); // outputs "word to your mother."
+    //             console.log(responseData.from); // outputs "+14506667788"
+    //             console.log(responseData.body); // outputs "word to your mother."
 
-//         }
-//         else {
-//             console.log(err);
-//         }
-//     });
-// }
+    //         }
+    //         else {
+    //             console.log(err);
+    //         }
+    //     });
+    // }
 }
 
 router.get('/', function(req, res) {

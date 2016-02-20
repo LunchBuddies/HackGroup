@@ -24,8 +24,8 @@ var confirmedAttendees = [];
     {phone: '+19723658656'}
 ];*/
 
-var promptTime = '00 24 15 * * 0-6';
-var confirmationTime = '00 26 15 * * 0-6'
+var promptTime = '00 26 15 * * 0-6';
+var confirmationTime = '00 28 15 * * 0-6'
 
 var promptMessage = 'Are you in for lunch at noon? Yes or No';
 var confirmationMessage = 'Confirmed, see you at noon!';

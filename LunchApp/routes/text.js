@@ -18,7 +18,7 @@ var users = [
 
 var confirmedAttendees = [];
 
-var promptTime = '00 010 03 * * 0-6';
+var promptTime = '00 18 13 * * 0-6';
 var confirmationTime = '00 012 03 * * 0-6'
 
 var promptMessage = 'Are you in for lunch at noon? Yes or No';
@@ -28,7 +28,7 @@ var confirmationMessage = 'Confirmed, see you at noon!';
 new CronJob({
  cronTime: promptTime,
  onTick: function(){
-    sendgrouptext(users, promptMessage)
+    sendgrouptext(users, promptMessage)    
 },
 start: true,
 timeZone: 'America/Los_Angeles'
@@ -38,6 +38,7 @@ new CronJob({
  cronTime: confirmationTime,
  onTick: function(){
     sendgrouptext(confirmedAttendees, confirmationMessage)
+
 },
 start: true,
 timeZone: 'America/Los_Angeles'
@@ -45,16 +46,15 @@ timeZone: 'America/Los_Angeles'
 
 function lookUpName(phoneNumber)
 {
-     for (counter=0;counter<users.length;counter++)
+  for (counter=0;counter<users.length;counter++)
    {
      var storedphone=users[counter].phone;
             
      if(phoneNumber.localeCompare(storedphone)==0)
             return users[counter].name;
-
    }
-}
 
+}
 
 
 // ------------------------- Receiving Texts -----------------------------
@@ -139,7 +139,7 @@ router.post('/', function(req, res) {
 });
 
 // Sends a message to a group of users 
-function sendgrouptext (groupOfUsers, message)
+function sendgrouptext(groupOfUsers, message)
 {
   for (counter=0;counter<groupOfUsers.length;counter++)
   {

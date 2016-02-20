@@ -13,7 +13,7 @@ var users = [
     { name: 'Ryan', phone: '+19723658656'}
 ];
 
-var promptTime = '00 34 01 * * 0-6';
+var promptTime = '00 03 02 * * 0-6';
 
 var promptMessage = 'Are you in for lunch? YES or NO';
 

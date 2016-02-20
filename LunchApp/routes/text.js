@@ -37,8 +37,6 @@ function sendPromptText(users,promptMessage)
 }
 
 
-
-
 // ------------------------- Receiving Texts -----------------------------
 // Not sure if this is needed... Twilio doesnt use GET commands
 // but probably good to have for completeness
@@ -54,7 +52,7 @@ router.post('/', function(req, res) {
         {
             // User responded yes to text message
             // TODO: Add user to lunch list
-            console.log('Yes');
+            console.log('Yes: ' + req.body.From);
             sendText(req.body.From,req.body.Body);
         }
         else

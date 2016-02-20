@@ -78,11 +78,13 @@ router.post('/', function(req, res) {
             // User responded yes to text message
             // TODO: Add user to lunch list
             console.log('Yes');
+            sendText(req.body.From,req.body.Body);
         }
         else
         {
             // Nothing should happen here
             console.log('No');
+            sendText(req.body.From,req.body.Body);
         }
     }
     // console.log('POST: message received');

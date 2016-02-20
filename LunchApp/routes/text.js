@@ -50,6 +50,19 @@ router.get('/', function(req, res) {
 });
 
 router.post('/', function(req, res) {
+    if (req._body) 
+    {
+        var lowBody = req.body.Body.toUpperCase();
+        var patt = new RegExp("YES");
+        if (patt.test(lowBody))
+        {
+            console.log('Yes');
+        }
+        else
+        {
+            console.log('No');
+        }
+    }
     // console.log('POST: message received');
     // console.log('------ REQUEST ------');
     // console.log(req);
@@ -57,7 +70,7 @@ router.post('/', function(req, res) {
     // console.log(res);
     // console.log('------ END ------');
 
-    console.log(req.body);
+    
 });
 
 module.exports = router;

@@ -3,6 +3,7 @@ var client = require('twilio')('AC5f80a9d16d712b11f6af27e006e51761', 'a29ae5d040
 var router = express.Router();
 var CronJob = require('cron').CronJob;
 
+var TwilioNumber = '+14693400518' // A number you bought from Twilio and can use for outbound communication
 var users = [
     { name: 'Nick',phone: '+16026164854'},
     { name: 'Mandeep',phone: '+17174601902'},
@@ -11,7 +12,6 @@ var users = [
 ];
 
 var promptTime = '00 35 00 * * 1-7';
-
 
 var promptMessage = 'Are you in for lunch? YES or NO';
 
@@ -34,7 +34,7 @@ function sendText(phoneNumber, message){
     client.sendMessage( {
 
         to: phoneNumber, // Any number Twilio can deliver to
-        from: '+14693400518', // A number you bought from Twilio and can use for outbound communication
+        from: TwilioNumber, 
         body: message // body of the SMS message
 
     }, function(err, responseData) { //this function is executed when a response is received from Twilio

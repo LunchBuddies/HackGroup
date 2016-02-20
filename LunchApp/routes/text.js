@@ -10,10 +10,10 @@ var users = [
     { name: 'Ryan', phone: '+1972}3658656'}
 ];
 
-var promptTime = '00 23 00 * * 1-7';
+var promptTime = '00 35 00 * * 1-7';
 
 
-var promptMessage = 'Are you in for lunch? YES or NO'
+var promptMessage = 'Are you in for lunch? YES or NO';
 
 
 //basic cron job
@@ -27,15 +27,15 @@ new CronJob(
 
 
 function sendPromptText(){
-
+    sendText(users[0].phone, promptMessage)
 }
 
-function sendText(phoneNumber){
+function sendText(phoneNumber, message){
     client.sendMessage( {
 
         to: phoneNumber, // Any number Twilio can deliver to
         from: '+14693400518', // A number you bought from Twilio and can use for outbound communication
-        body: 'Pepperoni Pizza is the best!' // body of the SMS message
+        body: message // body of the SMS message
 
     }, function(err, responseData) { //this function is executed when a response is received from Twilio
 

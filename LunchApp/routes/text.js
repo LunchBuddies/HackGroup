@@ -27,6 +27,7 @@ new CronJob({
    timeZone: 'America/Los_Angeles'
 });
 
+// Sends the text to prompt the users.
 function sendPromptText(users,promptMessage)
 {
    for (counter=0;counter<users.length;counter++)
@@ -36,6 +37,7 @@ function sendPromptText(users,promptMessage)
    }
 }
 
+// Sends a text messge using the Twilio API
 function sendText(phoneNumber, message){
     client.sendMessage( {
 

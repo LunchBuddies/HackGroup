@@ -13,14 +13,11 @@ var users = [
     { name: 'Ryan', phone: '+19723658656'}
 ];
 
-<<<<<<< HEAD
-var promptTime = '00 40 02 * * 0-6';
-=======
 var confirmedAttendees = [];
 
-var promptTime = '00 48 02 * * 0-6';
-var confirmationTime = '00 49 02 * * 0-6'
->>>>>>> a54ad0ebca6e584b6f208be941928012fc7ee706
+var promptTime = '00 51 02 * * 0-6';
+var confirmationTime = '00 53 02 * * 0-6'
+
 
 var promptMessage = 'Are you in for lunch? YES or NO';
 var confirmationMessage = 'Confirmed!';

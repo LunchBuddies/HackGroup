@@ -24,7 +24,7 @@ var confirmedAttendees = [];
     {phone: '+19723658656'}
 ];*/
 
-var promptTime = '00 26 15 * * 0-6';
+var promptTime = '00 28 15 * * 0-6';
 var confirmationTime = '00 28 15 * * 0-6'
 
 var promptMessage = 'Are you in for lunch at noon? Yes or No';
@@ -121,7 +121,7 @@ router.post('/', function(req, res) {
             // User responded yes to text message
             // TODO: Add user to lunch list
             console.log('Yes: ' + req.body.From);
-            sendText(req.body.From,'Good choice! Can\'t wait!', True);
+            sendText(req.body.From,'Good choice! Can\'t wait!', true);
 
             var data = {phone:req.body.From};
             confirmedAttendees.push(data);
@@ -130,7 +130,7 @@ router.post('/', function(req, res) {
         // User is french
         else if ((new RegExp("OUI")).test(req.body.Body.toUpperCase()))
         {
-          sendText(req.body.From,'We dont like the french...', True);
+          sendText(req.body.From,'We dont like the french...', true);
         }
 
         // User responsed no
@@ -139,7 +139,7 @@ router.post('/', function(req, res) {
             // Nothing should happen here
             console.log('No');
 
-            sendText(req.body.From,'Aww! We\'ll miss you!', True);
+            sendText(req.body.From,'Aww! We\'ll miss you!', true);
         }
 
         else if ((new RegExp("ADJUST FIRST TEXT TIME: ")).test(req.body.Body.toUpperCase()))
@@ -168,7 +168,7 @@ router.post('/', function(req, res) {
         // TODO - make sure user can send multiple texts to us
         else
         {
-            sendText(req.body.From,'Say that again? We didn\'t catch it!', True);   
+            sendText(req.body.From,'Say that again? We didn\'t catch it!', true);   
         }
     }
     console.log(confirmedAttendees[0].phone);
@@ -186,7 +186,7 @@ function sendGroupTexts (groupOfUsers, message)
 {
   for (counter=0;counter<groupOfUsers.length;counter++)
   {
-     sendText(groupOfUsers[counter].phone,message, True)
+     sendText(groupOfUsers[counter].phone,message, true)
    }
 }
 //Accepts an array of objects which contain a phone number and 
@@ -194,7 +194,7 @@ function sendGroupTexts (groupOfUsers, message)
 function sendDifferentGroupTexts(responseList){
   for (counter=0;counter<responseList.length;counter++)
   {
-     sendText(responseList[counter].phone,responseList[counter].message, True)
+     sendText(responseList[counter].phone,responseList[counter].message, true)
    }
 }
 

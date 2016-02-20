@@ -15,8 +15,8 @@ var users = [
 
 var confirmedAttendees = [];
 
-var promptTime = '00 02 03 * * 0-6';
-var confirmationTime = '00 04 03 * * 0-6'
+var promptTime = '00 010 03 * * 0-6';
+var confirmationTime = '00 012 03 * * 0-6'
 
 var promptMessage = 'Are you in for lunch? YES or NO';
 var confirmationMessage = 'Confirmed!';
@@ -76,7 +76,8 @@ router.post('/', function(req, res) {
             // User responded yes to text message
             // TODO: Add user to lunch list
             console.log('Yes: ' + req.body.From);
-            
+            sendText(req.body.From,'Good choice! Can\'t wait!');
+
             var data = {phone:req.body.From};
             confirmedAttendees.push(data);
         }
@@ -84,7 +85,8 @@ router.post('/', function(req, res) {
         {
             // Nothing should happen here
             console.log('No');
-            sendText(req.body.From,req.body.Body);
+
+            sendText(req.body.From,'Aww! We\'ll miss you!');
         }
     }
     console.log(confirmedAttendees[0].phone);

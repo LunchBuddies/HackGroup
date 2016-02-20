@@ -18,7 +18,7 @@ var users = [
 
 var confirmedAttendees = [];
 
-var promptTime = '00 010 03 * * 0-6';
+var promptTime = '00 18 13 * * 0-6';
 var confirmationTime = '00 012 03 * * 0-6'
 
 var promptMessage = 'Are you in for lunch at noon? Yes or No';
@@ -43,6 +43,17 @@ start: true,
 timeZone: 'America/Los_Angeles'
 });
 
+function lookUpName(phoneNumber)
+{
+  for (counter=0;counter<users.length;counter++)
+   {
+     var storedphone=users[counter].phone;
+            
+     if(phoneNumber.localeCompare(storedphone)==0)
+            return users[counter].name;
+   }
+
+}
 
 
 // ------------------------- Receiving Texts -----------------------------
@@ -133,7 +144,6 @@ function sendGroupTexts (groupOfUsers, message)
   for (counter=0;counter<groupOfUsers.length;counter++)
   {
      sendText(groupOfUsers[counter].phone,message, True)
-       // console.log(groupOfUsers[counter].phone,promptMessage);
    }
 }
 

@@ -27,33 +27,32 @@ new CronJob(
 
 
 function sendPromptText(){
-    console.log(users[3].name); //The function will send the initial text message
 
-//     for (i = 0; i < numbers.length; i++) { 
-//     console.log ('Send to ' + numbers[i]);
-//     client.sendMessage( {
+}
 
-//         to: numbers[i], // Any number Twilio can deliver to
-//         from: '+14693400518', // A number you bought from Twilio and can use for outbound communication
-//         body: 'Pepperoni Pizza is the best!' // body of the SMS message
+function sendText(phoneNumber){
+    client.sendMessage( {
 
-//     }, function(err, responseData) { //this function is executed when a response is received from Twilio
+        to: phoneNumber, // Any number Twilio can deliver to
+        from: '+14693400518', // A number you bought from Twilio and can use for outbound communication
+        body: 'Pepperoni Pizza is the best!' // body of the SMS message
 
-//         if (!err) { // "err" is an error received during the request, if any
+    }, function(err, responseData) { //this function is executed when a response is received from Twilio
 
-//             // "responseData" is a JavaScript object containing data received from Twilio.
-//             // A sample response from sending an SMS message is here (click "JSON" to see how the data appears in JavaScript):
-//             // http://www.twilio.com/docs/api/rest/sending-sms#example-1
+        if (!err) { // "err" is an error received during the request, if any
 
-//             console.log(responseData.from); // outputs "+14506667788"
-//             console.log(responseData.body); // outputs "word to your mother."
+            // "responseData" is a JavaScript object containing data received from Twilio.
+            // A sample response from sending an SMS message is here (click "JSON" to see how the data appears in JavaScript):
+            // http://www.twilio.com/docs/api/rest/sending-sms#example-1
 
-//         }
-//         else {
-//             console.log(err);
-//         }
-//     });
-// }
+            console.log(responseData.from); // outputs "+14506667788"
+            console.log(responseData.body); // outputs "word to your mother."
+
+        }
+        else {
+            console.log(err);
+        }
+    });
 }
 
 

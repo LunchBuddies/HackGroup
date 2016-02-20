@@ -10,11 +10,16 @@ var users = [
     { name: 'Ryan', phone: '+1972}3658656'}
 ];
 
+var promptTime = '00 23 00 * * 1-7';
+
+
+var promptMessage = 'Are you in for lunch? YES or NO'
+
 
 //basic cron job
 new CronJob(
     {
-    cronTime: '00 20 00 * * 1-7', 
+    cronTime: promptTime,
     onTick: sendPromptText, 
     start: true,
     timeZone: 'America/Los_Angeles'}
@@ -50,6 +55,8 @@ function sendPromptText(){
 //     });
 // }
 }
+
+
 
 
 

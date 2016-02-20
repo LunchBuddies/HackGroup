@@ -7,11 +7,14 @@ var CronJob = require('cron').CronJob;
 var numbers = [ '+17174601902', '+19723658656', '+16026164854', '+14802367962']
 
 //basic cron job
-new CronJob('00 07 23 * * 1-5', function() {
-  console.log('You will see this message every second');
-}, null, true, 'America/Los_Angeles');
+new CronJob('00 25 23 * * 1-5', sendPromptText() 
+    , null, true, 'America/Los_Angeles');
 
-// for (i = 0; i < numbers.length; i++) { 
+
+function sendPromptText(){
+    console.log('Executing Send Prompt Text'); //The function will send the initial text message
+
+//     for (i = 0; i < numbers.length; i++) { 
 //     console.log ('Send to ' + numbers[i]);
 //     client.sendMessage( {
 
@@ -36,8 +39,6 @@ new CronJob('00 07 23 * * 1-5', function() {
 //         }
 //     });
 // }
-    
-
-
+}
 
 module.exports = router;

@@ -45,19 +45,25 @@ function sendPromptText(){
     }
 }
 
+// Not sure if this is needed... Twilio doesnt use GET commands
+// but probably good to have for completeness
 router.get('/', function(req, res) {
   console.log('GET: message received');
 });
 
+// Post function for calls from Twilio
 router.post('/', function(req, res) {
     if (req._body) 
     {
         if ((new RegExp("YES")).test(req.body.Body.toUpperCase()))
         {
+            // User responded yes to text message
+            // TODO: Add user to lunch list
             console.log('Yes');
         }
         else
         {
+            // Nothing should happen here
             console.log('No');
         }
     }

@@ -13,9 +13,17 @@ var users = [
     { name: 'Ryan', phone: '+19723658656'}
 ];
 
+<<<<<<< HEAD
 var promptTime = '00 40 02 * * 0-6';
+=======
+var confirmedAttendees = [];
+
+var promptTime = '00 48 02 * * 0-6';
+var confirmationTime = '00 49 02 * * 0-6'
+>>>>>>> a54ad0ebca6e584b6f208be941928012fc7ee706
 
 var promptMessage = 'Are you in for lunch? YES or NO';
+var confirmationMessage = 'Confirmed!';
 
 //basic cron job
 new CronJob({
@@ -27,14 +35,33 @@ new CronJob({
    timeZone: 'America/Los_Angeles'
 });
 
+new CronJob({
+   cronTime: confirmationTime,
+   onTick: function(){
+    sendConfirmationText(users, confirmationMessage)
+   },
+   start: true,
+   timeZone: 'America/Los_Angeles'
+});
+
 // Sends the text to prompt the users.
-function sendPromptText(users,promptMessage)
+function sendPromptText(users,message)
 {
    for (counter=0;counter<users.length;counter++)
    {
-       sendText(users[counter].phone,promptMessage)
+       sendText(users[counter].phone,message)
        // console.log(users[counter].phone,promptMessage);
    }
+}
+
+function sendConfirmationText(confirmedAttendees, message)
+{
+   for (counter=0;counter<confirmedAttendees.length;counter++)
+   {
+       sendText(confirmedAttendees[counter].phone,message)
+       // console.log(users[counter].phone,promptMessage);
+   }
+
 }
 
 // ------------------------- Receiving Texts -----------------------------
@@ -53,7 +80,12 @@ router.post('/', function(req, res) {
             // User responded yes to text message
             // TODO: Add user to lunch list
             console.log('Yes: ' + req.body.From);
+            
             sendText(req.body.From,'yes');
+
+            var data = {phone:req.body.From};
+            confirmedAttendees.push(data);
+
         }
         else
         {
@@ -62,12 +94,14 @@ router.post('/', function(req, res) {
             //sendText(req.body.From,req.body.Body);
         }
     }
+    console.log(confirmedAttendees[0].phone);
     // console.log('POST: message received');
     // console.log('------ REQUEST ------');
     // console.log(req);
     // console.log('------ RESPONSE ------');
     // console.log(res);
     // console.log('------ END ------');
+
 });
 
 function sendText(phoneNumber, message){

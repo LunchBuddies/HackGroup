@@ -1,9 +1,21 @@
 var express = require('express');
-var client = require('twilio')('AC5f80a9d16d712b11f6af27e006e51761', 'a29ae5d040fb1ffa437c81ab365a02ae');
+//var client = require('')('AC5f80a9d16d712b11f6af27e006e51761', 'a29ae5d040fb1ffa437c81ab365a02ae');
+
+var text = require ('textbelt');
 var router = express.Router();
 
+var opt ={
+    fromAddr: '19723658656@txt.att.net'
+}
+
+text.sendText('17174601902', 'A sample text message!', opt, function(err) {
+  if (err) {
+    console.log(err);
+  }
+});
+
 // var number = '+19723658656';
-var numbers = [ '+17174601902', '+19723658656']
+/*var numbers = [ '+17174601902', '+19723658656']
 
 for (i = 0; i < numbers.length; i++) { 
     client.sendMessage( {
@@ -25,7 +37,7 @@ for (i = 0; i < numbers.length; i++) {
 
         }
     });
-}
+}*/
     
 
 

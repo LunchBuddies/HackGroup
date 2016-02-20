@@ -28,7 +28,7 @@ var confirmationMessage = 'Confirmed, see you at noon!';
 new CronJob({
  cronTime: promptTime,
  onTick: function(){
-    sendgrouptext(users, promptMessage)
+    sendGroupTexts(users, promptMessage)
 },
 start: true,
 timeZone: 'America/Los_Angeles'
@@ -37,7 +37,7 @@ timeZone: 'America/Los_Angeles'
 new CronJob({
  cronTime: confirmationTime,
  onTick: function(){
-    sendgrouptext(confirmedAttendees, confirmationMessage)
+    sendGroupTexts(confirmedAttendees, confirmationMessage)
 },
 start: true,
 timeZone: 'America/Los_Angeles'
@@ -128,7 +128,7 @@ router.post('/', function(req, res) {
 });
 
 // Sends a message to a group of users 
-function sendgrouptext (groupOfUsers, message)
+function sendGroupTexts (groupOfUsers, message)
 {
   for (counter=0;counter<groupOfUsers.length;counter++)
   {

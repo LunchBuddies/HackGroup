@@ -1,5 +1,8 @@
+
+
 var express = require('express');
-var client = require('twilio')('AC5f80a9d16d712b11f6af27e006e51761', 'a29ae5d040fb1ffa437c81ab365a02ae');
+var keys = require ('../Keys');
+var client = require('twilio')(keys.ACCOUNT_SID, keys.AUTH_KEY);
 var router = express.Router();
 var CronJob = require('cron').CronJob;
 
@@ -7,10 +10,10 @@ var CronJob = require('cron').CronJob;
 var TwilioNumber = '+14693400518'; // A number you bought from Twilio and can use for outbound communication
 
 var users = [
-    { name: 'Nick',phone: '+16026164854'},
-    { name: 'Mandeep',phone: '+17174601902'},
-    { name: 'Anurag', phone: '+14802367962'},
-    { name: 'Ryan', phone: '+19723658656'}
+{ name: 'Nick',phone: '+16026164854'},
+{ name: 'Mandeep',phone: '+17174601902'},
+{ name: 'Anurag', phone: '+14802367962'},
+{ name: 'Ryan', phone: '+19723658656'}
 ];
 
 var confirmedAttendees = [];
@@ -18,47 +21,29 @@ var confirmedAttendees = [];
 var promptTime = '00 010 03 * * 0-6';
 var confirmationTime = '00 012 03 * * 0-6'
 
-var promptMessage = 'Are you in for lunch? YES or NO';
-var confirmationMessage = 'Confirmed!';
+var promptMessage = 'Are you in for lunch at noon? Yes or No';
+var confirmationMessage = 'Confirmed, see you at noon!';
 
 //basic cron job
 new CronJob({
-   cronTime: promptTime,
-   onTick: function(){
-    sendPromptText(users, promptMessage)
-   },
-   start: true,
-   timeZone: 'America/Los_Angeles'
+ cronTime: promptTime,
+ onTick: function(){
+    setGroupTexts(users, promptMessage)
+},
+start: true,
+timeZone: 'America/Los_Angeles'
 });
 
 new CronJob({
-   cronTime: confirmationTime,
-   onTick: function(){
-    sendConfirmationText(confirmedAttendees, confirmationMessage)
-   },
-   start: true,
-   timeZone: 'America/Los_Angeles'
+ cronTime: confirmationTime,
+ onTick: function(){
+    setGroupTexts(confirmedAttendees, confirmationMessage)
+},
+start: true,
+timeZone: 'America/Los_Angeles'
 });
 
-// Sends the text to prompt the users.
-function sendPromptText(users,message)
-{
-   for (counter=0;counter<users.length;counter++)
-   {
-       sendText(users[counter].phone,message)
-       // console.log(users[counter].phone,promptMessage);
-   }
-}
 
-function sendConfirmationText(confirmedAttendees, message)
-{
-   for (counter=0;counter<confirmedAttendees.length;counter++)
-   {
-       sendText(confirmedAttendees[counter].phone,message)
-       // console.log(users[counter].phone,promptMessage);
-   }
-
-}
 
 // ------------------------- Receiving Texts -----------------------------
 // Not sure if this is needed... Twilio doesnt use GET commands
@@ -71,22 +56,40 @@ router.get('/', function(req, res) {
 router.post('/', function(req, res) {
     if (req._body) 
     {
-        if ((new RegExp("YES")).test(req.body.Body.toUpperCase()))
+        // User sends any variation of yes
+        if ((new RegExp("YES")).test(req.body.Body.toUpperCase()) 
+          || (new RegExp("YEA")).test(req.body.Body.toUpperCase())
+          || (new RegExp("YA")).test(req.body.Body.toUpperCase()))
         {
             // User responded yes to text message
             // TODO: Add user to lunch list
             console.log('Yes: ' + req.body.From);
-            sendText(req.body.From,'Good choice! Can\'t wait!');
+            sendText(req.body.From,'Good choice! Can\'t wait!', True);
 
             var data = {phone:req.body.From};
             confirmedAttendees.push(data);
         }
-        else
+
+        // User is french
+        else if ((new RegExp("OUI")).test(req.body.Body.toUpperCase()))
+        {
+          sendText(req.body.From,'We dont like the french...', True);
+        }
+
+        // User responsed no
+        else if ((new RegExp("NO")).test(req.body.Body.toUpperCase()))
         {
             // Nothing should happen here
             console.log('No');
 
-            sendText(req.body.From,'Aww! We\'ll miss you!');
+            sendText(req.body.From,'Aww! We\'ll miss you!', True);
+        }
+
+        // user sent some random message that didnt include the above
+        // TODO - make sure user can send multiple texts to us
+        else
+        {
+            sendText(req.body.From,'Say that again? We didn\'t catch it!', True);   
         }
     }
     console.log(confirmedAttendees[0].phone);
@@ -99,7 +102,18 @@ router.post('/', function(req, res) {
     
 });
 
-function sendText(phoneNumber, message){
+// Sends a message to a group of users 
+function setGroupTexts (groupOfUsers, message)
+{
+  for (counter=0;counter<groupOfUsers.length;counter++)
+  {
+     sendText(groupOfUsers[counter].phone,message, True)
+       // console.log(groupOfUsers[counter].phone,promptMessage);
+   }
+}
+
+// Sends a single message to a given phone number
+function sendText(phoneNumber, message, retry){
     client.sendMessage( {
 
         to: phoneNumber, // Any number Twilio can deliver to
@@ -110,16 +124,17 @@ function sendText(phoneNumber, message){
 
         if (!err) { // "err" is an error received during the request, if any
 
-            // "responseData" is a JavaScript object containing data received from Twilio.
-            // A sample response from sending an SMS message is here (click "JSON" to see how the data appears in JavaScript):
-            // http://www.twilio.com/docs/api/rest/sending-sms#example-1
-
-            console.log(responseData.from); // outputs "+14506667788"
-            console.log(responseData.body); // outputs "word to your mother."
+            console.log(responseData.from + ' ' + responseData.body); // outputs "+14506667788"
+            // console.log(responseData.body); // outputs "word to your mother."
 
         }
         else {
             console.log(err);
+            // If it was the first time failed, try again
+            if (retry)
+            {
+                sendText (phoneNumber, message, False);
+            }
         }
     });
 }

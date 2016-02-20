@@ -2,6 +2,8 @@ import chai from "chai";
 import promises from "chai-as-promised";
 import handler from "../lib/index";
 
+console.log('index.spec.js');
+
 chai.use(promises);
 const { expect } = chai;
 

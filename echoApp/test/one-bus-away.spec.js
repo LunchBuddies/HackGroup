@@ -3,6 +3,8 @@ import promises from "chai-as-promised";
 import { Response } from "alexa-lambda-skill";
 import OneBusAway from "../lib/one-bus-away";
 
+console.log('one-bus-away.spec.js');
+
 chai.use(promises);
 const { expect } = chai;
 

@@ -1,4 +1,5 @@
 import { Response } from "alexa-lambda-skill";
+console.log('one-bus-away.js');
 
 export default class OneBusAway {
   launch() {

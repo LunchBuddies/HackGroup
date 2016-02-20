@@ -1,7 +1,7 @@
 {
   "intents": [
     {
-      "intent": "hello",
+      "intent": "OneBusAway",
       "slots": [
         { "name": "name", "type": "LITERAL" }
       ]

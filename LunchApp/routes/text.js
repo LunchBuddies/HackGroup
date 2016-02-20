@@ -36,7 +36,12 @@ router.get('/', function(req, res) {
 });
 
 router.post('/', function(req, res) {
-  console.log('POST: message received');
+    console.log('POST: message received');
+    console.log('------ REQUEST ------');
+    console.log(req);
+    console.log('------ RESPONSE ------');
+    console.log(res);
+    console.log('------ END ------')
 });
 
 module.exports = router;

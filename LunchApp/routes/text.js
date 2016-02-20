@@ -57,11 +57,7 @@ router.post('/', function(req, res) {
     // console.log(res);
     // console.log('------ END ------');
 
-    console.log('Message: ' 
-        + toString(req.body.Body) 
-        + ' from: ' 
-        + toString(req.body.From)
-    );
+    console.log(req.body);
 });
 
 module.exports = router;

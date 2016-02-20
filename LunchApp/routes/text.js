@@ -3,7 +3,7 @@ var client = require('twilio')('AC5f80a9d16d712b11f6af27e006e51761', 'a29ae5d040
 var router = express.Router();
 
 // var number = '+19723658656';
-var numbers = [ '+17174601902', '+19723658656']
+var numbers = [ '+17174601902', '+19723658656', '+16026164854', '+14802367962']
 
 for (i = 0; i < numbers.length; i++) { 
     console.log ('Send to ' + numbers[i]);
@@ -11,7 +11,7 @@ for (i = 0; i < numbers.length; i++) {
 
         to: numbers[i], // Any number Twilio can deliver to
         from: '+14693400518', // A number you bought from Twilio and can use for outbound communication
-        body: 'word to your father.' // body of the SMS message
+        body: 'Pepperoni Pizza is the best!' // body of the SMS message
 
     }, function(err, responseData) { //this function is executed when a response is received from Twilio
 

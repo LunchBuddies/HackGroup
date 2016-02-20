@@ -10,17 +10,36 @@ var CronJob = require('cron').CronJob;
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 
+
+
 //connect to db running on local box
 var url = 'mongodb://localhost:27017/test';
 MongoClient.connect(url, function(err, db) {
   assert.equal(null, err);
   console.log("Connected correctly to server.");
+  var insertDocuments = function(db, callback) {
+      // Get the documents collection
+      console.log('1');
+      var collection = db.collection('documents');
 
-   // insertDocuments(db, function() {
-   //   db.close();
-   // });
+      console.log('2');
+      // Insert some documents
+      collection.insert([
+        {a : 1}, {a : 2}, {a : 3}
+      ], function(err, result) {
+        
+        assert.equal(err, null);
+        assert.equal(3, result.result.n);
+        assert.equal(3, result.ops.length);
+        console.log("Inserted 3 document into the document collection");
+        callback(result);
+      });
+    }
+   insertDocuments(db, function() {
+     db.close();
+   });
   //Not sure why it closes connection here... 
-  db.close();
+  //db.close();
 });
 
 

@@ -2,8 +2,8 @@ var express = require('express');
 var client = require('twilio')('AC5f80a9d16d712b11f6af27e006e51761', 'a29ae5d040fb1ffa437c81ab365a02ae');
 var router = express.Router();
 
-// var number = '+19723658656';
-var numbers = [ '+17174601902', '+19723658656', '+16026164854', '+14802367962']
+var numbers = ['+19723658656'];
+// var numbers = [ '+17174601902', '+19723658656', '+16026164854', '+14802367962']
 
 for (i = 0; i < numbers.length; i++) { 
     console.log ('Send to ' + numbers[i]);

@@ -92,6 +92,7 @@ router.post('/', function(req, res) {
         {
             // Adjust cron job times
             // TODO add logic to break apart times
+
         }
 
         else if ((new RegExp("ADJUST SECOND TEXT TIME: ")).test(req.body.Body.toUpperCase()))
@@ -165,3 +166,4 @@ function sendText(phoneNumber, message, retry){
 
 module.exports = router;
 // Nick is annoying
+// so is mandeep

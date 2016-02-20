@@ -20,6 +20,40 @@ var env = process.env.NODE_ENV || 'development';
 app.locals.ENV = env;
 app.locals.ENV_DEVELOPMENT = env == 'development';
 
+
+//connect to db running on local box
+var url = 'mongodb://anugup-mongo.westus.cloudapp.azure.com:27017/test';
+MongoClient.connect(url, function(err, db) {
+  assert.equal(null, err);
+  console.log("Connected correctly to server.");
+
+  
+  
+  // var insertDocuments = function(db, callback) {
+  //     // Get the documents collection
+  //     console.log('1');
+  //     var collection = db.collection('documents');
+
+  //     console.log('2');
+  //     // Insert some documents
+  //     collection.insert([
+  //       {b : 1}, {b : 2}, {b : 3}
+  //     ], function(err, result) {
+        
+  //       assert.equal(err, null);
+  //       assert.equal(3, result.result.n);
+  //       assert.equal(3, result.ops.length);
+  //       console.log("Inserted 3 document into the document collection");
+  //       callback(result);
+  //     });
+  //   }
+  //  insertDocuments(db, function() {
+  //    db.close();
+  //  });
+  //Not sure why it closes connection here... 
+  //db.close();
+});
+
 // view engine setup
 
 app.set('views', path.join(__dirname, 'views'));

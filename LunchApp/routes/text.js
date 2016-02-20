@@ -18,8 +18,14 @@ var users = [
 
 var confirmedAttendees = [];
 
-var promptTime = '00 18 13 * * 0-6';
-var confirmationTime = '00 012 03 * * 0-6'
+/*var confirmedAttendeesTest = [
+    {phone: '+16026164854'},
+    {phone: '+14802367962'},
+    {phone: '+19723658656'}
+];*/
+
+var promptTime = '00 05 15 * * 0-6';
+var confirmationTime = '00 07 15 * * 0-6'
 
 var promptMessage = 'Are you in for lunch at noon? Yes or No';
 var confirmationMessage = 'Confirmed, see you at noon!';
@@ -37,22 +43,59 @@ timeZone: 'America/Los_Angeles'
 new CronJob({
  cronTime: confirmationTime,
  onTick: function(){
-    sendGroupTexts(confirmedAttendees, confirmationMessage)
+    sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
 },
 start: true,
 timeZone: 'America/Los_Angeles'
 });
 
-function lookUpName(phoneNumber)
+function lookUpName(phoneNumber, userList)
 {
-  for (counter=0;counter<users.length;counter++)
+  for (counter=0;counter<userList.length;counter++)
    {
-     var storedphone=users[counter].phone;
+     var storedphone=userList[counter].phone;
             
      if(phoneNumber.localeCompare(storedphone)==0)
-            return users[counter].name;
+            return userList[counter].name;
    }
 
+}
+
+// This function will create the confirmation message for an input phone number
+function generateOtherAttendeesString(phoneNumber)
+{
+    var interestedNames=[];
+    var interestedPhones=[];
+
+    for (counter=0;counter<confirmedAttendeesTest.length;counter++)
+     {
+         var tempPhone=confirmedAttendeesTest[counter].phone;
+                
+         if(phoneNumber.localeCompare(tempPhone)!=0)
+         {
+                var data = {phone:tempPhone};
+                interestedPhones.push(data);
+         }
+     }
+
+   for (attendeeCounter=0;attendeeCounter<interestedPhones.length;attendeeCounter++)
+     {
+        var checkPhone= interestedPhones[attendeeCounter].phone;
+
+          for (counter=0;counter<users.length;counter++)
+           {
+                 var storedphone=users[counter].phone;
+                 var storedname =users[counter].name;
+                        
+                 if(checkPhone.localeCompare(storedphone)==0)
+                     {              
+                            interestedNames.push(storedname);
+                            break;
+                     }
+           }
+    }
+
+  return(interestedNames.join());
 }
 
 
@@ -138,13 +181,34 @@ router.post('/', function(req, res) {
     
 });
 
-// Sends a message to a group of users 
+// Sends the same message to a group of users 
 function sendGroupTexts (groupOfUsers, message)
 {
   for (counter=0;counter<groupOfUsers.length;counter++)
   {
      sendText(groupOfUsers[counter].phone,message, True)
    }
+}
+//Accepts an array of objects which contain a phone number and 
+//the message to be sent to that number
+function sendDifferentGroupTexts(responseList){
+  for (counter=0;counter<responseList.length;counter++)
+  {
+     sendText(responseList[counter].phone,responseList[counter].message, True)
+   }
+}
+
+//Returns an array of objects with the phone number and message text 
+//for that confirmed attendee
+function generateConfirmationMessages(listOfAttendees){
+    var responseList = [];
+    for(counter=0; counter<listOfAttendees.length;counter++){
+        var messageString = generateOtherAttendeesString(listOfAttendees[counter].phone);
+        var data = {phone: listOfAttendees[counter].phone, message: messageString};
+        responseList.push(data);
+    }
+
+    return responseList;
 }
 
 // Sends a single message to a given phone number

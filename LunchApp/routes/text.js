@@ -15,8 +15,8 @@ var users = [
 
 var confirmedAttendees = [];
 
-var promptTime = '00 57 02 * * 0-6';
-var confirmationTime = '00 58 02 * * 0-6'
+var promptTime = '00 00 03 * * 0-6';
+var confirmationTime = '00 01 03 * * 0-6'
 
 var promptMessage = 'Are you in for lunch? YES or NO';
 var confirmationMessage = 'Confirmed!';

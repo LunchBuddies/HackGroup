@@ -13,28 +13,26 @@ var users = [
     { name: 'Ryan', phone: '+19723658656'}
 ];
 
-var promptTime = '* * * * * *';
+var promptTime = '00 34 01 * * 0-6';
 
 var promptMessage = 'Are you in for lunch? YES or NO';
 
 //basic cron job
 new CronJob({
-   cronTime: '00 25 01 * * *',
+   cronTime: promptTime,
    onTick: function(){
     sendPromptText(users, promptMessage)
    },
    start: true,
    timeZone: 'America/Los_Angeles'
 });
-//promptMessageJob.start();
-//sendPromptText(users,promptMessage),
 
 function sendPromptText(users,promptMessage)
 {
    for (counter=0;counter<users.length;counter++)
    {
-       //sendText(users[counter].phone,promptMessage)
-       console.log(users[counter].phone,promptMessage);
+       sendText(users[counter].phone,promptMessage)
+       // console.log(users[counter].phone,promptMessage);
    }
 }
 
@@ -62,5 +60,39 @@ function sendText(phoneNumber, message){
         }
     });
 }
+
+
+// ------------------------- Receiving Texts -----------------------------
+// Not sure if this is needed... Twilio doesnt use GET commands
+// but probably good to have for completeness
+router.get('/', function(req, res) {
+  console.log('GET: message received');
+});
+
+// Post function for calls from Twilio
+router.post('/', function(req, res) {
+    if (req._body) 
+    {
+        if ((new RegExp("YES")).test(req.body.Body.toUpperCase()))
+        {
+            // User responded yes to text message
+            // TODO: Add user to lunch list
+            console.log('Yes');
+        }
+        else
+        {
+            // Nothing should happen here
+            console.log('No');
+        }
+    }
+    // console.log('POST: message received');
+    // console.log('------ REQUEST ------');
+    // console.log(req);
+    // console.log('------ RESPONSE ------');
+    // console.log(res);
+    // console.log('------ END ------');
+
+    
+});
 
 module.exports = router;

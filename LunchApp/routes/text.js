@@ -43,6 +43,18 @@ start: true,
 timeZone: 'America/Los_Angeles'
 });
 
+function lookUpName(phoneNumber)
+{
+     for (counter=0;counter<users.length;counter++)
+   {
+     var storedphone=users[counter].phone;
+            
+     if(phoneNumber.localeCompare(storedphone)==0)
+            return users[counter].name;
+
+   }
+}
+
 
 
 // ------------------------- Receiving Texts -----------------------------
@@ -132,7 +144,6 @@ function setGroupTexts (groupOfUsers, message)
   for (counter=0;counter<groupOfUsers.length;counter++)
   {
      sendText(groupOfUsers[counter].phone,message, True)
-       // console.log(groupOfUsers[counter].phone,promptMessage);
    }
 }
 

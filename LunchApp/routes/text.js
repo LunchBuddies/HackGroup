@@ -56,6 +56,9 @@ router.get('/', function(req, res) {
 router.post('/', function(req, res) {
     if (req._body) 
     {
+        // TODO: break to logic for each if {...} into its own function
+        // to clean up the code
+        // 
         // User sends any variation of yes
         if ((new RegExp("YES")).test(req.body.Body.toUpperCase()) 
           || (new RegExp("YEA")).test(req.body.Body.toUpperCase())

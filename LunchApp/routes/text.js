@@ -18,9 +18,13 @@ var users = [
 
 var confirmedAttendees = [];
 
-var confirmedAttendeesTest = ['+16026164854','+14802367962','+19723658656'];
+/*var confirmedAttendeesTest = [
+    {phone: '+16026164854'},
+    {phone: '+14802367962'},
+    {phone: '+19723658656'}
+];*/
 
-var promptTime = '00 59 13 * * 0-6';
+var promptTime = '00 22 14 * * 0-6';
 var confirmationTime = '00 012 03 * * 0-6'
 
 var promptMessage = 'Are you in for lunch at noon? Yes or No';
@@ -30,9 +34,7 @@ var confirmationMessage = 'Confirmed, see you at noon!';
 new CronJob({
  cronTime: promptTime,
  onTick: function(){
-    //sendGroupTexts(users, promptMessage)
-    generateOtherAttendeesString('+14802367962')
-
+    sendGroupTexts(users, promptMessage)
 },
 start: true,
 timeZone: 'America/Los_Angeles'
@@ -59,42 +61,41 @@ function lookUpName(phoneNumber, userList)
 
 }
 
+// This function will create the confirmation message for an input phone number
 function generateOtherAttendeesString(phoneNumber)
 {
-    var senderMessageName=[];
+    var interestedNames=[];
     var interestedPhones=[];
-    var message;
 
     for (counter=0;counter<confirmedAttendeesTest.length;counter++)
-   {
-     var tempPhone=confirmedAttendeesTest[counter].phone;
-            
-     if(phoneNumber.localeCompare(tempPhone)!=0)
      {
-            var data = {phone:tempPhone};
-            interestedPhones.push(data);
+         var tempPhone=confirmedAttendeesTest[counter].phone;
+                
+         if(phoneNumber.localeCompare(tempPhone)!=0)
+         {
+                var data = {phone:tempPhone};
+                interestedPhones.push(data);
+         }
      }
-   }
 
    for (attendeeCounter=0;attendeeCounter<interestedPhones.length;attendeeCounter++)
-   {
+     {
         var checkPhone= interestedPhones[attendeeCounter].phone;
-        console.log(checkPhone);
 
-    /* for (counter=0;counter<users.length;counter++)
-       {
-         var storedphone=users[counter].phone;
-                
-         if(checkPhone.localeCompare(storedphone)==0)
-                {
-                    senderMessageName.push(users[counter].name);
-                    break;
-                }
-       }
-*/
-   }
+          for (counter=0;counter<users.length;counter++)
+           {
+                 var storedphone=users[counter].phone;
+                 var storedname =users[counter].name;
+                        
+                 if(checkPhone.localeCompare(storedphone)==0)
+                     {              
+                            interestedNames.push(storedname);
+                            break;
+                     }
+           }
+    }
 
-  // console.log(senderMessageName.join());
+  return(interestedNames.join());
 }
 
 

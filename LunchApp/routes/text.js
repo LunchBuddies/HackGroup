@@ -68,8 +68,6 @@ router.post('/', function(req, res) {
     // console.log('------ RESPONSE ------');
     // console.log(res);
     // console.log('------ END ------');
-
-    
 });
 
 function sendText(phoneNumber, message){

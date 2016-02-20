@@ -50,12 +50,18 @@ router.get('/', function(req, res) {
 });
 
 router.post('/', function(req, res) {
-    console.log('POST: message received');
-    console.log('------ REQUEST ------');
-    console.log(req);
-    console.log('------ RESPONSE ------');
-    console.log(res);
-    console.log('------ END ------')
+    // console.log('POST: message received');
+    // console.log('------ REQUEST ------');
+    // console.log(req);
+    // console.log('------ RESPONSE ------');
+    // console.log(res);
+    // console.log('------ END ------');
+
+    console.log('Message: ' 
+        + toString(req.body.Body) 
+        + ' from: ' 
+        + toString(req.body.From)
+    );
 });
 
 module.exports = router;

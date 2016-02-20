@@ -28,12 +28,21 @@ function sendPromptText(){
 //         body: 'Pepperoni Pizza is the best!' // body of the SMS message
 
 //     }, function(err, responseData) { //this function is executed when a response is received from Twilio
+//         if (!err) { // "err" is an error received during the request, if any
 
-        }
-        else {
-            console.log(err);
-        }
-    });
+//             // "responseData" is a JavaScript object containing data received from Twilio.
+//             // A sample response from sending an SMS message is here (click "JSON" to see how the data appears in JavaScript):
+//             // http://www.twilio.com/docs/api/rest/sending-sms#example-1
+
+//             console.log(responseData.from); // outputs "+14506667788"
+//             console.log(responseData.body); // outputs "word to your mother."
+
+//         }
+//         else {
+//             console.log(err);
+//         }
+//     });
+// }
 }
 
 router.get('/', function(req, res) {
@@ -48,6 +57,5 @@ router.post('/', function(req, res) {
     console.log(res);
     console.log('------ END ------')
 });
-
 
 module.exports = router;

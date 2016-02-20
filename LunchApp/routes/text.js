@@ -7,8 +7,13 @@ var CronJob = require('cron').CronJob;
 var numbers = [ '+17174601902', '+19723658656', '+16026164854', '+14802367962']
 
 //basic cron job
-new CronJob('00 25 23 * * 1-5', sendPromptText() 
-    , null, true, 'America/Los_Angeles');
+new CronJob(
+    {
+    cronTime: '00 38 23 * * 1-5', 
+    onTick: sendPromptText, 
+    start: false,
+    timeZone: 'America/Los_Angeles'}
+    );
 
 
 function sendPromptText(){

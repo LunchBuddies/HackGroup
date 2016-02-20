@@ -3,31 +3,39 @@ var client = require('twilio')('AC5f80a9d16d712b11f6af27e006e51761', 'a29ae5d040
 var router = express.Router();
 var CronJob = require('cron').CronJob;
 
-var TwilioNumber = '+14693400518' // A number you bought from Twilio and can use for outbound communication
+
+var TwilioNumber = '+14693400518'; // A number you bought from Twilio and can use for outbound communication
+
 var users = [
     { name: 'Nick',phone: '+16026164854'},
     { name: 'Mandeep',phone: '+17174601902'},
     { name: 'Anurag', phone: '+14802367962'},
-    { name: 'Ryan', phone: '+1972}3658656'}
+    { name: 'Ryan', phone: '+19723658656'}
 ];
 
-var promptTime = '00 35 00 * * 1-7';
+var promptTime = '* * * * * *';
 
 var promptMessage = 'Are you in for lunch? YES or NO';
 
-
 //basic cron job
-new CronJob(
-    {
-    cronTime: promptTime,
-    onTick: sendPromptText, 
-    start: true,
-    timeZone: 'America/Los_Angeles'}
-    );
+new CronJob({
+   cronTime: '00 25 01 * * *',
+   onTick: function(){
+    sendPromptText(users, promptMessage)
+   },
+   start: true,
+   timeZone: 'America/Los_Angeles'
+});
+//promptMessageJob.start();
+//sendPromptText(users,promptMessage),
 
-
-function sendPromptText(){
-    sendText(users[0].phone, promptMessage)
+function sendPromptText(users,promptMessage)
+{
+   for (counter=0;counter<users.length;counter++)
+   {
+       //sendText(users[counter].phone,promptMessage)
+       console.log(users[counter].phone,promptMessage);
+   }
 }
 
 function sendText(phoneNumber, message){
@@ -54,9 +62,5 @@ function sendText(phoneNumber, message){
         }
     });
 }
-
-
-
-
 
 module.exports = router;

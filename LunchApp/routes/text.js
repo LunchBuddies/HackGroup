@@ -15,8 +15,15 @@ var url = 'mongodb://localhost:27017/test';
 MongoClient.connect(url, function(err, db) {
   assert.equal(null, err);
   console.log("Connected correctly to server.");
+
+   // insertDocuments(db, function() {
+   //   db.close();
+   // });
+  //Not sure why it closes connection here... 
   db.close();
 });
+
+
 
 
 var TwilioNumber = '+14693400518'; // A number you bought from Twilio and can use for outbound communication

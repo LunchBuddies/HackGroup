@@ -6,6 +6,7 @@ var router = express.Router();
 var numbers = [ '+17174601902', '+19723658656']
 
 for (i = 0; i < numbers.length; i++) { 
+    console.log ('Send to ' + numbers[i]);
     client.sendMessage( {
 
         to: numbers[i], // Any number Twilio can deliver to
@@ -23,6 +24,9 @@ for (i = 0; i < numbers.length; i++) {
             console.log(responseData.from); // outputs "+14506667788"
             console.log(responseData.body); // outputs "word to your mother."
 
+        }
+        else {
+            console.log(err);
         }
     });
 }

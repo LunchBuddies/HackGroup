@@ -13,7 +13,7 @@ var users = [
     { name: 'Ryan', phone: '+19723658656'}
 ];
 
-var promptTime = '00 03 02 * * 0-6';
+var promptTime = '00 40 02 * * 0-6';
 
 var promptMessage = 'Are you in for lunch? YES or NO';
 
@@ -53,13 +53,13 @@ router.post('/', function(req, res) {
             // User responded yes to text message
             // TODO: Add user to lunch list
             console.log('Yes: ' + req.body.From);
-            sendText(req.body.From,req.body.Body);
+            sendText(req.body.From,'yes');
         }
         else
         {
             // Nothing should happen here
             console.log('No');
-            sendText(req.body.From,req.body.Body);
+            //sendText(req.body.From,req.body.Body);
         }
     }
     // console.log('POST: message received');

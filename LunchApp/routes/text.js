@@ -85,6 +85,25 @@ router.post('/', function(req, res) {
             sendText(req.body.From,'Aww! We\'ll miss you!', True);
         }
 
+        else if ((new RegExp("ADJUST FIRST TEXT TIME: ")).test(req.body.Body.toUpperCase()))
+        {
+            // Adjust cron job times
+            // TODO add logic to break apart times
+        }
+
+        else if ((new RegExp("ADJUST SECOND TEXT TIME: ")).test(req.body.Body.toUpperCase()))
+        {
+            // Adjust cron job times
+            // TODO add logic to break apart times
+        }
+
+        else if ((new RegExp("REGISTER")).test(req.body.Body.toUpperCase()))
+        {
+            // Add new user
+            // TODO: break apart string and add user, no need to ask for # because it is
+            // hidden is the POST request
+        }
+
         // user sent some random message that didnt include the above
         // TODO - make sure user can send multiple texts to us
         else

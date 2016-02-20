@@ -102,6 +102,8 @@ router.post('/', function(req, res) {
             // Add new user
             // TODO: break apart string and add user, no need to ask for # because it is
             // hidden is the POST request
+            // 
+            // TODO: How do we get their name?
         }
 
         // user sent some random message that didnt include the above

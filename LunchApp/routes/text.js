@@ -52,9 +52,7 @@ router.get('/', function(req, res) {
 router.post('/', function(req, res) {
     if (req._body) 
     {
-        var lowBody = req.body.Body.toUpperCase();
-        var patt = new RegExp("YES");
-        if (patt.test(lowBody))
+        if ((new RegExp("YES")).test(req.body.Body.toUpperCase()))
         {
             console.log('Yes');
         }

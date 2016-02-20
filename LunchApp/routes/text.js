@@ -24,8 +24,8 @@ var confirmedAttendees = [];
     {phone: '+19723658656'}
 ];*/
 
-var promptTime = '00 22 14 * * 0-6';
-var confirmationTime = '00 012 03 * * 0-6'
+var promptTime = '00 50 14 * * 0-6';
+var confirmationTime = '00 51 14 * * 0-6'
 
 var promptMessage = 'Are you in for lunch at noon? Yes or No';
 var confirmationMessage = 'Confirmed, see you at noon!';
@@ -43,7 +43,7 @@ timeZone: 'America/Los_Angeles'
 new CronJob({
  cronTime: confirmationTime,
  onTick: function(){
-    sendGroupTexts(confirmedAttendees, confirmationMessage)
+    sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
 },
 start: true,
 timeZone: 'America/Los_Angeles'
@@ -181,13 +181,34 @@ router.post('/', function(req, res) {
     
 });
 
-// Sends a message to a group of users 
+// Sends the same message to a group of users 
 function sendGroupTexts (groupOfUsers, message)
 {
   for (counter=0;counter<groupOfUsers.length;counter++)
   {
      sendText(groupOfUsers[counter].phone,message, True)
    }
+}
+//Accepts an array of objects which contain a phone number and 
+//the message to be sent to that number
+function sendDifferentGroupTexts(responseList){
+  for (counter=0;counter<responseList.length;counter++)
+  {
+     sendText(responseList[counter].phone,responseList[counter].message, True)
+   }
+}
+
+//Returns an array of objects with the phone number and message text 
+//for that confirmed attendee
+function generateConfirmationMessages(listOfAttendees){
+    var responseList = [];
+    for(counter=0; counter<listOfAttendees.length;counter++){
+        var messageString = generateOtherAttendeesString(listOfAttendees[counter].phone);
+        var data = {phone: listOfAttendees[counter].phone, message: messageString};
+        responseList.push(data);
+    }
+
+    return responseList;
 }
 
 // Sends a single message to a given phone number

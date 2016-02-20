@@ -24,13 +24,15 @@ var confirmedAttendees = [];
     {phone: '+19723658656'}
 ];*/
 
-var promptTime = '00 42 15 * * 0-6';
-var confirmationTime = '00 43 15 * * 0-6'
+var promptTime = '00 46 15 * * 0-6';
+var confirmationTime = '00 47 15 * * 0-6'
 
-
+// ------------------------- Message Strings -----------------------------
+// These are the base strings for the messages
 
 var promptMessage = 'Are you in for lunch at noon? Yes or No';
-var confirmationMessage = 'Confirmed, see you at noon!';
+var immediateYesResponse = 'Good call. We\'ll let you know who\'se going at noon!';
+var immediateNoResponse = 'Aww! We\'ll miss you!';
 
 //basic cron job
 new CronJob({
@@ -123,7 +125,7 @@ router.post('/', function(req, res) {
             // User responded yes to text message
             // TODO: Add user to lunch list
             console.log('Yes: ' + req.body.From);
-            sendText(req.body.From,'Good choice! Can\'t wait!', true);
+            sendText(req.body.From,immediateYesResponse, true);
 
             var data = {phone:req.body.From};
             confirmedAttendees.push(data);
@@ -141,7 +143,7 @@ router.post('/', function(req, res) {
             // Nothing should happen here
             console.log('No');
 
-            sendText(req.body.From,'Aww! We\'ll miss you!', true);
+            sendText(req.body.From,immediateNoResponse, true);
         }
 
         else if ((new RegExp("ADJUST FIRST TEXT TIME: ")).test(req.body.Body.toUpperCase()))

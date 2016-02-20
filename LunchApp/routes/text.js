@@ -24,8 +24,8 @@ var confirmedAttendees = [];
     {phone: '+19723658656'}
 ];*/
 
-var promptTime = '00 34 15 * * 0-6';
-var confirmationTime = '00 36 15 * * 0-6'
+var promptTime = '00 40 15 * * 0-6';
+var confirmationTime = '00 41 15 * * 0-6'
 
 var promptMessage = 'Are you in for lunch at noon? Yes or No';
 var confirmationMessage = 'Confirmed, see you at noon!';
@@ -67,9 +67,9 @@ function generateOtherAttendeesString(phoneNumber)
     var interestedNames=[];
     var interestedPhones=[];
 
-    for (counter=0;counter<confirmedAttendeesTest.length;counter++)
+    for (counter=0;counter<confirmedAttendees.length;counter++)
      {
-         var tempPhone=confirmedAttendeesTest[counter].phone;
+         var tempPhone=confirmedAttendees[counter].phone;
                 
          if(phoneNumber.localeCompare(tempPhone)!=0)
          {

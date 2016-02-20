@@ -2,7 +2,7 @@
 
 var express = require('express');
 var keys = require ('../Keys');
-var client = require('twilio')(keys.ACCOUNT_SID, keys.AUTH_KEY);
+var client = require('twilio')(keys.TWILIO_ACCOUNT_SID, keys.TWILIO_AUTH_KEY);
 var router = express.Router();
 var CronJob = require('cron').CronJob;
 

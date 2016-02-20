@@ -11,6 +11,8 @@ var routes = require('./routes/index');
 var user = require('./routes/user');
 var text = require('./routes/text');
 var textError = require('./routes/textError');
+// var init = require('./routes/init');
+// var runner = require('./routes/runner');
 
 var app = express();
 

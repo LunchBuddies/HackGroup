@@ -30,8 +30,13 @@ for (i = 0; i < numbers.length; i++) {
         }
     });
 }
-    
 
+router.get('/', function(req, res) {
+  console.log('GET: message received');
+});
 
+router.post('/', function(req, res) {
+  console.log('POST: message received');
+});
 
 module.exports = router;

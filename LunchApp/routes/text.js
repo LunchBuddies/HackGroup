@@ -6,18 +6,24 @@ var CronJob = require('cron').CronJob;
 // var number = '+19723658656';
 var numbers = [ '+17174601902', '+19723658656', '+16026164854', '+14802367962']
 
+var users = [
+    { name: 'Nick',phone: '+16026164854'},
+    { name: 'Mandeep',phone: '+17174601902'},
+];
+
+
 //basic cron job
 new CronJob(
     {
-    cronTime: '00 38 23 * * 1-5', 
+    cronTime: '00 16 00 * * 1-7', 
     onTick: sendPromptText, 
-    start: false,
+    start: true,
     timeZone: 'America/Los_Angeles'}
     );
 
 
 function sendPromptText(){
-    console.log('Executing Send Prompt Text'); //The function will send the initial text message
+    console.log(users[1].phone); //The function will send the initial text message
 
 //     for (i = 0; i < numbers.length; i++) { 
 //     console.log ('Send to ' + numbers[i]);

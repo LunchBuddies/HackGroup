@@ -14,10 +14,10 @@ var mongoose = require('mongoose');
 var assert = require('assert');
 var Schema = mongoose.Schema;
 
-var userSchema = new Schema({
-    name: String,
-    phone: String
-});
+// var userSchema = new Schema({
+//     name: String,
+//     phone: String
+// });
 
 // We are setting prompt time and confirmation time for lunch
 var date = new Date();
@@ -58,6 +58,7 @@ var userSchema = new Schema ({
     isGoing: Boolean,
     isConfirmed: Boolean 
 });
+
 var user = mongoose.model('user2', userSchema );
 console.log('----- Created user 2.0 model: done');
 

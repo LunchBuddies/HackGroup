@@ -37,9 +37,8 @@ testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(d.getMinutes()+ 1);
 testConfirmTime.setMinutes(d.getMinutes() + 2);
 
-var PromptTime = ' 00 30 19 * * 0-6';
-var ConfirmTime =  '00 00 20 * * 0-6';
-
+var PromptTime = ' 00 00 10 * * 0-6';
+var ConfirmTime =  '00 30 10 * * 0-6';
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages
 
@@ -53,6 +52,7 @@ var onlyOneAttendee = 'Looks like no one else is interested today! Better luck n
 promptCronJob = new CronJob({
  cronTime: PromptTime,
  onTick: function(){
+    confirmedAttendees = [];
    sendGroupTexts(users, promptMessage)
 },
 start: true,
@@ -63,7 +63,6 @@ confirmCronJob = new CronJob({
  cronTime: ConfirmTime, //confirmTime
  onTick: function(){
     sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees));
-    confirmedAttendees = [];
 },
 start: true,
 timeZone: 'America/Los_Angeles'

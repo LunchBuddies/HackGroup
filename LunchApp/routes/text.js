@@ -62,7 +62,8 @@ timeZone: 'America/Los_Angeles'
 confirmCronJob = new CronJob({
  cronTime: ConfirmTime, //confirmTime
  onTick: function(){
-    sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
+    sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees));
+    confirmedAttendees = [];
 },
 start: true,
 timeZone: 'America/Los_Angeles'

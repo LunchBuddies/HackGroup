@@ -6,6 +6,8 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var MongoClient = require('mongodb').MongoClient;
+var mongoose = require('mongoose');
 
 var routes = require('./routes/index');
 var user = require('./routes/user');
@@ -21,13 +23,19 @@ app.locals.ENV = env;
 app.locals.ENV_DEVELOPMENT = env == 'development';
 
 
-//connect to db running on local box
-var url = 'mongodb://anugup-mongo.westus.cloudapp.azure.com:27017/test';
-MongoClient.connect(url, function(err, db) {
-  assert.equal(null, err);
-  console.log("Connected correctly to server.");
+mongoose.connect('mongodb://anugup-mongo.westus.cloudapp.azure.com:27017/test');
+var db = mongoose.connection;
+var collection = db.collection('documents');
+// collection.insert ({c})
 
-  
+//connect to db running on local box
+// var url = 'mongodb://anugup-mongo.westus.cloudapp.azure.com:27017/test';
+// MongoClient.connect(url, function(err, db) {
+//   assert.equal(null, err);
+//   console.log("Connected correctly to server."
+// )};
+
+// var db = connect (...);
   
   // var insertDocuments = function(db, callback) {
   //     // Get the documents collection
@@ -52,7 +60,7 @@ MongoClient.connect(url, function(err, db) {
   //  });
   //Not sure why it closes connection here... 
   //db.close();
-});
+// });
 
 // view engine setup
 

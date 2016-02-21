@@ -234,9 +234,8 @@ function confirmCronLogic () {
 //       console.log('for phone: '+ phone + ' the message is: '+ messageString);         
 
 //     }
-   
+//   
 // }
-
 
 function generateAllMessages(users)
 {

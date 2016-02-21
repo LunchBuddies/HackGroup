@@ -168,7 +168,7 @@ router.post('/', function(req, res) {
           || (new RegExp("YEA")).test(req.body.Body.toUpperCase())
           || (new RegExp("YA")).test(req.body.Body.toUpperCase()))
         {
-           
+           console.log('RAW REQUEST' + req);
             // PUT SAVE FUNCTION HERE
             var testConfirmationObj = new confirmation ({
                 phone: req.body.From,

@@ -29,15 +29,9 @@ var currentSecond = d.getSeconds();
 var currentMin = d.getMinutes();
 var currentHour = d.getHours();
 
-var promptTime2 = (currentSecond + 1) + ' ' + currentMin + ' ' + currentHour + ' * * 0-6';
-var confirmationTime2 =  (currentSecond) + ' ' + (currentMin + 2) + ' ' + currentHour + ' * * 0-6';
+var promptTime = (currentSecond + 1) + ' ' + currentMin + ' ' + currentHour + ' * * 0-6';
+var confirmationTime =  (currentSecond) + ' ' + (currentMin + 2) + ' ' + currentHour + ' * * 0-6';
 
-var promptTime = ' 00 18 17 * * 0-6';
-var confirmationTime =  '00 19 17 * * 0-6';
-
-
-console.log ('prompt time = ' + promptTime2);
-console.log ('confirmation time = ' + confirmationTime2);
 
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages

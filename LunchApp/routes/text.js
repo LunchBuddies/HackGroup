@@ -52,17 +52,21 @@ var defaultSignature = '\n - TheLunchBuddies.com'
 //Message which prompts users to respond.
 var promptMessages = [
     "Interested in lunch? Text \'YES\' by noon and we\'ll let you know who else is interested. ",
-    "Free for lunch? Text  Text \'YES\' by noon and we\'ll let you know who else is interested. "
+    "Free for lunch? Text \'YES\' by noon and we\'ll let you know who else is interested. ",
+    "Free for lunch? Come on, you know you want to. Text \'YES\' by noon and we\'ll let you know who else is interested. ",
+    "Text \'YES\' "
 ]
 
 //Message which sends right after a user confirms.
 var immediateYesResponsesMessages = [
-    "Good call. We\'ll text you at noon to let you know who\'s going"
+    "You've never made a better decision. Ever. Good call. Seriously. We\'ll text you at noon to let you know who\'s going.",
+    "Got it! We\'ll text you at noon to let you know who\'s going.",
+    "Lunch, lunch, lunchy-lunch lunch. We\'ll text you at noon to let you know who\'s going."
 ]
 
 //Message which 
 var immediateNoResponsesMessages = [
-    "Aww! We\'ll miss you"
+    "Aww! We\'ll miss you."
 ]
 
 //Message which will be sent if there is only one attendee
@@ -87,9 +91,10 @@ function generateConfirmationMessage(namesString, suggestedCafe, signature){
         signature = defaultSignature;
     }
     var optionsList = [
-        ' ' + namesString + ' are free! We suggest ' + suggestedCafe + '. Have fun you crazy kids!',
+        namesString + ' are free! We suggest ' + suggestedCafe + '. Have fun you crazy kids!',
         'Have the time of your life with ' + namesString + '. We\'ve heard good things about ' + suggestedCafe + '...',
-        'Enjoy lunch with ' + namesString + '. Might we suggest ' + suggestedCafe + '?'
+        'Enjoy lunch with ' + namesString + '. Might we suggest ' + suggestedCafe + '?',
+        namesString + ' said they would absolutely love to go. We suggest ' + suggestedCafe + '.'
     ]
     var randomNumber = getRandomInt(0, optionsList.length-1);
     return optionsList[randomNumber] + signature;

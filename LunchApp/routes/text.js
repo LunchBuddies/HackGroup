@@ -71,11 +71,31 @@ var userSchema = new Schema ({
 var user = mongoose.model('user2', userSchema );
 console.log('----- Created user 2.0 model: done');
 
-// Basic cron job
+// Cron job that prompts users to come to lunch
 new CronJob({
- cronTime: testPromptTime,
- onTick: function(){
-   
+    cronTime: testPromptTime,
+    onTick: function(){
+        promptCronLogic ();
+    },
+    start: true,
+    timeZone: 'America/Los_Angeles'
+});
+console.log('----- Start prompt cron: done');
+
+// Cron job that confirms to users at lunch time
+new CronJob({
+    cronTime: testConfirmTime, //confirmTime
+    onTick: function()
+    {
+        confirmCronLogic();
+    },
+    start: true,
+    timeZone: 'America/Los_Angeles'
+});
+console.log('----- Start Confirmation cron: done');
+
+// Contains all the logic executed when the PROMPT cron job ticks
+function promptCronLogic ()  {
     user.find( function (err, result) {
         console.log('----- fetch users in PromptCron: done');
         for (var i = 0; i < result.length ; i++)
@@ -96,16 +116,10 @@ new CronJob({
       // numAffected is the number of updated documents
       console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
     });
-},
-start: true,
-timeZone: 'America/Los_Angeles'
-});
-console.log('----- Start prompt cron: done');
+}
 
-new CronJob({
- cronTime: testConfirmTime, //confirmTime
- onTick: function()
- {
+// Contains all the logic executed when the CONFIRM cron job ticks
+function confirmCronLogic () {
     console.log('fetch confirmation');
     user.find
     ( function (err, result) 
@@ -115,12 +129,7 @@ new CronJob({
         }
     );
     //sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
-},
-start: true,
-timeZone: 'America/Los_Angeles'
-});
-console.log('----- Start Confirmation cron: done');
-
+}
 
 // ------------------------- Confirmation Texts -----------------------------
 
@@ -247,7 +256,12 @@ function generateAllMessages(users)
 // Not sure if this is needed... Twilio doesnt use GET commands
 // but probably good to have for completeness
 router.get('/', function(req, res) {
-  console.log('GET: message received');
+      if(new RegExp("prompt").test(req.headers.command)){
+       promptCronLogic ();
+     }
+     else if (new RegExp("confirm").test(req.headers.command)){
+       confirmCronLogic();
+    };
 });
 
 // Post function for calls from Twilio

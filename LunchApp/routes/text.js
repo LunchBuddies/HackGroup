@@ -41,7 +41,9 @@ var immediateNoResponse = 'Aww! We\'ll miss you!';
 var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 31'];
 var onlyOneAttendee = 'Looks like no one else is interested today! Better luck next time.'; //Message which is sent if only one person RSVPs
 var joinMessage = 'Thanks for joining!';
-var joinFailureMessage = 'Say that again? We didn\'t catch it! Text: Join <Your Name>';
+var joinFailureMessage = 'Say that again? We didn\'t catch it! Text: Join <Your Name> to subscribe';
+var stopMessage = 'Sorry to see you go! Hope you will reconsider';
+var stopFailureMessage = 'Say that again? We didn\'t catch it! Text: STOP to unsubscribe';
 
 
 sendText(req.body.From,'Say that again? We didn\'t catch it!', true);   
@@ -267,6 +269,23 @@ router.post('/', function(req, res) {
             else
             {
                 sendText(req.body.From,joinFailureMessage, true);  
+            }
+        }
+
+        else if ((new RegExp("STOP")).test(req.body.Body.toUpperCase()))
+        {
+            var checkStop = req.body.Body.substr(0,3).toUpperCase();
+
+            if(checkStop == "STOP")
+            {
+                var userPhone= req.body.From;
+                user.find({phone: userPhone}).remove().exec();
+                
+                sendText(req.body.From, stopMessage,true); 
+            }
+            else
+            {
+                sendText(req.body.From,stopFailureMessage, true);  
             }
         }
 

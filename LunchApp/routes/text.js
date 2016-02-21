@@ -18,11 +18,11 @@ var users = [
 
 var confirmedAttendees = [];
 
-// var confirmedAttendeesTest = [
-//     {phone: '+16026164854'},
-//     {phone: '+14802367962'},
-//     {phone: '+19723658656'}
-// ];
+ var confirmedAttendeesTest = [
+     {phone: '+16026164854'},
+     {phone: '+14802367962'},
+     {phone: '+19723658656'}
+ ];
 
 var d = new Date();
 var currentSecond = d.getSeconds();
@@ -33,7 +33,7 @@ var promptTime2 = (currentSecond + 1) + ' ' + currentMin + ' ' + currentHour + '
 var confirmationTime2 =  (currentSecond) + ' ' + (currentMin + 2) + ' ' + currentHour + ' * * 0-6';
 
 var promptTime = ' 00 18 17 * * 0-6';
-var confirmationTime =  '00 19 17 * * 0-6';
+var confirmationTime =  '00 38 17 * * 0-6';
 
 
 console.log ('prompt time = ' + promptTime2);
@@ -45,7 +45,7 @@ console.log ('confirmation time = ' + confirmationTime2);
 var promptMessage = 'Are you in for lunch at noon? Yes or No';
 var immediateYesResponse = 'Good call. We\'ll let you know who\'s going at noon!';
 var immediateNoResponse = 'Aww! We\'ll miss you!';
-var cafes = [9,16,34,36,31, 4, 31];
+var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 31'];
 
 //basic cron job
 new CronJob({
@@ -60,7 +60,7 @@ timeZone: 'America/Los_Angeles'
 new CronJob({
  cronTime: confirmationTime,
  onTick: function(){
-    sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
+    sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendeesTest))
 },
 start: true,
 timeZone: 'America/Los_Angeles'
@@ -85,9 +85,9 @@ function generateOtherAttendeesString(phoneNumber)
     var interestedNames=[];
     var interestedPhones=[];
 
-    for (counter=0;counter<confirmedAttendees.length;counter++)
+    for (counter=0;counter<confirmedAttendeesTest.length;counter++)
      {
-         var tempPhone=confirmedAttendees[counter].phone;
+         var tempPhone=confirmedAttendeesTest[counter].phone;
                 
          if(phoneNumber.localeCompare(tempPhone)!=0)
          {
@@ -225,6 +225,7 @@ function sendDifferentGroupTexts(responseList){
 function generateConfirmationMessages(listOfAttendees){
     console.log('The number of confirmed attendees is ' + listOfAttendees.length);
     var responseList = [];
+    var cafeNumber=randomCafe();
     
     for(CGcounter=0; CGcounter<listOfAttendees.length;CGcounter++){
         console.log ('initially, counter is: ' + CGcounter);
@@ -232,7 +233,7 @@ function generateConfirmationMessages(listOfAttendees){
         
         console.log ('StoredPhone is: ' + storedPhone);
 
-        var messageString = generateOtherAttendeesString(storedPhone);
+        var messageString = 'Enjoy lunch with '+ generateOtherAttendeesString(storedPhone) +'. We suggest going to '+ cafeNumber;
 
         console.log ('messageString is: ' + messageString);
 
@@ -277,7 +278,7 @@ function sendText(phoneNumber, message, retry){
 
 
 function randomCafe (){
-    return cafes[getRandomInt(0, len(cafes))];
+    return cafes[getRandomInt(0, cafes.length-1)];
 }
 
 function getRandomInt(min, max) {

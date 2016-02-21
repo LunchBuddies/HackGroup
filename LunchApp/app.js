@@ -6,7 +6,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var MongoClient = require('mongodb').MongoClient;
+//var MongoClient = require('mongodb').MongoClient;
 var mongoose = require('mongoose');
 
 var routes = require('./routes/index');
@@ -26,7 +26,10 @@ app.locals.ENV_DEVELOPMENT = env == 'development';
 mongoose.connect('mongodb://anugup-mongo.westus.cloudapp.azure.com:27017/test');
 var db = mongoose.connection;
 var collection = db.collection('documents');
-// collection.insert ({c})
+collection.insert ({Ryan : 10}, function (err, result) {
+    console.log ('insert into db' );
+});
+
 
 //connect to db running on local box
 // var url = 'mongodb://anugup-mongo.westus.cloudapp.azure.com:27017/test';
@@ -115,5 +118,6 @@ app.use(function(err, req, res, next) {
     });
 });
 
-
+module.exports = db;
 module.exports = app;
+

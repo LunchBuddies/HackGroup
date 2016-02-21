@@ -9,21 +9,26 @@ var database = require('../db');
 
 // for Mongo
 var MongoClient = require('mongodb').MongoClient;
+var mongoose = require('mongoose');
 var assert = require('assert');
 
-var collection = database.collection('users');
-collection.insert ({hi : 10, number: '+19723658656'}, function (err, result) {
-    console.log ('text.js: insert into db' );
-});
 
-var TwilioNumber = '+14693400518'; // A number you bought from Twilio and can use for outbound communication
+var userSchema = mongoose.Schema({
+    name: String,
+    phone: String
+})
 
-var users = [
-{ name: 'Nick',phone: '+16026164854'},
-{ name: 'Mandeep',phone: '+17174601902'},
-{ name: 'Anurag', phone: '+14802367962'},
-{ name: 'Ryan', phone: '+19723658656'}
-];
+var userModel = mongoose.model('User',
+			   userSchema,
+			   'people'); // people collection in mongodb
+var users = [];
+
+userModel.find(function (err, result) {
+    for (var i = 0; i < result.length ; i++)
+    { 
+	users.push(result[i]);
+    }
+})
 
 var confirmedAttendees = [];
 
@@ -43,8 +48,10 @@ testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(d.getMinutes()+ 1);
 testConfirmTime.setMinutes(d.getMinutes() + 3);
 
-var promptTime = ' 00 18 17 * * 0-6';
-var confirmTime =  '00 38 17 * * 0-6';
+console.log(d.toString());
+
+var promptTime = ' 00 59 05 * * 0-6';
+var confirmTime =  '00 56 21 * * 0-6';
 
 
 
@@ -58,7 +65,7 @@ var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 
 
 //basic cron job
 new CronJob({
- cronTime: testPromptTime, //promptTime
+ cronTime: promptTime, //promptTime
  onTick: function(){
    // sendGroupTexts(users, promptMessage)
 },

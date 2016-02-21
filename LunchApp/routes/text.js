@@ -340,7 +340,7 @@ router.post('/', function(req, res) {
                             console.log ('remove user');
                         });
                     });
-                }).remove().exec();
+                });
                 
                 // sendText(req.body.From, stopMessage,true); 
             }

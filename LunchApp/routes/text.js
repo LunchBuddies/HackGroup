@@ -383,6 +383,7 @@ function GetKeyword(body)
 function sendText(phoneNumber, message, retry){
     console.log('==================== Begin: sendText ====================');
     console.log("----- " + message )
+    
     client.sendMessage( {
 
         to: phoneNumber, // Any number Twilio can deliver to
@@ -404,7 +405,7 @@ function sendText(phoneNumber, message, retry){
             logHistoryEvent ('Error', err);
             if (retry)
             {
-                sendText (phoneNumber, message, False);
+                sendText (phoneNumber, message, false);
             }
         }
     });

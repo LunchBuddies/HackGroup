@@ -30,15 +30,15 @@ var confirmationSchema = new Schema ({
 var user = mongoose.model('user', userSchema ); // people collection in mongodb
 var confirmation = mongoose.model('testconfirmation', confirmationSchema );
 
-var testConfirmationObj = new confirmation ({
-    phone: '+19723658656',
-    time: new Date().toISOString()
-});
+// var testConfirmationObj = new confirmation ({
+//     phone: '+19723658656',
+//     time: new Date().toISOString()
+// });
 
-testConfirmationObj.save (function (err, request) {
-    if (err) return console.error(err);
-    console.dir(request);
-});
+// testConfirmationObj.save (function (err, request) {
+//     if (err) return console.error(err);
+//     console.dir(request);
+// });
 
 // var findUsersFromMongo = userModel.find( function (err, result) {
 //     console.log('Fetched users from mongo');
@@ -186,16 +186,25 @@ router.post('/', function(req, res) {
         {
            
             // PUT SAVE FUNCTION HERE
+            var testConfirmationObj = new confirmation ({
+                phone: req.body.From,
+                time: new Date().toISOString()
+            });
 
+            testConfirmationObj.save (function (err, request) {
+                if (err) return console.error(err);
+                // console.dir(request);
+                console.log('Yes: ' + req.body.From);
+                sendText(req.body.From,immediateYesResponse, true);
+            });
 
             // User responded yes to text message
             // TODO: Add user to lunch list
-            console.log('Yes: ' + req.body.From);
-            sendText(req.body.From,immediateYesResponse, true);
+            
 
-            var data = {phone:req.body.From};
-            console.log('Adding ' + data.phone + ' to the confirmedAttendees list');
-            confirmedAttendees.push(data);
+            // var data = {phone:req.body.From};
+            // console.log('Adding ' + data.phone + ' to the confirmedAttendees list');
+            // confirmedAttendees.push(data);
         }
 
         // User is french

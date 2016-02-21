@@ -24,8 +24,8 @@ var confirmedAttendees = [];
     {phone: '+19723658656'}
 ];*/
 
-var promptTime = '00 01 16 * * 0-6';
-var confirmationTime = '00 02 16 * * 0-6'
+var promptTime = '00 04 16 * * 0-6';
+var confirmationTime = '00 05 16 * * 0-6'
 
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages
@@ -198,7 +198,7 @@ function sendGroupTexts (groupOfUsers, message)
 function sendDifferentGroupTexts(responseList){
   for (counter=0;counter<responseList.length;counter++)
   {
-     console.log('Sending for '+ responseList[counter].phone + ' message is: ' 
+     console.log('Sending for '+ responseList[counter].phone + ' message is: ' + 
         responseList[counter].message);
 
      sendText(responseList[counter].phone,responseList[counter].message, true)

@@ -25,10 +25,6 @@ var confirmedAttendees = [];
  //     {phone: '+19723658656'}
  // ];
 
- exports.randomTest = function() {
-    return "Hello";
- };
-
 var d = new Date();
 var testPromptTime = new Date();
 var testConfirmTime = new Date();
@@ -37,8 +33,8 @@ testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(d.getMinutes()+ 1);
 testConfirmTime.setMinutes(d.getMinutes() + 2);
 
-var PromptTime = ' 00 30 19 * * 0-6';
-var ConfirmTime =  '00 00 20 * * 0-6';
+var PromptTime = ' 00 00 09 * * 0-6';
+var ConfirmTime =  '00 30 10 * * 0-6';
 
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages

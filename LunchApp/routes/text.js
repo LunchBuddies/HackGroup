@@ -251,9 +251,7 @@ router.post('/', function(req, res) {
 
 
         // User sends any variation of yes
-        if ((new RegExp("YES")).test(req.body.Body.toUpperCase()) 
-          || (new RegExp("YEA")).test(req.body.Body.toUpperCase())
-          || (new RegExp("YA")).test(req.body.Body.toUpperCase()))
+        if ((new RegExp("YES")).test(req.body.Body.toUpperCase()))
         {
 
             // Update status of user to 

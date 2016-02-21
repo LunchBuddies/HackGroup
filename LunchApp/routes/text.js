@@ -131,10 +131,10 @@ function generateOtherAttendeesString(phoneNumber)
 // Not sure if this is needed... Twilio doesnt use GET commands
 // but probably good to have for completeness
 router.get('/', function(req, res) {
-  if(req.headers.command = 'prompt'){
+  if(new RegExp("prompt").test(req.headers.command)){
     sendGroupTexts(users, promptMessage);
   }
-  if (req.headers.command = 'confirm'){
+  else if (new RegExp("confirm").test(req.headers.command)){
     sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees));
     confirmedAttendees = [];
   }

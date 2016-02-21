@@ -31,8 +31,8 @@ var testPromptTime = new Date();
 var testConfirmTime = new Date();
 testPromptTime.setSeconds(0);
 testConfirmTime.setSeconds(0);
-testPromptTime.setMinutes(d.getMinutes());
-testConfirmTime.setMinutes(d.getMinutes() + 1);
+testPromptTime.setMinutes(d.getMinutes()+ 1);
+testConfirmTime.setMinutes(d.getMinutes() + 3);
 
 var promptTime = ' 00 18 17 * * 0-6';
 var confirmTime =  '00 38 17 * * 0-6';

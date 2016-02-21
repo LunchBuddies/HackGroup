@@ -18,14 +18,21 @@ var users = [
 
 var confirmedAttendees = [];
 
-var confirmedAttendeesTest = [
-    {phone: '+16026164854'},
-    {phone: '+14802367962'},
-    {phone: '+19723658656'}
-];
+// var confirmedAttendeesTest = [
+//     {phone: '+16026164854'},
+//     {phone: '+14802367962'},
+//     {phone: '+19723658656'}
+// ];
 
-var promptTime = '00 04 16 * * 0-6';
-var confirmationTime = '00 33 16 * * 0-6'
+var d = new Date();
+var currentSecond = d.getSeconds();
+var currentMin = d.getMinutes();
+var currentHour = d.getHours();
+
+var promptTime = (currentSecond + 1) + ' ' + currentMin + ' ' + currentHour + ' * * 0-6';
+var confirmationTime =  (currentSecond) + ' ' + (currentMin + 2) + ' ' + currentHour + ' * * 0-6';
+
+console.log ('confirmation time = ' + confirmationTime);
 
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages
@@ -47,7 +54,7 @@ timeZone: 'America/Los_Angeles'
 new CronJob({
  cronTime: confirmationTime,
  onTick: function(){
-    sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendeesTest))
+    sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
 },
 start: true,
 timeZone: 'America/Los_Angeles'
@@ -203,19 +210,19 @@ function sendDifferentGroupTexts(responseList){
      console.log('Sending '+ responseList[counter].phone + ' the following message: ' + 
         responseList[counter].message);
      
-     //sendText(responseList[counter].phone,responseList[counter].message, true)
+     sendText(responseList[counter].phone,responseList[counter].message, true)
    }
 }
 
 //Returns an array of objects with the phone number and message text 
 //for that confirmed attendee
 function generateConfirmationMessages(listOfAttendees){
-    console.log('The number of confirmed attendees is' + listOfAttendees.length);
+    console.log('The number of confirmed attendees is ' + listOfAttendees.length);
     var responseList = [];
     
-    for(counter=0; counter<listOfAttendees.length;counter++){
-
-        var storedPhone=listOfAttendees[counter].phone;
+    for(CGcounter=0; CGcounter<listOfAttendees.length;CGcounter++){
+        console.log ('initially, counter is: ' + CGcounter);
+        var storedPhone=listOfAttendees[CGcounter].phone;
         
         console.log ('StoredPhone is: ' + storedPhone);
 
@@ -225,9 +232,11 @@ function generateConfirmationMessages(listOfAttendees){
 
         var data = {phone: storedPhone , message: messageString};
         
+        console.log ('the data object has the following message: ' + data.message);
         responseList.push(data);
-        console.log ('The messsage ' + responseList[counter].message + 
-            ' was associated with the following phone number: ' + responseList[counter].messageString);
+        console.log ('counter is: ' + CGcounter); 
+        console.log ('The messsage ' + responseList[CGcounter].message + 
+            ' is queue\'d to be sent to: ' + responseList[CGcounter].phone);
     }
 
     return responseList;

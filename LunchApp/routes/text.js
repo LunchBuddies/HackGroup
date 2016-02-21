@@ -90,7 +90,7 @@ new CronJob({
         for (var i = 0; i < result.length ; i++)
         { 
             console.log(result[i].phone);
-            //sendText(result[i].phone, promptMessage, true)
+            sendText(result[i].phone, promptMessage, true)
         }
         //console.log(result);
 
@@ -234,7 +234,7 @@ function generateAllMessages(users)
             continue;
         }
          
-      //sendText(phone,messsageString, true)
+      sendText(phone,messsageString, true)
       console.log('for phone: '+ phone + ' the message is: '+ messageString);         
 
     }

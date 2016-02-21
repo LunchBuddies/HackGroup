@@ -28,29 +28,7 @@ var confirmationSchema = new Schema ({
 });
 
 var user = mongoose.model('user', userSchema ); // people collection in mongodb
-var confirmation = mongoose.model('testconfirmation', confirmationSchema );
-
-// var testConfirmationObj = new confirmation ({
-//     phone: '+19723658656',
-//     time: new Date().toISOString()
-// });
-
-// testConfirmationObj.save (function (err, request) {
-//     if (err) return console.error(err);
-//     console.dir(request);
-// });
-
-// var findUsersFromMongo = userModel.find( function (err, result) {
-//     console.log('Fetched users from mongo');
-//     users = result;
-//     // for (var i = 0; i < result.length ; i++)
-//     // { 
-//     //     console.log('hi');
-//     //     users.push(result[i]);
-
-//     // }
-
-// });
+var confirmation = mongoose.model('confirmation', confirmationSchema );
 
 
 var confirmedAttendees = [];

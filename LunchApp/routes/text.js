@@ -31,7 +31,7 @@ var testConfirmTime = new Date();
 testPromptTime.setSeconds(0);
 testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(d.getMinutes()+ 1);
-testConfirmTime.setMinutes(d.getMinutes() + 1);
+testConfirmTime.setMinutes(d.getMinutes() + 3);
 
 var promptTime = ' 00 30 19 * * 0-6';
 var confirmTime =  '00 00 20 * * 0-6';
@@ -39,7 +39,7 @@ var confirmTime =  '00 00 20 * * 0-6';
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages
 
-var promptMessage = 'Are you in for lunch at noon? Yes or No';
+var promptMessage = 'Are you in for lunch at noon? Text \'YES\' to confirm and we\'ll let you know who else is interested!;
 var immediateYesResponse = 'Good call. We\'ll let you know who\'s going at noon!';
 var immediateNoResponse = 'Aww! We\'ll miss you!';
 var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 31'];

@@ -354,6 +354,13 @@ router.post('/', function(req, res) {
             var keyword = GetKeyword(testBody);
             console.log ('user' + _user123);
             console.log ('keyword' + keyword);
+
+            if (_user123 == '')
+            {
+                sendText(req.body.From,joinFailureMessage, true); 
+                return;
+            }
+
             if(keyword == "JOIN")
             {   
                 var insertUser = new user ({
@@ -368,6 +375,7 @@ router.post('/', function(req, res) {
                     if (!err){
                         console.log('Inserted new record with name: '+ _user123);
                         sendText(req.body.From, generateMessageWithSignature(joinMessage),true); 
+                        return;
                     }
                     else
                     {

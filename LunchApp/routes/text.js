@@ -1,5 +1,4 @@
 //    Declaration Section    //
-
 var express = require('express');
 var keys = require ('../Keys');
 var history = require ('../History');
@@ -20,27 +19,23 @@ var userSchema = new Schema({
     phone: String
 });
 
-// for date 
+// We are setting prompt time and confirmation time for lunch
 var date = new Date();
 var testPromptTime = new Date();
 var testConfirmTime = new Date();
 testPromptTime.setSeconds(0);
 testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(date.getMinutes()+ 1);
+<<<<<<< HEAD
 testConfirmTime.setMinutes(date.getMinutes() + 2);
 var PromptTime = ' 00 00 13 * * 0-6';
 var ConfirmTime =  '00 30 13 * * 0-6';
+=======
+testConfirmTime.setMinutes(date.getMinutes() + 1);
+var PromptTime = ' 20 06 03 * * 0-6';
+var ConfirmTime =  '00 01 03 * * 0-6';
+>>>>>>> origin/registration
 console.log('----- Set times: done');
-
-// var confirmedAttendees = [];
-// var confirmationSchema = new Schema ({
-//     phone: String,
-//     time: String
-// });
-// people collection in mongodb
-//var confirmation = mongoose.model('confirmation', confirmationSchema );
-
-
 
 
 // ------------------------- Message Strings -----------------------------
@@ -117,6 +112,7 @@ function promptCronLogic ()  {
     user.find( function (err, result) {
         if (!err) 
         { 
+
             console.log('----- fetch users in PromptCron: done');
             for (var i = 0; i < result.length ; i++)
             { 
@@ -129,15 +125,14 @@ function promptCronLogic ()  {
         {
             logHistoryEvent ('Error', err);
         }
-
     });
-
-    // 
+    
     var conditionsForResetDB = {}
       , updateForResetDB = { isGoing: false }
       , optionsForResetDB = {multi: true } ;
 
     user.update(conditionsForResetDB, updateForResetDB,  optionsForResetDB, function callback (err, numAffected) {
+
         if (!err)
         {
             // numAffected is the number of updated documents
@@ -148,8 +143,11 @@ function promptCronLogic ()  {
             logHistoryEvent ('Error', err);
         }  
             
+      // numAffected is the number of updated documents
+      console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
+
     });
-}
+};
 
 // Contains all the logic executed when the CONFIRM cron job ticks
 function confirmCronLogic () {
@@ -157,85 +155,19 @@ function confirmCronLogic () {
     user.find
     ( function (err, result) 
         {
+
             if (!err)
             {
                 generateAllMessages(result);      
-                //generateAllMessageswhenGroupwillbeImplemented(users);  
             }
             else
             {
                 logHistoryEvent ('Error', err);
             }
-                              
         }
     );
-    //sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
 }
 
-
-
-
-// ------------------------- Confirmation Texts -----------------------------
-
-// function generateAllMessageswhenGroupwillbeImplemented(users)
-// {
-//      var cafeNumber=randomCafe();
-
-//     for (var i=0;i<users.length;i++)
-//     {
-//         var phone=users[i].phone;
-//         var interestedNames=[];
-//         var messageString;
-//         var message;
-
-//         var group = users[i].group;
-
-//         if(users[i].isConfirmed=='YES')
-//         {
-//             for (var j=0;j<users.length;j++)
-//             {
-//                 if(
-//                     (users[j].isConfirmed=='YES')
-//                      && (group.localeCompare(users[j].group)==0)
-//                     && (phone.localeCompare(users[j].phone)!=0)
-//                  )
-//                     {
-//                         interestedNames.push(users[j].name);                        
-//                     }
-//             }
-
-//              if (interestedNames.length == 1)
-//         {
-//               message= interestedNames.join(', ');
-//         }
-
-//           else
-//           {
-//             message = [interestedNames.slice(0, -1).join(', '), 
-//             interestedNames.slice(-1)[0]].join(interestedNames.length 
-//                 < 2 ? '' : ' and ');
-//           }
-
-//         if(message=='')
-//                 {
-//                     messageString = onlyOneAttendee;
-//                 }
-//                 else
-//                 {
-//                     messageString = 'Enjoy lunch with '+ message +'. We suggest going to '+ cafeNumber;
-//                 }
-//         }
-//         else
-//         {
-//             continue;
-//         }
-         
-//       //sendText(phone,messsageString, true)
-//       console.log('for phone: '+ phone + ' the message is: '+ messageString);         
-
-//     }
-//   
-// }
 
 function generateAllMessages(users)
 {
@@ -251,12 +183,18 @@ function generateAllMessages(users)
         messageString = '';
         var message;
 
+        var group = users[i].group;
+
+        console.log ('Phone: ' + phone + ' has group: '+ group + ' and said: '+ users[i].isGoing);
+
         if(users[i].isGoing)
         {
             for (var j=0;j<users.length;j++)
             {
                 if((users[j].isGoing)
-                    && (phone.localeCompare(users[j].phone) != 0))
+                    && (phone.localeCompare(users[j].phone) != 0)
+                    && (group.localeCompare(users[j].group)==0)
+                   )
                     {
                         interestedNames.push(users[j].name);                        
                     }
@@ -287,7 +225,7 @@ function generateAllMessages(users)
         {
             continue;
         }
-        // console.log('for phone: '+ phone + ' the message is: '+ messageString);         
+         console.log('for phone: '+ phone + ' the message is: '+ messageString);         
 
         sendText(phone,messageString, true);
         console.log('==================== End: generateAllMessages ====================');
@@ -436,66 +374,3 @@ function getRandomInt(min, max) {
 
 module.exports = router;
 
-
-/*
-
-// // Sends the same message to a group of users 
-// function sendGroupTexts (groupOfUsers, message)
-// {
-//   for (counter=0;counter<groupOfUsers.length;counter++)
-//   {
-//      sendText(groupOfUsers[counter].phone,message, true)
-//    }
-// }
-// //Accepts an array of objects which contain a phone number and 
-// //the message to be sent to that number
-// function sendDifferentGroupTexts(responseList){
-//   for (counter=0;counter<responseList.length;counter++)
-//   {
-//      console.log('Sending '+ responseList[counter].phone + ' the following message: ' + 
-//         responseList[counter].message);
-     
-//      sendText(responseList[counter].phone,responseList[counter].message, true)
-//    }
-// }
-
-//Returns an array of objects with the phone number and message text 
-//for that confirmed attendee
-// function generateConfirmationMessages(listOfAttendees){
-//     console.log('The number of confirmed attendees is ' + listOfAttendees.length);
-//     var responseList = [];
-//     var cafeNumber=randomCafe();
-//      var messageString;
-    
-//     for(CGcounter=0; CGcounter<listOfAttendees.length;CGcounter++){
-//         var storedPhone=listOfAttendees[CGcounter].phone;
-        
-
-//         if(generateOtherAttendeesString(storedPhone)=='')
-//         {
-//             messageString = onlyOneAttendee;
-//         }
-//         else
-//         {
-//             messageString = 'Enjoy lunch with '+ generateOtherAttendeesString(storedPhone) +'. We suggest going to '+ cafeNumber;
-//         }
-
-//         console.log ('messageString is: ' + messageString);
-
-//         var data = {phone: storedPhone , message: messageString};
-        
-//         console.log ('the data object has the following message: ' + data.message);
-//         responseList.push(data);
-//         console.log ('counter is: ' + CGcounter); 
-//         console.log ('The messsage ' + responseList[CGcounter].message + 
-//             ' is queue\'d to be sent to: ' + responseList[CGcounter].phone);
-//     }
-
-//     return responseList;
-// }
-
-
-// Nick is annoying
-// so is mandeep
- 
-*/

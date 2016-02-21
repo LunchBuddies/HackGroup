@@ -246,7 +246,7 @@ router.post('/', function(req, res) {
     if (req._body) 
     {
         // Log every text we get
-        logHistoryEvent ('ReceiveText', {phoneNumber: req.body.From, message: req.body.Body});
+        // logHistoryEvent ('ReceiveText', {phoneNumber: req.body.From, message: req.body.Body});
 
 
         // User sends any variation of yes

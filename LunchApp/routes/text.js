@@ -306,7 +306,13 @@ router.post('/', function(req, res) {
             console.log ('keyword' + keyword);
             if(keyword == "JOIN")
             {   
-                var insertUser = new user ({name:_user123, phone:req.body.From,group:'OENGPM', isGoing: false, isConfirmed:true });
+                var insertUser = new userSchema ({
+                    name:_user123, 
+                    phone:req.body.From,
+                    group:'OENGPM', isGoing: false, 
+                    isConfirmed:true 
+                });
+                
                 insertUser.save (function (err, result) 
                 {
                     if (!err){

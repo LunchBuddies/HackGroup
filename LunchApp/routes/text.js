@@ -28,8 +28,9 @@ var confirmationSchema = new Schema ({
 });
 
 var user = mongoose.model('user', userSchema ); // people collection in mongodb
+var stringuser = mongoose.model('user', userSchema ); // people collection in mongodb
 var confirmation = mongoose.model('confirmation', confirmationSchema );
-
+var stringconfirmation = mongoose.model('confirmation', confirmationSchema );
 
 var confirmedAttendees = [];
 
@@ -50,7 +51,7 @@ testPromptTime.setMinutes(d.getMinutes()+ 1);
 testConfirmTime.setMinutes(d.getMinutes() + 2);
 
 var PromptTime = ' 00 30 19 * * 0-6';
-var ConfirmTime =  '00 00 20 * * 0-6';
+var ConfirmTime =  '00 40 00 * * 0-6';
 
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages
@@ -66,7 +67,7 @@ new CronJob({
  cronTime: PromptTime,
  onTick: function(){
    console.log('fetch users');
-    // userModel.find( function (err, result) {
+    // user.find( function (err, result) {
     //     console.log('Fetched users from mongo');
     //     for (var i = 0; i < result.length ; i++)
     //     { 
@@ -81,14 +82,36 @@ start: true,
 timeZone: 'America/Los_Angeles'
 });
 
-// new CronJob({
-//  cronTime: testConfirmTime, //confirmTime
-//  onTick: function(){
-//     sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
-// },
-// start: true,
-// timeZone: 'America/Los_Angeles'
-// });
+ // console.log('Fetched confirmed users from mongo');
+ //                    for (var i = 0; i < result.length ; i++)
+ //                    { 
+ //                       var message = generateOtherAttendeesString(result[i].phone);
+
+ //                       sendText(result[i].phone,message, true)
+ //                    }
+ //                    console.log(result);
+
+new CronJob({
+ cronTime: ConfirmTime, //confirmTime
+ onTick: function()
+ {
+    console.log('fetch confirmation');
+    confirmation.find
+    ( function (err, result) 
+        {
+            user.find
+            ( function (err,userresult)
+                {
+                    generateAllMessages(result,userresult);
+                }
+            );                   
+        }
+    );
+    //sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
+},
+start: true,
+timeZone: 'America/Los_Angeles'
+});
 
 
 function lookUpName(phoneNumber, userList)
@@ -103,50 +126,68 @@ function lookUpName(phoneNumber, userList)
 
 }
 
+function generateAllMessages(confirmationlist,userlist)
+{
+    console.log('the length of confirmation is: ' + confirmationlist.length);
+    console.log('the length of user is: ' + userlist.length);
+}
+
+
 // This function will create the confirmation message for an input phone number
 function generateOtherAttendeesString(phoneNumber)
 {
-    console.log('The generateOtherAttendeesString function recieved the following number: ' + phoneNumber);
-    var interestedNames=[];
-    var interestedPhones=[];
+    // console.log('The generateOtherAttendeesString function recieved the following number: ' + phoneNumber);
+    // var interestedNames=[];
+    // var interestedPhones=[];
 
-    for (counter=0;counter<confirmedAttendees.length;counter++)
-     {
-         var tempPhone=confirmedAttendees[counter].phone;
-                
-         if(phoneNumber.localeCompare(tempPhone)!=0)
-         {
-                var data = {phone:tempPhone};
-                interestedPhones.push(data);
-         }
-     }
+    //                 stringconfirmation.find( function (err, result) {
+    //                     console.log('Fetched confirmed users from mongo - generateOtherAttendeesString');
+    //                     for (var i = 0; i < result.length ; i++)
+    //                     { 
+    //                        if (phoneNumber.localeCompare(result[i].phone) !=0)
+    //                        {
+    //                         console.log('entered');
 
-   for (attendeeCounter=0;attendeeCounter<interestedPhones.length;attendeeCounter++)
-     {
-        var checkPhone= interestedPhones[attendeeCounter].phone;
+    //                             var data = {phone:result[i].phone};
+    //                             interestedPhones.push(data);
+    //                        }
+    //                     }
 
-          for (counter=0;counter<users.length;counter++)
-           {
-                 var storedphone=users[counter].phone;
-                 var storedname =users[counter].name;
-                        
-                 if(checkPhone.localeCompare(storedphone)==0)
-                     {              
-                            interestedNames.push(storedname);
-                            break;
-                     }
-           }
-    }
-    console.log('generateOtherAtendeesString is returning ' + interestedNames.join(', '));
-  
-  //If there are only two people who are interested
-  if (interestedNames.length == 1){
-    return(interestedNames.join(', '));
-  }
-  else{
-    return ([interestedNames.slice(0, -1).join(', '), 
-        interestedNames.slice(-1)[0]].join(interestedNames.length < 2 ? '' : ' and '));
-  }
+    //                 });
+
+    //                  console.log('the length is: '+ interestedPhones.length);
+
+    //                  for (attendeeCounter=0;attendeeCounter<interestedPhones.length;attendeeCounter++)
+    //                  {
+    //                     var checkPhone= interestedPhones[attendeeCounter].phone;
+
+    //                     stringuser.find( function (err, result) {
+    //                     console.log('Fetched all registered users from mongo');
+    //                     for (var i = 0; i < result.length ; i++)
+    //                     { 
+    //                          var storedname =result[i].name;
+
+    //                        if (checkPhone.localeCompare(result[i].phone) !=0)
+    //                        {
+    //                             interestedNames.push(storedname);
+    //                             break;
+    //                        }
+    //                     }
+    //                 });
+
+
+    
+
+    //        console.log('generateOtherAtendeesString is returning ' + interestedNames.join(', '));
+          
+    //       //If there are only two people who are interested
+    //       if (interestedNames.length == 1){
+    //         return(interestedNames.join(', '));
+    //       }
+    //       else{
+    //         return ([interestedNames.slice(0, -1).join(', '), 
+    //             interestedNames.slice(-1)[0]].join(interestedNames.length < 2 ? '' : ' and '));
+    //       }
 }
 
 // ------------------------- Receiving Texts -----------------------------
@@ -172,7 +213,8 @@ router.post('/', function(req, res) {
             // PUT SAVE FUNCTION HERE
             var testConfirmationObj = new confirmation ({
                 phone: req.body.From,
-                time: new Date().toISOString()
+                time: new Date().toISOString(),
+                confirmationsent: false
             });
 
             testConfirmationObj.save (function (err, request) {
@@ -242,7 +284,7 @@ router.post('/', function(req, res) {
     // console.log('------ RESPONSE ------');
     // console.log(res);
     // console.log('------ END ------');
-    
+
 });
 
 // Sends the same message to a group of users 

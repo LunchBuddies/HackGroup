@@ -334,12 +334,16 @@ router.post('/', function(req, res) {
             if(checkStop == "STOP")
             {
                 var userPhone= req.body.From;
-                user.find({phone: userPhone}, function (err, response) {
-                    response.remove( function (err2.response2) {
-                        response2.exec(function (err3, response3) {
-                            console.log ('remove user');
-                        });
-                    });
+                // user.find({phone: userPhone}, function (err, response) {
+                //     response.remove( function (err2.response2) {
+                //         response2.exec(function (err3, response3) {
+                //             console.log ('remove user');
+                //         });
+                //     });
+                // });
+
+                user.deleteOne ({phone: req.body.From}, function (err, response) {
+                    console.log ('remove user');
                 });
                 
                 // sendText(req.body.From, stopMessage,true); 

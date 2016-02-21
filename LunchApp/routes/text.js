@@ -51,7 +51,7 @@ var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 
 new CronJob({
  cronTime: testPromptTime, //promptTime
  onTick: function(){
-   // sendGroupTexts(users, promptMessage)
+   sendGroupTexts(users, promptMessage)
 },
 start: true,
 timeZone: 'America/Los_Angeles'

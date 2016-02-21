@@ -26,15 +26,10 @@ var testConfirmTime = new Date();
 testPromptTime.setSeconds(0);
 testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(date.getMinutes()+ 1);
-<<<<<<< HEAD
 testConfirmTime.setMinutes(date.getMinutes() + 2);
 var PromptTime = ' 00 00 13 * * 0-6';
 var ConfirmTime =  '00 30 13 * * 0-6';
-=======
-testConfirmTime.setMinutes(date.getMinutes() + 1);
-var PromptTime = ' 20 06 03 * * 0-6';
-var ConfirmTime =  '00 01 03 * * 0-6';
->>>>>>> origin/registration
+
 console.log('----- Set times: done');
 
 

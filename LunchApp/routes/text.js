@@ -226,6 +226,7 @@ function generateConfirmationMessages(listOfAttendees){
     console.log('The number of confirmed attendees is ' + listOfAttendees.length);
     var responseList = [];
     var cafeNumber=randomCafe();
+     var messageString;
     
     for(CGcounter=0; CGcounter<listOfAttendees.length;CGcounter++){
         console.log ('initially, counter is: ' + CGcounter);
@@ -233,7 +234,14 @@ function generateConfirmationMessages(listOfAttendees){
         
         console.log ('StoredPhone is: ' + storedPhone);
 
-        var messageString = 'Enjoy lunch with '+ generateOtherAttendeesString(storedPhone) +'. We suggest going to '+ cafeNumber;
+        if(generateOtherAttendeesString(storedPhone) == null)
+        {
+            messageString = 'Looks like no one else is interested today! Better luck next time';
+        }
+        else
+        {
+            messageString = 'Enjoy lunch with '+ generateOtherAttendeesString(storedPhone) +'. We suggest going to '+ cafeNumber;
+        }
 
         console.log ('messageString is: ' + messageString);
 

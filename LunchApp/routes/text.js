@@ -1,4 +1,4 @@
-
+//    Declaration Section    //
 
 var express = require('express');
 var keys = require ('../Keys');
@@ -6,8 +6,6 @@ var client = require('twilio')(keys.TWILIO_ACCOUNT_SID, keys.TWILIO_AUTH_KEY);
 var router = express.Router();
 var CronJob = require('cron').CronJob;
 var database = require('../db');
-
-
 var TwilioNumber = '+14693400518';
 
 // for Mongo
@@ -15,43 +13,31 @@ var MongoClient = require('mongodb').MongoClient;
 var mongoose = require('mongoose');
 var assert = require('assert');
 var Schema = mongoose.Schema;
-
-
 var userSchema = new Schema({
     name: String,
-    phone: String
-});
+    phone: String});
+var user = mongoose.model('user', userSchema );
 
-var confirmationSchema = new Schema ({
-    phone: String,
-    time: String
-});
-
-var user = mongoose.model('user', userSchema ); // people collection in mongodb
-var stringuser = mongoose.model('user', userSchema ); // people collection in mongodb
-var confirmation = mongoose.model('confirmation', confirmationSchema );
-var stringconfirmation = mongoose.model('confirmation', confirmationSchema );
-
-var confirmedAttendees = [];
-
- // var confirmedAttendeesTest = [
- //     {phone: '+16026164854'},
- //     {phone: '+17174601902'},
- //     {phone: '+14802367962'},
- //     {phone: '+19723658656'}
- // ];
-
-var d = new Date();
+// for date 
+var date = new Date();
 var testPromptTime = new Date();
 var testConfirmTime = new Date();
 testPromptTime.setSeconds(0);
 testConfirmTime.setSeconds(0);
-testPromptTime.setMinutes(d.getMinutes()+ 1);
+testPromptTime.setMinutes(date.getMinutes()+ 1);
+testConfirmTime.setMinutes(date.getMinutes() + 2);
+var PromptTime = ' 20 06 03 * * 0-6';
+var ConfirmTime =  '00 01 03 * * 0-6';
 
-testConfirmTime.setMinutes(d.getMinutes() + 2);
+// var confirmedAttendees = [];
+// var confirmationSchema = new Schema ({
+//     phone: String,
+//     time: String
+// });
+ // people collection in mongodb
+//var confirmation = mongoose.model('confirmation', confirmationSchema );
 
-var PromptTime = ' 00 30 19 * * 0-6';
-var ConfirmTime =  '00 40 00 * * 0-6';
+
 
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages
@@ -62,7 +48,22 @@ var immediateNoResponse = 'Aww! We\'ll miss you!';
 var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 31'];
 var onlyOneAttendee = 'Looks like no one else is interested today! Better luck next time.' //Message which is sent if only one person RSVPs
 
-//basic cron job
+
+// User object should contain following properties
+// name
+// phone
+// group - right now, the value coule be just OENGPM
+// isConfirmed - default would be No
+
+var users =[
+{name:'Mandeep', phone:'+17174601902',group:'OENGPM1',isConfirmed:'YES'},
+{name:'Nick', phone:'+16011234567',group:'OENGPM1',isConfirmed:'YES'},
+{name:'Anurag', phone:'+14041234567',group:'OENGPM',isConfirmed:'NO'},
+{name:'Ryan', phone:'+19721234567',group:'OENGPM',isConfirmed:'YES'}
+];
+
+
+// Basic cron job
 new CronJob({
  cronTime: PromptTime,
  onTick: function(){
@@ -71,10 +72,10 @@ new CronJob({
     //     console.log('Fetched users from mongo');
     //     for (var i = 0; i < result.length ; i++)
     //     { 
-    //         console.log('hi');
-    //         sendText(result[i].phone,'Sent from callback', true)
+    //         console.log(result[i].number);
+    //         //sendText(result[i].phone,promptMessage, true)
     //     }
-    //     console.log(result);
+    //     //console.log(result);
 
     // });
 },
@@ -82,29 +83,17 @@ start: true,
 timeZone: 'America/Los_Angeles'
 });
 
- // console.log('Fetched confirmed users from mongo');
- //                    for (var i = 0; i < result.length ; i++)
- //                    { 
- //                       var message = generateOtherAttendeesString(result[i].phone);
-
- //                       sendText(result[i].phone,message, true)
- //                    }
- //                    console.log(result);
-
 new CronJob({
  cronTime: ConfirmTime, //confirmTime
  onTick: function()
  {
     console.log('fetch confirmation');
-    confirmation.find
+    user.find
     ( function (err, result) 
         {
-            user.find
-            ( function (err,userresult)
-                {
-                    generateAllMessages(result,userresult);
-                }
-            );                   
+             //generateAllMessages(result);      
+            generateAllMessages(users);   
+            //generateAllMessageswhenGroupwillbeImplemented(users);                    
         }
     );
     //sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
@@ -114,81 +103,125 @@ timeZone: 'America/Los_Angeles'
 });
 
 
-function lookUpName(phoneNumber, userList)
-{
-  for (counter=0;counter<userList.length;counter++)
-   {
-     var storedphone=userList[counter].phone;
-            
-     if(phoneNumber.localeCompare(storedphone)==0)
-            return userList[counter].name;
-   }
 
+// ------------------------- Confirmation Texts -----------------------------
+
+// function generateAllMessageswhenGroupwillbeImplemented(users)
+// {
+//      var cafeNumber=randomCafe();
+
+//     for (var i=0;i<users.length;i++)
+//     {
+//         var phone=users[i].phone;
+//         var interestedNames=[];
+//         var messageString;
+//         var message;
+
+//         var group = users[i].group;
+
+//         if(users[i].isConfirmed=='YES')
+//         {
+//             for (var j=0;j<users.length;j++)
+//             {
+//                 if(
+//                     (users[j].isConfirmed=='YES')
+//                      && (group.localeCompare(users[j].group)==0)
+//                     && (phone.localeCompare(users[j].phone)!=0)
+//                  )
+//                     {
+//                         interestedNames.push(users[j].name);                        
+//                     }
+//             }
+
+//              if (interestedNames.length == 1)
+//         {
+//               message= interestedNames.join(', ');
+//         }
+
+//           else
+//           {
+//             message = [interestedNames.slice(0, -1).join(', '), 
+//             interestedNames.slice(-1)[0]].join(interestedNames.length 
+//                 < 2 ? '' : ' and ');
+//           }
+
+//         if(message=='')
+//                 {
+//                     messageString = onlyOneAttendee;
+//                 }
+//                 else
+//                 {
+//                     messageString = 'Enjoy lunch with '+ message +'. We suggest going to '+ cafeNumber;
+//                 }
+//         }
+//         else
+//         {
+//             continue;
+//         }
+         
+//       //sendText(phone,messsageString, true)
+//       console.log('for phone: '+ phone + ' the message is: '+ messageString);         
+
+//     }
+   
+// }
+
+
+function generateAllMessages(users)
+{
+     var cafeNumber=randomCafe();
+
+    for (var i=0;i<users.length;i++)
+    {
+        var phone=users[i].phone;
+        var interestedNames=[];
+        var messageString;
+        var message;
+
+        if(users[i].isConfirmed=='YES')
+        {
+            for (var j=0;j<users.length;j++)
+            {
+                if((users[j].isConfirmed=='YES')
+                    && (phone.localeCompare(users[j].phone) !=0))
+                    {
+                        interestedNames.push(users[j].name);                        
+                    }
+            }
+
+             if (interestedNames.length == 1)
+        {
+              message= interestedNames.join(', ');
+        }
+
+          else
+          {
+            message = [interestedNames.slice(0, -1).join(', '), 
+            interestedNames.slice(-1)[0]].join(interestedNames.length 
+                < 2 ? '' : ' and ');
+          }
+
+        if(message=='')
+                {
+                    messageString = onlyOneAttendee;
+                }
+                else
+                {
+                    messageString = 'Enjoy lunch with '+ message +'. We suggest going to '+ cafeNumber;
+                }
+        }
+        else
+        {
+            continue;
+        }
+         
+      //sendText(phone,messsageString, true)
+      console.log('for phone: '+ phone + ' the message is: '+ messageString);         
+
+    }
+   
 }
 
-function generateAllMessages(confirmationlist,userlist)
-{
-    console.log('the length of confirmation is: ' + confirmationlist.length);
-    console.log('the length of user is: ' + userlist.length);
-}
-
-
-// This function will create the confirmation message for an input phone number
-function generateOtherAttendeesString(phoneNumber)
-{
-    // console.log('The generateOtherAttendeesString function recieved the following number: ' + phoneNumber);
-    // var interestedNames=[];
-    // var interestedPhones=[];
-
-    //                 stringconfirmation.find( function (err, result) {
-    //                     console.log('Fetched confirmed users from mongo - generateOtherAttendeesString');
-    //                     for (var i = 0; i < result.length ; i++)
-    //                     { 
-    //                        if (phoneNumber.localeCompare(result[i].phone) !=0)
-    //                        {
-    //                         console.log('entered');
-
-    //                             var data = {phone:result[i].phone};
-    //                             interestedPhones.push(data);
-    //                        }
-    //                     }
-
-    //                 });
-
-    //                  console.log('the length is: '+ interestedPhones.length);
-
-    //                  for (attendeeCounter=0;attendeeCounter<interestedPhones.length;attendeeCounter++)
-    //                  {
-    //                     var checkPhone= interestedPhones[attendeeCounter].phone;
-
-    //                     stringuser.find( function (err, result) {
-    //                     console.log('Fetched all registered users from mongo');
-    //                     for (var i = 0; i < result.length ; i++)
-    //                     { 
-    //                          var storedname =result[i].name;
-
-    //                        if (checkPhone.localeCompare(result[i].phone) !=0)
-    //                        {
-    //                             interestedNames.push(storedname);
-    //                             break;
-    //                        }
-    //                     }
-    //                 });
-
-
-    
-
-    //        console.log('generateOtherAtendeesString is returning ' + interestedNames.join(', '));
-          
-    //       //If there are only two people who are interested
-    //       if (interestedNames.length == 1){
-    //         return(interestedNames.join(', '));
-    //       }
-    //       else{
-    //         return ([interestedNames.slice(0, -1).join(', '), 
-    //             interestedNames.slice(-1)[0]].join(interestedNames.length < 2 ? '' : ' and '));
-    //       }
-}
 
 // ------------------------- Receiving Texts -----------------------------
 // Not sure if this is needed... Twilio doesnt use GET commands
@@ -287,61 +320,6 @@ router.post('/', function(req, res) {
 
 });
 
-// Sends the same message to a group of users 
-function sendGroupTexts (groupOfUsers, message)
-{
-  for (counter=0;counter<groupOfUsers.length;counter++)
-  {
-     sendText(groupOfUsers[counter].phone,message, true)
-   }
-}
-//Accepts an array of objects which contain a phone number and 
-//the message to be sent to that number
-function sendDifferentGroupTexts(responseList){
-  for (counter=0;counter<responseList.length;counter++)
-  {
-     console.log('Sending '+ responseList[counter].phone + ' the following message: ' + 
-        responseList[counter].message);
-     
-     sendText(responseList[counter].phone,responseList[counter].message, true)
-   }
-}
-
-//Returns an array of objects with the phone number and message text 
-//for that confirmed attendee
-function generateConfirmationMessages(listOfAttendees){
-    console.log('The number of confirmed attendees is ' + listOfAttendees.length);
-    var responseList = [];
-    var cafeNumber=randomCafe();
-     var messageString;
-    
-    for(CGcounter=0; CGcounter<listOfAttendees.length;CGcounter++){
-        var storedPhone=listOfAttendees[CGcounter].phone;
-        
-
-        if(generateOtherAttendeesString(storedPhone)=='')
-        {
-            messageString = onlyOneAttendee;
-        }
-        else
-        {
-            messageString = 'Enjoy lunch with '+ generateOtherAttendeesString(storedPhone) +'. We suggest going to '+ cafeNumber;
-        }
-
-        console.log ('messageString is: ' + messageString);
-
-        var data = {phone: storedPhone , message: messageString};
-        
-        console.log ('the data object has the following message: ' + data.message);
-        responseList.push(data);
-        console.log ('counter is: ' + CGcounter); 
-        console.log ('The messsage ' + responseList[CGcounter].message + 
-            ' is queue\'d to be sent to: ' + responseList[CGcounter].phone);
-    }
-
-    return responseList;
-}
-
 // Sends a single message to a given phone number
 function sendText(phoneNumber, message, retry){
     client.sendMessage( {
@@ -379,5 +357,67 @@ function getRandomInt(min, max) {
 }
 
 module.exports = router;
+
+
+/*
+
+// // Sends the same message to a group of users 
+// function sendGroupTexts (groupOfUsers, message)
+// {
+//   for (counter=0;counter<groupOfUsers.length;counter++)
+//   {
+//      sendText(groupOfUsers[counter].phone,message, true)
+//    }
+// }
+// //Accepts an array of objects which contain a phone number and 
+// //the message to be sent to that number
+// function sendDifferentGroupTexts(responseList){
+//   for (counter=0;counter<responseList.length;counter++)
+//   {
+//      console.log('Sending '+ responseList[counter].phone + ' the following message: ' + 
+//         responseList[counter].message);
+     
+//      sendText(responseList[counter].phone,responseList[counter].message, true)
+//    }
+// }
+
+//Returns an array of objects with the phone number and message text 
+//for that confirmed attendee
+// function generateConfirmationMessages(listOfAttendees){
+//     console.log('The number of confirmed attendees is ' + listOfAttendees.length);
+//     var responseList = [];
+//     var cafeNumber=randomCafe();
+//      var messageString;
+    
+//     for(CGcounter=0; CGcounter<listOfAttendees.length;CGcounter++){
+//         var storedPhone=listOfAttendees[CGcounter].phone;
+        
+
+//         if(generateOtherAttendeesString(storedPhone)=='')
+//         {
+//             messageString = onlyOneAttendee;
+//         }
+//         else
+//         {
+//             messageString = 'Enjoy lunch with '+ generateOtherAttendeesString(storedPhone) +'. We suggest going to '+ cafeNumber;
+//         }
+
+//         console.log ('messageString is: ' + messageString);
+
+//         var data = {phone: storedPhone , message: messageString};
+        
+//         console.log ('the data object has the following message: ' + data.message);
+//         responseList.push(data);
+//         console.log ('counter is: ' + CGcounter); 
+//         console.log ('The messsage ' + responseList[CGcounter].message + 
+//             ' is queue\'d to be sent to: ' + responseList[CGcounter].phone);
+//     }
+
+//     return responseList;
+// }
+
+
 // Nick is annoying
 // so is mandeep
+
+*/

@@ -32,6 +32,7 @@ var currentHour = d.getHours();
 var promptTime = (currentSecond + 1) + ' ' + currentMin + ' ' + currentHour + ' * * 0-6';
 var confirmationTime =  (currentSecond) + ' ' + (currentMin + 2) + ' ' + currentHour + ' * * 0-6';
 
+console.log ('prompt time = ' + promptTime);
 console.log ('confirmation time = ' + confirmationTime);
 
 // ------------------------- Message Strings -----------------------------

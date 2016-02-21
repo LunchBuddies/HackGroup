@@ -33,6 +33,7 @@ var confirmationTime = '00 05 16 * * 0-6'
 var promptMessage = 'Are you in for lunch at noon? Yes or No';
 var immediateYesResponse = 'Good call. We\'ll let you know who\'s going at noon!';
 var immediateNoResponse = 'Aww! We\'ll miss you!';
+var cafes = [9,16,34,36,31];
 
 //basic cron job
 new CronJob({
@@ -252,6 +253,15 @@ function sendText(phoneNumber, message, retry){
             }
         }
     });
+}
+
+
+function randomCafe (){
+    return cafes[getRandomInt(0, len(cafes))];
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 module.exports = router;

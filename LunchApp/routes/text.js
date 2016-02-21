@@ -47,7 +47,7 @@ console.log('----- Set times: done');
 // These are the base strings for the messages
 
 //Signature for the end of our messages
-var defaultSignature = '\n - TheLunchBuddies.com'
+var defaultSignature = '\n - TheLunchBuddies'
 
 //Message which prompts users to respond.
 var promptMessages = [
@@ -99,8 +99,6 @@ function generateConfirmationMessage(namesString, suggestedCafe, signature){
     var randomNumber = getRandomInt(0, optionsList.length-1);
     return optionsList[randomNumber] + signature;
 }
-
-console.log("Sample Message: " + generateConfirmationMessage('Nick and Mandeep', 'Cafe 35'));
 
 // User object should contain following properties
 // name

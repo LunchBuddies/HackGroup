@@ -410,7 +410,7 @@ function sendText(phoneNumber, message, retry){
             // console.log(responseData.from + ' ' + responseData.body); // outputs "+14506667788"
             // console.log(responseData.body); // outputs "word to your mother."
             console.log('----- Sent text to ' + responseData.to + ': done')
-            logHistoryEvent ('SendText', {phoneNumber: responseData.to});
+            logHistoryEvent ('SendText', {phoneNumber: responseData.to, message: message});
         }
         else {
             console.log(err);

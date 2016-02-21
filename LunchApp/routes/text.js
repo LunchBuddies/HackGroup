@@ -37,7 +37,7 @@ testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(d.getMinutes()+ 1);
 testConfirmTime.setMinutes(d.getMinutes() + 2);
 
-var PromptTime = ' 00 00 10 * * 0-6';
+var PromptTime = ' 00 03 10 * * 0-6';
 var ConfirmTime =  '00 30 10 * * 0-6';
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages
@@ -53,7 +53,7 @@ promptCronJob = new CronJob({
  cronTime: PromptTime,
  onTick: function(){
     confirmedAttendees = [];
-   sendGroupTexts(users, promptMessage)
+   sendGroupTexts(users, promptMessage);
 },
 start: true,
 timeZone: 'America/Los_Angeles'

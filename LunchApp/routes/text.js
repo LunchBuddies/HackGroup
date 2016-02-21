@@ -46,6 +46,29 @@ console.log('----- Set times: done');
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages
 
+//Signature for the end of our messages
+var defaultSignature = '\n - The Lunch Buddies'
+
+//Message which prompts users to respond.
+var promptMessages = {
+    "Interested in lunch? Text \'YES\' by noon and we\'ll let you know who else is interested. "
+    "Free for lunch? Text  Text \'YES\' by noon and we\'ll let you know who else is interested. "
+}
+
+//Message which sends right after a user confirms.
+var immediateYesResponsesMessages = {
+    "Good call. We\'ll text you at noon to let you know who\'s going"
+}
+
+//Message which 
+var immediateNoResponsesMessages = {
+    "Aww! We\'ll miss you"
+}
+
+
+var onlyOneAttendeeMessages = {
+    "Looks like no one else is interested today! Better luck next time."    
+}
 
 var promptMessage = 'Interested in lunch? Text \'YES\' by noon and we\'ll let you know who else is interested. \n - TheLunchBuddies';
 var immediateYesResponse = 'Good call. We\'ll text you at noon to let you know who\'s going';
@@ -53,6 +76,10 @@ var immediateNoResponse = 'Aww! We\'ll miss you!';
 var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 31'];
 var onlyOneAttendee = 'Looks like no one else is interested today! Better luck next time.' //Message which is sent if only one person RSVPs
 
+//Generates a message from an array of messages and appends the default signature
+function generateMessageWithSignature(messageArray, signature = defaultSignature ){
+    return messageArray[getRandomInt(0, messageArray.length-1)] + signature;
+}
 
 // User object should contain following properties
 // name

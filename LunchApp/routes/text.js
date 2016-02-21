@@ -16,8 +16,6 @@ collection.insert ({hi : 10, number: '+19723658656'}, function (err, result) {
     console.log ('text.js: insert into db' );
 });
 
-
-
 var TwilioNumber = '+14693400518'; // A number you bought from Twilio and can use for outbound communication
 
 var users = [

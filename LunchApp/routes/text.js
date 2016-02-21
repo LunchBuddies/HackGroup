@@ -96,7 +96,7 @@ function logHistoryEvent (_eventType, _params) {
     historyEventToSend.save(function(err, thor) {
         if (err) 
         {
-            // logHistoryEvent ('Error', err);
+            logHistoryEvent ('Error', err);
             return console.error(err);
         }
         console.dir("----- logged 1 historical event");
@@ -119,7 +119,7 @@ function promptCronLogic ()  {
         }
         else
         {
-            // logHistoryEvent ('Error', err);
+            logHistoryEvent ('Error', err);
         }
     });
     
@@ -136,7 +136,7 @@ function promptCronLogic ()  {
         }  
         else
         {
-            // logHistoryEvent ('Error', err);
+            logHistoryEvent ('Error', err);
         }  
             
       // numAffected is the number of updated documents
@@ -158,7 +158,7 @@ function confirmCronLogic () {
             }
             else
             {
-                // logHistoryEvent ('Error', err);
+                logHistoryEvent ('Error', err);
             }
         }
     );
@@ -246,7 +246,7 @@ router.post('/', function(req, res) {
     if (req._body) 
     {
         // Log every text we get
-        // logHistoryEvent ('ReceiveText', {phoneNumber: req.body.From, message: req.body.Body});
+        logHistoryEvent ('ReceiveText', {phoneNumber: req.body.From, message: req.body.Body});
 
 
         // User sends any variation of yes
@@ -347,6 +347,8 @@ router.post('/', function(req, res) {
 // }
 
 
+
+
 // Sends a single message to a given phone number
 function sendText(phoneNumber, message, retry){
     console.log('==================== Begin: sendText ====================');
@@ -364,12 +366,12 @@ function sendText(phoneNumber, message, retry){
             // console.log(responseData.from + ' ' + responseData.body); // outputs "+14506667788"
             // console.log(responseData.body); // outputs "word to your mother."
             console.log('----- Sent text to ' + responseData.to + ': done')
-            // logHistoryEvent ('SendText', {phoneNumber: responseData.to, message: message});
+            logHistoryEvent ('SendText', {phoneNumber: responseData.to, message: message});
         }
         else {
             console.log(err);
             // If it was the first time failed, try again
-            // logHistoryEvent ('Error', err);
+            logHistoryEvent ('Error', err);
             if (retry)
             {
                 sendText (phoneNumber, message, False);

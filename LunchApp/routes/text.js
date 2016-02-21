@@ -113,7 +113,7 @@ console.log('----- Created user 2.0 model: done');
 
 // Cron job that prompts users to come to lunch
 new CronJob({
-    cronTime: PromptTime,
+    cronTime: testPromptTime,
     onTick: function(){
         promptCronLogic ();
     },
@@ -124,7 +124,7 @@ console.log('----- Start prompt cron: done');
 
 // Cron job that confirms to users at lunch time
 new CronJob({
-    cronTime: ConfirmTime, //confirmTime
+    cronTime: testConfirmTime, //confirmTime
     onTick: function()
     {
         confirmCronLogic();

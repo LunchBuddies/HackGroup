@@ -1,9 +1,9 @@
 
 
 var express = require('express');
+var router = express.Router();
 var keys = require ('../Keys');
 var client = require('twilio')(keys.TWILIO_ACCOUNT_SID, keys.TWILIO_AUTH_KEY);
-var router = express.Router();
 var CronJob = require('cron').CronJob;
 
 
@@ -25,6 +25,10 @@ var confirmedAttendees = [];
  //     {phone: '+19723658656'}
  // ];
 
+ exports.randomTest = function() {
+    return "Hello";
+ };
+
 var d = new Date();
 var testPromptTime = new Date();
 var testConfirmTime = new Date();
@@ -45,8 +49,8 @@ var immediateNoResponse = 'Aww! We\'ll miss you!';
 var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 31'];
 var onlyOneAttendee = 'Looks like no one else is interested today! Better luck next time.' //Message which is sent if only one person RSVPs
 
-//basic cron job
-new CronJob({
+//Cron Job which sends prompt messages
+promptCronJob = new CronJob({
  cronTime: PromptTime,
  onTick: function(){
    sendGroupTexts(users, promptMessage)
@@ -55,7 +59,7 @@ start: true,
 timeZone: 'America/Los_Angeles'
 });
 
-new CronJob({
+confirmCronJob = new CronJob({
  cronTime: ConfirmTime, //confirmTime
  onTick: function(){
     sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
@@ -126,12 +130,19 @@ function generateOtherAttendeesString(phoneNumber)
 // Not sure if this is needed... Twilio doesnt use GET commands
 // but probably good to have for completeness
 router.get('/', function(req, res) {
-  console.log('GET: message received');
+  if(req.headers.command = 'prompt'){
+    sendGroupTexts(users, promptMessage);
+  }
+  if (req.headers.command = 'confirm'){
+    sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees));
+  }
+  //res.send();
+  
 });
 
 // Post function for calls from Twilio
 router.post('/', function(req, res) {
-    if (req._body) 
+    if (req._body) ;
     {
         // TODO: break to logic for each if {...} into its own function
         // to clean up the code
@@ -142,7 +153,6 @@ router.post('/', function(req, res) {
           || (new RegExp("YA")).test(req.body.Body.toUpperCase()))
         {
             // User responded yes to text message
-            // TODO: Add user to lunch list
             console.log('Yes: ' + req.body.From);
             sendText(req.body.From,immediateYesResponse, true);
 
@@ -233,7 +243,7 @@ function generateConfirmationMessages(listOfAttendees){
     var cafeNumber=randomCafe();
      var messageString;
     
-    for(CGcounter=0; CGcounter<listOfAttendees.length;CGcounter++){
+    for(CGcounter=0; CGcounter<listOfAttendees.length;CGcounter++){     
         var storedPhone=listOfAttendees[CGcounter].phone;
         
 
@@ -286,7 +296,6 @@ function sendText(phoneNumber, message, retry){
         }
     });
 }
-
 
 function randomCafe (){
     return cafes[getRandomInt(0, cafes.length-1)];

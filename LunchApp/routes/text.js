@@ -13,10 +13,8 @@ var MongoClient = require('mongodb').MongoClient;
 var mongoose = require('mongoose');
 var assert = require('assert');
 var Schema = mongoose.Schema;
-var userSchema = new Schema({
-    name: String,
-    phone: String});
-var user = mongoose.model('user', userSchema );
+
+
 
 // for date 
 var date = new Date();
@@ -25,16 +23,17 @@ var testConfirmTime = new Date();
 testPromptTime.setSeconds(0);
 testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(date.getMinutes()+ 1);
-testConfirmTime.setMinutes(date.getMinutes() + 2);
+testConfirmTime.setMinutes(date.getMinutes() + 1);
 var PromptTime = ' 20 06 03 * * 0-6';
 var ConfirmTime =  '00 01 03 * * 0-6';
+console.log('----- Set times');
 
 // var confirmedAttendees = [];
 // var confirmationSchema = new Schema ({
 //     phone: String,
 //     time: String
 // });
- // people collection in mongodb
+// people collection in mongodb
 //var confirmation = mongoose.model('confirmation', confirmationSchema );
 
 
@@ -53,55 +52,86 @@ var onlyOneAttendee = 'Looks like no one else is interested today! Better luck n
 // name
 // phone
 // group - right now, the value coule be just OENGPM
-// isConfirmed - default would be No
+// isConfirmed - default would be false
 
 var users =[
-{name:'Mandeep', phone:'+17174601902',group:'OENGPM1',isConfirmed:'YES'},
-{name:'Nick', phone:'+16011234567',group:'OENGPM1',isConfirmed:'YES'},
-{name:'Anurag', phone:'+14041234567',group:'OENGPM',isConfirmed:'NO'},
-{name:'Ryan', phone:'+19721234567',group:'OENGPM',isConfirmed:'YES'}
+{name:'Mandeep', phone:'+17174601902',group:'OENGPM', isGoing: true, isConfirmed:true },
+{name:'Nick', phone:'+16011234567',group:'OENGPM', isGoing: true, isConfirmed:false },
+{name:'Anurag', phone:'+14041234567',group:'OENGPM', isGoing: true, isConfirmed:true },
+{name:'Ryan', phone:'+19721234567',group:'OENGPM', isGoing: true, isConfirmed:true }
 ];
+
+var userSchema = new Schema ({
+    name: String,
+    phone: String,
+    group: String,
+    isGoing: Boolean,
+    isConfirmed: Boolean 
+});
+var user = mongoose.model('user2', userSchema );
+console.log('----- Created user 2.0 model');
+
+// var insertUser = new user ({name:'Ryan', phone:'+19721234567',group:'OENGPM', isGoing: false, isConfirmed:true });
+// insertUser.save (function (err, result) {
+//     console.log('saved 1 record to user2');
+// });
+
+
+
+
+// var testConfirmationObj = new confirmation ({
+//     phone: req.body.From,
+//     time: new Date().toISOString(),
+//     confirmationsent: false
+// });
+
+// testConfirmationObj.save (function (err, request) {
+//     if (err) return console.error(err);
+//     // console.dir(request);
+//     console.log('Yes: ' + req.body.From);
+//     sendText(req.body.From,immediateYesResponse, true);
+// });
 
 
 // Basic cron job
 new CronJob({
- cronTime: PromptTime,
+ cronTime: testPromptTime,
  onTick: function(){
    console.log('fetch users');
-    // user.find( function (err, result) {
-    //     console.log('Fetched users from mongo');
-    //     for (var i = 0; i < result.length ; i++)
-    //     { 
-    //         console.log(result[i].number);
-    //         //sendText(result[i].phone,promptMessage, true)
-    //     }
-    //     //console.log(result);
+    user.find( function (err, result) {
+        console.log('Fetched users from mongo');
+        for (var i = 0; i < result.length ; i++)
+        { 
+            console.log(result[i].phone);
+            //sendText(result[i].phone, promptMessage, true)
+        }
+        //console.log(result);
 
-    // });
+    });
 },
 start: true,
 timeZone: 'America/Los_Angeles'
 });
+console.log('----- Prompt Cron Started');
 
 new CronJob({
- cronTime: ConfirmTime, //confirmTime
+ cronTime: testConfirmTime, //confirmTime
  onTick: function()
  {
-    console.log('fetch confirmation');
-    user.find
-    ( function (err, result) 
-        {
-             //generateAllMessages(result);      
-            generateAllMessages(users);   
-            //generateAllMessageswhenGroupwillbeImplemented(users);                    
-        }
-    );
+    // console.log('fetch confirmation');
+    // user.find
+    // ( function (err, result) 
+    //     {
+    //         //generateAllMessages(result);      
+    //         //generateAllMessageswhenGroupwillbeImplemented(users);                    
+    //     }
+    // );
     //sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
 },
 start: true,
 timeZone: 'America/Los_Angeles'
 });
-
+console.log('----- Confirmation Cron Started');
 
 
 // ------------------------- Confirmation Texts -----------------------------
@@ -169,6 +199,8 @@ timeZone: 'America/Los_Angeles'
 
 function generateAllMessages(users)
 {
+    console.log('--------------- generateAllMessages ---------------');
+    console.log(users);
      var cafeNumber=randomCafe();
 
     for (var i=0;i<users.length;i++)
@@ -178,21 +210,21 @@ function generateAllMessages(users)
         var messageString;
         var message;
 
-        if(users[i].isConfirmed=='YES')
+        if(users[i].isGoing)
         {
             for (var j=0;j<users.length;j++)
             {
-                if((users[j].isConfirmed=='YES')
-                    && (phone.localeCompare(users[j].phone) !=0))
+                if((users[j].isGoing)
+                    && (phone.localeCompare(users[j].phone) != 0))
                     {
                         interestedNames.push(users[j].name);                        
                     }
             }
 
              if (interestedNames.length == 1)
-        {
-              message= interestedNames.join(', ');
-        }
+            {
+                message= interestedNames.join(', ');
+            }
 
           else
           {
@@ -219,7 +251,6 @@ function generateAllMessages(users)
       console.log('for phone: '+ phone + ' the message is: '+ messageString);         
 
     }
-   
 }
 
 
@@ -242,27 +273,15 @@ router.post('/', function(req, res) {
           || (new RegExp("YEA")).test(req.body.Body.toUpperCase())
           || (new RegExp("YA")).test(req.body.Body.toUpperCase()))
         {
-            // PUT SAVE FUNCTION HERE
-            var testConfirmationObj = new confirmation ({
-                phone: req.body.From,
-                time: new Date().toISOString(),
-                confirmationsent: false
+            // Update status of user to 
+            var conditions = { phone: req.body.From }
+              , update = { isGoing: true };
+
+            user.update(conditions, update, function callback (err, numAffected) {
+              // numAffected is the number of updated documents
+              console.log('updated status for ' + conditions.phone)
+              console.log(numAffected);
             });
-
-            testConfirmationObj.save (function (err, request) {
-                if (err) return console.error(err);
-                // console.dir(request);
-                console.log('Yes: ' + req.body.From);
-                sendText(req.body.From,immediateYesResponse, true);
-            });
-
-            // User responded yes to text message
-            // TODO: Add user to lunch list
-            
-
-            // var data = {phone:req.body.From};
-            // console.log('Adding ' + data.phone + ' to the confirmedAttendees list');
-            // confirmedAttendees.push(data);
         }
 
         // User is french

@@ -55,13 +55,12 @@ var confirmation = mongoose.model('testconfirmation', confirmationSchema );
 
 var confirmedAttendees = [];
 
-/*
- var confirmedAttendeesTest = [
-     {phone: '+16026164854'},
-     {phone: '+17174601902'},
-     {phone: '+14802367962'}
- ];
-*/
+ // var confirmedAttendeesTest = [
+ //     {phone: '+16026164854'},
+ //     {phone: '+17174601902'},
+ //     {phone: '+14802367962'},
+ //     {phone: '+19723658656'}
+ // ];
 
 var d = new Date();
 var testPromptTime = new Date();
@@ -69,26 +68,25 @@ var testConfirmTime = new Date();
 testPromptTime.setSeconds(0);
 testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(d.getMinutes()+ 1);
-testConfirmTime.setMinutes(d.getMinutes() + 3);
 
-console.log(d.toString());
+testConfirmTime.setMinutes(d.getMinutes() + 2);
 
-var promptTime = ' 00 59 05 * * 0-6';
-var confirmTime =  '00 56 21 * * 0-6';
+var PromptTime = ' 00 30 19 * * 0-6';
+var ConfirmTime =  '00 00 20 * * 0-6';
 
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages
 
-var promptMessage = 'Are you in for lunch at noon? Yes or No';
-var immediateYesResponse = 'Good call. We\'ll let you know who\'s going at noon!';
+var promptMessage = 'Are you in for lunch at noon? Text \'YES\' to confirm and we\'ll let you know who else is interested!';
+var immediateYesResponse = 'Good call. We\'ll text you at noon to let you know who\'s going';
 var immediateNoResponse = 'Aww! We\'ll miss you!';
 var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 31'];
+var onlyOneAttendee = 'Looks like no one else is interested today! Better luck next time.' //Message which is sent if only one person RSVPs
 
 //basic cron job
 new CronJob({
- cronTime: testPromptTime, //promptTime
+ cronTime: PromptTime,
  onTick: function(){
-   // sendGroupTexts(users, promptMessage)
    console.log('fetch users');
     // userModel.find( function (err, result) {
     //     console.log('Fetched users from mongo');
@@ -113,6 +111,7 @@ timeZone: 'America/Los_Angeles'
 // start: true,
 // timeZone: 'America/Los_Angeles'
 // });
+
 
 function lookUpName(phoneNumber, userList)
 {
@@ -161,9 +160,16 @@ function generateOtherAttendeesString(phoneNumber)
            }
     }
     console.log('generateOtherAtendeesString is returning ' + interestedNames.join(', '));
-  return(interestedNames.join(', '));
+  
+  //If there are only two people who are interested
+  if (interestedNames.length == 1){
+    return(interestedNames.join(', '));
+  }
+  else{
+    return ([interestedNames.slice(0, -1).join(', '), 
+        interestedNames.slice(-1)[0]].join(interestedNames.length < 2 ? '' : ' and '));
+  }
 }
-
 
 // ------------------------- Receiving Texts -----------------------------
 // Not sure if this is needed... Twilio doesnt use GET commands
@@ -290,14 +296,12 @@ function generateConfirmationMessages(listOfAttendees){
      var messageString;
     
     for(CGcounter=0; CGcounter<listOfAttendees.length;CGcounter++){
-        console.log ('initially, counter is: ' + CGcounter);
         var storedPhone=listOfAttendees[CGcounter].phone;
         
-        console.log ('StoredPhone is: ' + storedPhone);
 
         if(generateOtherAttendeesString(storedPhone)=='')
         {
-            messageString = 'Looks like no one else is interested today! Better luck next time.';
+            messageString = onlyOneAttendee;
         }
         else
         {

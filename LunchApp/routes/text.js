@@ -61,12 +61,12 @@ var onlyOneAttendee = 'Looks like no one else is interested today! Better luck n
 // group - right now, the value coule be just OENGPM
 // isConfirmed - default would be false
 
-var users =[
-{name:'Mandeep', phone:'+17174601902',group:'OENGPM', isGoing: true, isConfirmed:true },
-{name:'Nick', phone:'+16011234567',group:'OENGPM', isGoing: true, isConfirmed:false },
-{name:'Anurag', phone:'+14041234567',group:'OENGPM', isGoing: true, isConfirmed:true },
-{name:'Ryan', phone:'+19721234567',group:'OENGPM', isGoing: true, isConfirmed:true }
-];
+// var users =[
+// {name:'Mandeep', phone:'+17174601902',group:'OENGPM', isGoing: true, isConfirmed:true },
+// {name:'Nick', phone:'+16011234567',group:'OENGPM', isGoing: true, isConfirmed:false },
+// {name:'Anurag', phone:'+14041234567',group:'OENGPM', isGoing: true, isConfirmed:true },
+// {name:'Ryan', phone:'+19721234567',group:'OENGPM', isGoing: true, isConfirmed:true }
+// ];
 
 var userSchema = new Schema ({
     name: String,
@@ -92,6 +92,16 @@ new CronJob({
         }
         //console.log(result);
 
+    });
+
+    // 
+    var conditionsForResetDB = {}
+      , updateForResetDB = { isGoing: false }
+      , optionsForResetDB = {multi: true } ;
+
+    user.update(conditionsForResetDB, updateForResetDB,  optionsForResetDB, function callback (err, numAffected) {
+      // numAffected is the number of updated documents
+      console.log(numAffected);
     });
 },
 start: true,
@@ -187,12 +197,13 @@ function generateAllMessages(users)
     console.log('--------------- generateAllMessages ---------------');
     console.log(users);
      var cafeNumber=randomCafe();
+     var messageString;
 
     for (var i=0;i<users.length;i++)
     {
         var phone=users[i].phone;
         var interestedNames=[];
-        var messageString;
+        messageString = '';
         var message;
 
         if(users[i].isGoing)
@@ -231,10 +242,9 @@ function generateAllMessages(users)
         {
             continue;
         }
-         
-      sendText(phone,messsageString, true)
-      console.log('for phone: '+ phone + ' the message is: '+ messageString);         
+        console.log('for phone: '+ phone + ' the message is: '+ messageString);         
 
+        sendText(phone,messageString, true);
     }
 }
 
@@ -260,12 +270,12 @@ router.post('/', function(req, res) {
         {
 
             // Update status of user to 
-            var conditions = { phone: req.body.From }
-              , update = { isGoing: true };
+            var conditionsForUpdateDB = { phone: req.body.From }
+              , updateForUpdateDB = { isGoing: true };
 
-            user.update(conditions, update, function callback (err, numAffected) {
+            user.update(conditionsForUpdateDB, updateForUpdateDB, function callback (err, numAffected) {
               // numAffected is the number of updated documents
-              console.log('updated status for ' + conditions.phone)
+              console.log('updated status for ' + conditionsForUpdateDB.phone)
               console.log(numAffected);
             });
 
@@ -301,7 +311,7 @@ router.post('/', function(req, res) {
 
         else if ((new RegExp("REGISTER")).test(req.body.Body.toUpperCase()))
         {
-            var testBody = 'REGISTER Name: John, group: OENG';
+            var testBody = 'REGISTER John OENG';
             // Add new user
             // TODO: break apart string and add user, no need to ask for # because it is
             // hidden is the POST request
@@ -333,6 +343,7 @@ router.post('/', function(req, res) {
 
 // Sends a single message to a given phone number
 function sendText(phoneNumber, message, retry){
+    console.log("----- " + message)
     client.sendMessage( {
 
         to: phoneNumber, // Any number Twilio can deliver to

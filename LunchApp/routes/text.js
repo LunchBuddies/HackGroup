@@ -78,8 +78,6 @@ var userSchema = new Schema ({
 var user = mongoose.model('user2', userSchema );
 console.log('----- Created user 2.0 model');
 
-
-
 // Basic cron job
 new CronJob({
  cronTime: testPromptTime,

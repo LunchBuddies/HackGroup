@@ -2,6 +2,7 @@
 
 var express = require('express');
 var keys = require ('../Keys');
+var history = require ('../history');
 var client = require('twilio')(keys.TWILIO_ACCOUNT_SID, keys.TWILIO_AUTH_KEY);
 var router = express.Router();
 var CronJob = require('cron').CronJob;
@@ -13,8 +14,6 @@ var MongoClient = require('mongodb').MongoClient;
 var mongoose = require('mongoose');
 var assert = require('assert');
 var Schema = mongoose.Schema;
-
-
 
 var userSchema = new Schema({
     name: String,
@@ -73,7 +72,7 @@ console.log('----- Created user 2.0 model: done');
 
 // Cron job that prompts users to come to lunch
 new CronJob({
-    cronTime: PromptTime,
+    cronTime: testPromptTime,
     onTick: function(){
         promptCronLogic ();
     },
@@ -84,7 +83,7 @@ console.log('----- Start prompt cron: done');
 
 // Cron job that confirms to users at lunch time
 new CronJob({
-    cronTime: ConfirmTime, //confirmTime
+    cronTime: testConfirmTime, //confirmTime
     onTick: function()
     {
         confirmCronLogic();
@@ -94,16 +93,42 @@ new CronJob({
 });
 console.log('----- Start Confirmation cron: done');
 
+
+function logHistoryEvent (_eventType, _params) {
+    
+    var historyEventToSend = new history ({
+        time: new Date(),
+        event: _eventType,
+        params: _params
+    });
+
+    historyEventToSend.save(function(err, thor) {
+        if (err) 
+        {
+            logHistoryEvent ('Error', err);
+            return console.error(err);
+        }
+        console.dir("----- logged 1 historical event");
+    });
+}
+
 // Contains all the logic executed when the PROMPT cron job ticks
 function promptCronLogic ()  {
     user.find( function (err, result) {
-        console.log('----- fetch users in PromptCron: done');
-        for (var i = 0; i < result.length ; i++)
+        if (!err) 
         { 
-            // console.log(result[i].phone);
-            sendText(result[i].phone, promptMessage, true)
+            console.log('----- fetch users in PromptCron: done');
+            for (var i = 0; i < result.length ; i++)
+            { 
+                // console.log(result[i].phone);
+                // sendText(result[i].phone, promptMessage, true)
+            }
+            //console.log(result);
         }
-        //console.log(result);
+        else
+        {
+            logHistoryEvent ('Error', err);
+        }
 
     });
 
@@ -113,8 +138,16 @@ function promptCronLogic ()  {
       , optionsForResetDB = {multi: true } ;
 
     user.update(conditionsForResetDB, updateForResetDB,  optionsForResetDB, function callback (err, numAffected) {
-      // numAffected is the number of updated documents
-      console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
+        if (!err)
+        {
+            // numAffected is the number of updated documents
+            console.log('---- Reset ' + numAffected.nModified + ' accounts: done'); 
+        }  
+        else
+        {
+            logHistoryEvent ('Error', err);
+        }  
+            
     });
 }
 
@@ -124,12 +157,23 @@ function confirmCronLogic () {
     user.find
     ( function (err, result) 
         {
-            generateAllMessages(result);      
-            //generateAllMessageswhenGroupwillbeImplemented(users);                    
+            if (!err)
+            {
+                generateAllMessages(result);      
+                //generateAllMessageswhenGroupwillbeImplemented(users);  
+            }
+            else
+            {
+                logHistoryEvent ('Error', err);
+            }
+                              
         }
     );
     //sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
 }
+
+
+
 
 // ------------------------- Confirmation Texts -----------------------------
 
@@ -246,7 +290,7 @@ function generateAllMessages(users)
         }
         // console.log('for phone: '+ phone + ' the message is: '+ messageString);         
 
-        sendText(phone,messageString, true);
+        // sendText(phone,messageString, true);
         console.log('==================== End: generateAllMessages ====================');
     }
 }
@@ -268,9 +312,10 @@ router.get('/', function(req, res) {
 router.post('/', function(req, res) {
     if (req._body) 
     {
-        // TODO: break to logic for each if {...} into its own function
-        // to clean up the code
-        // 
+        // Log every text we get
+        logHistoryEvent ('ReceiveText', {phoneNumber: req.body.From, message: req.body.Body});
+
+
         // User sends any variation of yes
         if ((new RegExp("YES")).test(req.body.Body.toUpperCase()) 
           || (new RegExp("YEA")).test(req.body.Body.toUpperCase())
@@ -287,7 +332,6 @@ router.post('/', function(req, res) {
               // console.log(numAffected);
               sendText(conditionsForUpdateDB.phone, immediateYesResponse, true );
             });
-
         }
 
         // User is french
@@ -367,10 +411,12 @@ function sendText(phoneNumber, message, retry){
             // console.log(responseData.from + ' ' + responseData.body); // outputs "+14506667788"
             // console.log(responseData.body); // outputs "word to your mother."
             console.log('----- Sent text to ' + responseData.to + ': done')
+            logHistoryEvent ('SendText', {phoneNumber: responseData.to});
         }
         else {
             console.log(err);
             // If it was the first time failed, try again
+            logHistoryEvent ('Error', err);
             if (retry)
             {
                 sendText (phoneNumber, message, False);

@@ -299,27 +299,27 @@ router.post('/', function(req, res) {
         else if ((new RegExp("JOIN")).test(req.body.Body.toUpperCase()))
         {
             console.log (req.body.Body);
-            // var testBody = req.body.Body;
-            // var user = GetUser(testBody);
-            // var keyword = GetKeyword(testBody);
-            // console.log ('user' + user);
-            // console.log ('keyword' + keyword);
-            // if(keyword == "JOIN")
-            // {   
-            //     var insertUser = new user ({name:user, phone:req.body.From,group:'OENGPM', isGoing: false, isConfirmed:true });
-            //     insertUser.save (function (err, result) 
-            //     {
-            //         if (!err){
-            //             console.log('Inserted new record with name: '+ user);
-            //             sendText(req.body.From, joinMessage,true); 
-            //         }
-            //         else
-            //         {
-            //             sendText(req.body.From,joinFailureMessage, true);  
-            //         }
+            var testBody = req.body.Body;
+            var _user123 = GetUser(testBody);
+            var keyword = GetKeyword(testBody);
+            console.log ('user' + _user123);
+            console.log ('keyword' + keyword);
+            if(keyword == "JOIN")
+            {   
+                var insertUser = new user ({name:_user123, phone:req.body.From,group:'OENGPM', isGoing: false, isConfirmed:true });
+                insertUser.save (function (err, result) 
+                {
+                    if (!err){
+                        console.log('Inserted new record with name: '+ _user123);
+                        sendText(req.body.From, joinMessage,true); 
+                    }
+                    else
+                    {
+                        sendText(req.body.From,joinFailureMessage, true);  
+                    }
 
-            //     });
-            // }
+                });
+            }
         }
 
         // user sent some random message that didnt include the above

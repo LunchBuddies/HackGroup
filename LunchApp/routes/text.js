@@ -327,11 +327,11 @@ router.post('/', function(req, res) {
             }
         }
 
-        else if ((new RegExp("STOP")).test(req.body.Body.toUpperCase()))
+        else if ((new RegExp("CLOSE")).test(req.body.Body.toUpperCase()))
         {
             var checkStop = req.body.Body.substr(0,3).toUpperCase();
 
-            if(checkStop == "STOP")
+            if(checkStop == "CLOSE")
             {
 
                 
@@ -403,10 +403,11 @@ function sendText(phoneNumber, message, retry){
             console.log(err);
             // If it was the first time failed, try again
             logHistoryEvent ('Error', err);
-            if (retry)
-            {
-                sendText (phoneNumber, message, false);
-            }
+
+            // if (retry)
+            // {
+            //     sendText (phoneNumber, message, false);
+            // }
         }
     });
     console.log('==================== End: sendText ====================');

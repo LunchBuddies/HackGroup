@@ -80,6 +80,23 @@ function generateMessageWithSignature(messageArray, signature){
     return messageArray[getRandomInt(0, messageArray.length-1)] + signature;
 }
 
+//Given a list of names and a suggestedCafe to insert, generages a confirmation message with a signature.
+//If no signature is provided, the default signature will be used. 
+function generateConfirmationMessage(namesString, suggestedCafe, signature){
+    if (signature = 'undefined'){
+        signature = defaultSignature;
+    }
+    var optionsList = [
+        ' ' + namesString + ' are free! We suggest ' + suggestedCafe + '. Have fun you crazy kids!',
+        'Have the time of your life with ' + namesString + '. We\'ve heard good things about ' + suggestedCafe + '...',
+        'Enjoy lunch with ' + namesString + '. Might we suggest ' + suggestedCafe + '?'
+    ]
+    var randomNumber = getRandomInt(0, optionsList.length-1);
+    return optionsList[randomNumber] + signature;
+}
+
+console.log("Sample Message: " + generateConfirmationMessage('Nick and Mandeep', 'Cafe 35'));
+
 // User object should contain following properties
 // name
 // phone
@@ -98,7 +115,7 @@ console.log('----- Created user 2.0 model: done');
 
 // Cron job that prompts users to come to lunch
 new CronJob({
-    cronTime: testPromptTime,
+    cronTime: PromptTime,
     onTick: function(){
         promptCronLogic ();
     },
@@ -109,7 +126,7 @@ console.log('----- Start prompt cron: done');
 
 // Cron job that confirms to users at lunch time
 new CronJob({
-    cronTime: testConfirmTime, //confirmTime
+    cronTime: ConfirmTime, //confirmTime
     onTick: function()
     {
         confirmCronLogic();
@@ -295,18 +312,19 @@ function generateAllMessages(users)
 
           else
           {
-            message = [interestedNames.slice(0, -1).join(', '), 
+            //A list of names seperated by commas, and with an 'and', if appropriate
+            formattedNames = [interestedNames.slice(0, -1).join(', '), 
             interestedNames.slice(-1)[0]].join(interestedNames.length 
                 < 2 ? '' : ' and ');
           }
 
-        if(message=='')
+        if(formattedNames=='')
                 {
                     messageString = generateMessageWithSignature(onlyOneAttendeeMessages);
                 }
                 else
                 {
-                    messageString = 'Enjoy lunch with '+ message +'. We suggest going to '+ cafeNumber;
+                    messageString = generateConfirmationMessage(formattedNames, cafeNumber);
                 }
         }
         else

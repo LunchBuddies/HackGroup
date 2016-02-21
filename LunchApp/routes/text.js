@@ -47,7 +47,7 @@ timeZone: 'America/Los_Angeles'
 new CronJob({
  cronTime: confirmationTime,
  onTick: function(){
-    sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
+   // sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
 },
 start: true,
 timeZone: 'America/Los_Angeles'
@@ -212,6 +212,7 @@ function generateConfirmationMessages(listOfAttendees){
     var responseList = [];
     
     for(counter=0; counter<listOfAttendees.length;counter++){
+
         console.log('An attendee phone Number: ' + listOfAttendees[counter].phone);
 
         var messageString = generateOtherAttendeesString(listOfAttendees[counter].phone);

@@ -31,7 +31,7 @@ testPromptTime.setMinutes(date.getMinutes()+ 1);
 testConfirmTime.setMinutes(date.getMinutes() + 2);
 var PromptTime = ' 20 06 03 * * 0-6';
 var ConfirmTime =  '00 01 03 * * 0-6';
-console.log('----- Set times');
+console.log('----- Set times: done');
 
 // var confirmedAttendees = [];
 // var confirmationSchema = new Schema ({
@@ -61,13 +61,6 @@ var onlyOneAttendee = 'Looks like no one else is interested today! Better luck n
 // group - right now, the value coule be just OENGPM
 // isConfirmed - default would be false
 
-// var users =[
-// {name:'Mandeep', phone:'+17174601902',group:'OENGPM', isGoing: true, isConfirmed:true },
-// {name:'Nick', phone:'+16011234567',group:'OENGPM', isGoing: true, isConfirmed:false },
-// {name:'Anurag', phone:'+14041234567',group:'OENGPM', isGoing: true, isConfirmed:true },
-// {name:'Ryan', phone:'+19721234567',group:'OENGPM', isGoing: true, isConfirmed:true }
-// ];
-
 var userSchema = new Schema ({
     name: String,
     phone: String,
@@ -76,18 +69,18 @@ var userSchema = new Schema ({
     isConfirmed: Boolean 
 });
 var user = mongoose.model('user2', userSchema );
-console.log('----- Created user 2.0 model');
+console.log('----- Created user 2.0 model: done');
 
 // Basic cron job
 new CronJob({
  cronTime: testPromptTime,
  onTick: function(){
-   console.log('fetch users');
+   
     user.find( function (err, result) {
-        console.log('Fetched users from mongo');
+        console.log('----- fetch users in PromptCron: done');
         for (var i = 0; i < result.length ; i++)
         { 
-            console.log(result[i].phone);
+            // console.log(result[i].phone);
             sendText(result[i].phone, promptMessage, true)
         }
         //console.log(result);
@@ -101,13 +94,13 @@ new CronJob({
 
     user.update(conditionsForResetDB, updateForResetDB,  optionsForResetDB, function callback (err, numAffected) {
       // numAffected is the number of updated documents
-      console.log(numAffected);
+      console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
     });
 },
 start: true,
 timeZone: 'America/Los_Angeles'
 });
-console.log('----- Prompt Cron Started');
+console.log('----- Start prompt cron: done');
 
 new CronJob({
  cronTime: testConfirmTime, //confirmTime
@@ -126,7 +119,7 @@ new CronJob({
 start: true,
 timeZone: 'America/Los_Angeles'
 });
-console.log('----- Confirmation Cron Started');
+console.log('----- Start Confirmation cron: done');
 
 
 // ------------------------- Confirmation Texts -----------------------------
@@ -194,8 +187,8 @@ console.log('----- Confirmation Cron Started');
 
 function generateAllMessages(users)
 {
-    console.log('--------------- generateAllMessages ---------------');
-    console.log(users);
+    console.log('==================== Begin: generateAllMessages ====================');
+    // console.log(users);
      var cafeNumber=randomCafe();
      var messageString;
 
@@ -242,9 +235,10 @@ function generateAllMessages(users)
         {
             continue;
         }
-        console.log('for phone: '+ phone + ' the message is: '+ messageString);         
+        // console.log('for phone: '+ phone + ' the message is: '+ messageString);         
 
         sendText(phone,messageString, true);
+        console.log('==================== End: generateAllMessages ====================');
     }
 }
 
@@ -276,7 +270,7 @@ router.post('/', function(req, res) {
             user.update(conditionsForUpdateDB, updateForUpdateDB, function callback (err, numAffected) {
               // numAffected is the number of updated documents
               console.log('updated status for ' + conditionsForUpdateDB.phone)
-              console.log(numAffected);
+              // console.log(numAffected);
             });
 
         }
@@ -331,7 +325,7 @@ router.post('/', function(req, res) {
             sendText(req.body.From,'Say that again? We didn\'t catch it!', true);   
         }
     }
-    console.log(confirmedAttendees[0].phone);
+    // console.log(confirmedAttendees[0].phone);
     // console.log('POST: message received');
     // console.log('------ REQUEST ------');
     // console.log(req);
@@ -343,7 +337,8 @@ router.post('/', function(req, res) {
 
 // Sends a single message to a given phone number
 function sendText(phoneNumber, message, retry){
-    console.log("----- " + message)
+    console.log('==================== Begin: sendText ====================');
+    console.log("----- " + message )
     client.sendMessage( {
 
         to: phoneNumber, // Any number Twilio can deliver to
@@ -354,9 +349,9 @@ function sendText(phoneNumber, message, retry){
 
         if (!err) { // "err" is an error received during the request, if any
 
-            console.log(responseData.from + ' ' + responseData.body); // outputs "+14506667788"
+            // console.log(responseData.from + ' ' + responseData.body); // outputs "+14506667788"
             // console.log(responseData.body); // outputs "word to your mother."
-
+            console.log('----- Sent text to ' + responseData.to + ': done')
         }
         else {
             console.log(err);
@@ -367,6 +362,7 @@ function sendText(phoneNumber, message, retry){
             }
         }
     });
+    console.log('==================== End: sendText ====================');
 }
 
 

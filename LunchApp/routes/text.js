@@ -121,7 +121,7 @@ function promptCronLogic ()  {
             for (var i = 0; i < result.length ; i++)
             { 
                 // console.log(result[i].phone);
-                // sendText(result[i].phone, promptMessage, true)
+                sendText(result[i].phone, promptMessage, true)
             }
             //console.log(result);
         }
@@ -290,7 +290,7 @@ function generateAllMessages(users)
         }
         // console.log('for phone: '+ phone + ' the message is: '+ messageString);         
 
-        // sendText(phone,messageString, true);
+        sendText(phone,messageString, true);
         console.log('==================== End: generateAllMessages ====================');
     }
 }

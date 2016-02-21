@@ -18,19 +18,21 @@ var users = [
 
 var confirmedAttendees = [];
 
+/*
  var confirmedAttendeesTest = [
      {phone: '+16026164854'},
-     {phone: '+14802367962'},
-     {phone: '+19723658656'}
+     {phone: '+17174601902'},
+     {phone: '+14802367962'}
  ];
+*/
 
 var d = new Date();
 var testPromptTime = new Date();
 var testConfirmTime = new Date();
 testPromptTime.setSeconds(0);
 testConfirmTime.setSeconds(0);
-testPromptTime.setMinutes(d.getMinutes() + 1);
-testConfirmTime.setMinutes(d.getMinutes() + 3);
+testPromptTime.setMinutes(d.getMinutes());
+testConfirmTime.setMinutes(d.getMinutes() + 1);
 
 var promptTime = ' 00 18 17 * * 0-6';
 var confirmTime =  '00 38 17 * * 0-6';
@@ -49,7 +51,7 @@ var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 
 new CronJob({
  cronTime: testPromptTime, //promptTime
  onTick: function(){
-    sendGroupTexts(users, promptMessage)
+   // sendGroupTexts(users, promptMessage)
 },
 start: true,
 timeZone: 'America/Los_Angeles'
@@ -58,7 +60,7 @@ timeZone: 'America/Los_Angeles'
 new CronJob({
  cronTime: testConfirmTime, //confirmTime
  onTick: function(){
-    sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendeesTest))
+    sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
 },
 start: true,
 timeZone: 'America/Los_Angeles'
@@ -83,9 +85,9 @@ function generateOtherAttendeesString(phoneNumber)
     var interestedNames=[];
     var interestedPhones=[];
 
-    for (counter=0;counter<confirmedAttendeesTest.length;counter++)
+    for (counter=0;counter<confirmedAttendees.length;counter++)
      {
-         var tempPhone=confirmedAttendeesTest[counter].phone;
+         var tempPhone=confirmedAttendees[counter].phone;
                 
          if(phoneNumber.localeCompare(tempPhone)!=0)
          {
@@ -110,8 +112,8 @@ function generateOtherAttendeesString(phoneNumber)
                      }
            }
     }
-    console.log('generateOtherAtendeesString is returning ' + interestedNames.join());
-  return(interestedNames.join());
+    console.log('generateOtherAtendeesString is returning ' + interestedNames.join(', '));
+  return(interestedNames.join(', '));
 }
 
 
@@ -232,9 +234,9 @@ function generateConfirmationMessages(listOfAttendees){
         
         console.log ('StoredPhone is: ' + storedPhone);
 
-        if(generateOtherAttendeesString(storedPhone) == null)
+        if(generateOtherAttendeesString(storedPhone)=='')
         {
-            messageString = 'Looks like no one else is interested today! Better luck next time';
+            messageString = 'Looks like no one else is interested today! Better luck next time.';
         }
         else
         {

@@ -333,14 +333,8 @@ router.post('/', function(req, res) {
 
             if(checkStop == "STOP")
             {
-                var userPhone= req.body.From;
-                // user.find({phone: userPhone}, function (err, response) {
-                //     response.remove( function (err2.response2) {
-                //         response2.exec(function (err3, response3) {
-                //             console.log ('remove user');
-                //         });
-                //     });
-                // });
+
+                
 
                 user.deleteOne ({phone: req.body.From}, function (err, response) {
                     console.log ('remove user');
@@ -417,7 +411,7 @@ function sendText(phoneNumber, message, retry){
     console.log('==================== End: sendText ====================');
 }
 
-
+//
 function randomCafe (){
     return cafes[getRandomInt(0, cafes.length-1)];
 }

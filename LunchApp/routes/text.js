@@ -29,15 +29,36 @@ var users = [
 
 var confirmedAttendees = [];
 
-var promptTime = '00 010 03 * * 0-6';
-var confirmationTime = '00 012 03 * * 0-6'
+ var confirmedAttendeesTest = [
+     {phone: '+16026164854'},
+     {phone: '+14802367962'},
+     {phone: '+19723658656'}
+ ];
+
+var d = new Date();
+var testPromptTime = new Date();
+var testConfirmTime = new Date();
+testPromptTime.setSeconds(0);
+testConfirmTime.setSeconds(0);
+testPromptTime.setMinutes(d.getMinutes() + 1);
+testConfirmTime.setMinutes(d.getMinutes() + 3);
+
+var promptTime = ' 00 18 17 * * 0-6';
+var confirmTime =  '00 38 17 * * 0-6';
+
+
+
+// ------------------------- Message Strings -----------------------------
+// These are the base strings for the messages
 
 var promptMessage = 'Are you in for lunch at noon? Yes or No';
-var confirmationMessage = 'Confirmed, see you at noon!';
+var immediateYesResponse = 'Good call. We\'ll let you know who\'s going at noon!';
+var immediateNoResponse = 'Aww! We\'ll miss you!';
+var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 31'];
 
 //basic cron job
 new CronJob({
- cronTime: promptTime,
+ cronTime: testPromptTime, //promptTime
  onTick: function(){
     sendGroupTexts(users, promptMessage)
 },
@@ -46,14 +67,63 @@ timeZone: 'America/Los_Angeles'
 });
 
 new CronJob({
- cronTime: confirmationTime,
+ cronTime: testConfirmTime, //confirmTime
  onTick: function(){
-    sendGroupTexts(confirmedAttendees, confirmationMessage)
+    sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendeesTest))
 },
 start: true,
 timeZone: 'America/Los_Angeles'
 });
 
+function lookUpName(phoneNumber, userList)
+{
+  for (counter=0;counter<userList.length;counter++)
+   {
+     var storedphone=userList[counter].phone;
+            
+     if(phoneNumber.localeCompare(storedphone)==0)
+            return userList[counter].name;
+   }
+
+}
+
+// This function will create the confirmation message for an input phone number
+function generateOtherAttendeesString(phoneNumber)
+{
+    console.log('The generateOtherAttendeesString function recieved the following number: ' + phoneNumber);
+    var interestedNames=[];
+    var interestedPhones=[];
+
+    for (counter=0;counter<confirmedAttendeesTest.length;counter++)
+     {
+         var tempPhone=confirmedAttendeesTest[counter].phone;
+                
+         if(phoneNumber.localeCompare(tempPhone)!=0)
+         {
+                var data = {phone:tempPhone};
+                interestedPhones.push(data);
+         }
+     }
+
+   for (attendeeCounter=0;attendeeCounter<interestedPhones.length;attendeeCounter++)
+     {
+        var checkPhone= interestedPhones[attendeeCounter].phone;
+
+          for (counter=0;counter<users.length;counter++)
+           {
+                 var storedphone=users[counter].phone;
+                 var storedname =users[counter].name;
+                        
+                 if(checkPhone.localeCompare(storedphone)==0)
+                     {              
+                            interestedNames.push(storedname);
+                            break;
+                     }
+           }
+    }
+    console.log('generateOtherAtendeesString is returning ' + interestedNames.join());
+  return(interestedNames.join());
+}
 
 
 // ------------------------- Receiving Texts -----------------------------
@@ -78,16 +148,17 @@ router.post('/', function(req, res) {
             // User responded yes to text message
             // TODO: Add user to lunch list
             console.log('Yes: ' + req.body.From);
-            sendText(req.body.From,'Good choice! Can\'t wait!', True);
+            sendText(req.body.From,immediateYesResponse, true);
 
             var data = {phone:req.body.From};
+            console.log('Adding ' + data.phone + ' to the confirmedAttendees list');
             confirmedAttendees.push(data);
         }
 
         // User is french
         else if ((new RegExp("OUI")).test(req.body.Body.toUpperCase()))
         {
-          sendText(req.body.From,'We dont like the french...', True);
+          sendText(req.body.From,'We dont like the french...', true);
         }
 
         // User responsed no
@@ -96,7 +167,7 @@ router.post('/', function(req, res) {
             // Nothing should happen here
             console.log('No');
 
-            sendText(req.body.From,'Aww! We\'ll miss you!', True);
+            sendText(req.body.From,immediateNoResponse, true);
         }
 
         else if ((new RegExp("ADJUST FIRST TEXT TIME: ")).test(req.body.Body.toUpperCase()))
@@ -125,7 +196,7 @@ router.post('/', function(req, res) {
         // TODO - make sure user can send multiple texts to us
         else
         {
-            sendText(req.body.From,'Say that again? We didn\'t catch it!', True);   
+            sendText(req.body.From,'Say that again? We didn\'t catch it!', true);   
         }
     }
     console.log(confirmedAttendees[0].phone);
@@ -138,14 +209,53 @@ router.post('/', function(req, res) {
     
 });
 
-// Sends a message to a group of users 
+// Sends the same message to a group of users 
 function sendGroupTexts (groupOfUsers, message)
 {
   for (counter=0;counter<groupOfUsers.length;counter++)
   {
-     sendText(groupOfUsers[counter].phone,message, True)
-       // console.log(groupOfUsers[counter].phone,promptMessage);
+     sendText(groupOfUsers[counter].phone,message, true)
    }
+}
+//Accepts an array of objects which contain a phone number and 
+//the message to be sent to that number
+function sendDifferentGroupTexts(responseList){
+  for (counter=0;counter<responseList.length;counter++)
+  {
+     console.log('Sending '+ responseList[counter].phone + ' the following message: ' + 
+        responseList[counter].message);
+     
+     sendText(responseList[counter].phone,responseList[counter].message, true)
+   }
+}
+
+//Returns an array of objects with the phone number and message text 
+//for that confirmed attendee
+function generateConfirmationMessages(listOfAttendees){
+    console.log('The number of confirmed attendees is ' + listOfAttendees.length);
+    var responseList = [];
+    var cafeNumber=randomCafe();
+    
+    for(CGcounter=0; CGcounter<listOfAttendees.length;CGcounter++){
+        console.log ('initially, counter is: ' + CGcounter);
+        var storedPhone=listOfAttendees[CGcounter].phone;
+        
+        console.log ('StoredPhone is: ' + storedPhone);
+
+        var messageString = 'Enjoy lunch with '+ generateOtherAttendeesString(storedPhone) +'. We suggest going to '+ cafeNumber;
+
+        console.log ('messageString is: ' + messageString);
+
+        var data = {phone: storedPhone , message: messageString};
+        
+        console.log ('the data object has the following message: ' + data.message);
+        responseList.push(data);
+        console.log ('counter is: ' + CGcounter); 
+        console.log ('The messsage ' + responseList[CGcounter].message + 
+            ' is queue\'d to be sent to: ' + responseList[CGcounter].phone);
+    }
+
+    return responseList;
 }
 
 // Sends a single message to a given phone number
@@ -173,6 +283,15 @@ function sendText(phoneNumber, message, retry){
             }
         }
     });
+}
+
+
+function randomCafe (){
+    return cafes[getRandomInt(0, cafes.length-1)];
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 module.exports = router;

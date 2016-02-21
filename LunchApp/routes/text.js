@@ -136,6 +136,7 @@ router.get('/', function(req, res) {
   }
   if (req.headers.command = 'confirm'){
     sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees));
+    confirmedAttendees = [];
   }
   //res.send();
   

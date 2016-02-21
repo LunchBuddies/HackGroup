@@ -47,7 +47,7 @@ console.log('----- Set times: done');
 // These are the base strings for the messages
 
 
-var promptMessage = 'Are you in for lunch at noon? Text \'YES\' to confirm and we\'ll let you know who else is interested!';
+var promptMessage = 'Interested in lunch? Text \'YES\' by noon and we\'ll let you know who else is interested. \n - TheLunchBuddies';
 var immediateYesResponse = 'Good call. We\'ll text you at noon to let you know who\'s going';
 var immediateNoResponse = 'Aww! We\'ll miss you!';
 var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 31'];

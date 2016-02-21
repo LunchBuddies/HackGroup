@@ -18,14 +18,26 @@ var users = [
 
 var confirmedAttendees = [];
 
-/*var confirmedAttendeesTest = [
-    {phone: '+16026164854'},
-    {phone: '+14802367962'},
-    {phone: '+19723658656'}
-];*/
+// var confirmedAttendeesTest = [
+//     {phone: '+16026164854'},
+//     {phone: '+14802367962'},
+//     {phone: '+19723658656'}
+// ];
 
-var promptTime = '00 04 16 * * 0-6';
-var confirmationTime = '00 05 16 * * 0-6'
+var d = new Date();
+var currentSecond = d.getSeconds();
+var currentMin = d.getMinutes();
+var currentHour = d.getHours();
+
+var promptTime2 = (currentSecond + 1) + ' ' + currentMin + ' ' + currentHour + ' * * 0-6';
+var confirmationTime2 =  (currentSecond) + ' ' + (currentMin + 2) + ' ' + currentHour + ' * * 0-6';
+
+var promptTime = ' 00 18 17 * * 0-6';
+var confirmationTime =  '00 19 17 * * 0-6';
+
+
+console.log ('prompt time = ' + promptTime2);
+console.log ('confirmation time = ' + confirmationTime2);
 
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages
@@ -48,7 +60,7 @@ timeZone: 'America/Los_Angeles'
 new CronJob({
  cronTime: confirmationTime,
  onTick: function(){
-   // sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
+    sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
 },
 start: true,
 timeZone: 'America/Los_Angeles'
@@ -69,6 +81,7 @@ function lookUpName(phoneNumber, userList)
 // This function will create the confirmation message for an input phone number
 function generateOtherAttendeesString(phoneNumber)
 {
+    console.log('The generateOtherAttendeesString function recieved the following number: ' + phoneNumber);
     var interestedNames=[];
     var interestedPhones=[];
 
@@ -99,7 +112,7 @@ function generateOtherAttendeesString(phoneNumber)
                      }
            }
     }
-
+    console.log('generateOtherAtendeesString is returning ' + interestedNames.join());
   return(interestedNames.join());
 }
 
@@ -129,6 +142,7 @@ router.post('/', function(req, res) {
             sendText(req.body.From,immediateYesResponse, true);
 
             var data = {phone:req.body.From};
+            console.log('Adding ' + data.phone + ' to the confirmedAttendees list');
             confirmedAttendees.push(data);
         }
 
@@ -199,9 +213,9 @@ function sendGroupTexts (groupOfUsers, message)
 function sendDifferentGroupTexts(responseList){
   for (counter=0;counter<responseList.length;counter++)
   {
-     console.log('Sending for '+ responseList[counter].phone + ' message is: ' + 
+     console.log('Sending '+ responseList[counter].phone + ' the following message: ' + 
         responseList[counter].message);
-
+     
      sendText(responseList[counter].phone,responseList[counter].message, true)
    }
 }
@@ -209,20 +223,26 @@ function sendDifferentGroupTexts(responseList){
 //Returns an array of objects with the phone number and message text 
 //for that confirmed attendee
 function generateConfirmationMessages(listOfAttendees){
-    console.log('The number of confirmed attendees is' + listOfAttendees.length);
+    console.log('The number of confirmed attendees is ' + listOfAttendees.length);
     var responseList = [];
     
-    for(counter=0; counter<listOfAttendees.length;counter++){
-
-        console.log('An attendee phone Number: ' + listOfAttendees[counter].phone);
-
-        var messageString = generateOtherAttendeesString(listOfAttendees[counter].phone);
-        var data = {phone: listOfAttendees[counter].phone, message: messageString};
+    for(CGcounter=0; CGcounter<listOfAttendees.length;CGcounter++){
+        console.log ('initially, counter is: ' + CGcounter);
+        var storedPhone=listOfAttendees[CGcounter].phone;
         
-        console.log('For phone Number: ' + listOfAttendees[counter].phone + 'message is: ' +
-            messageString);
+        console.log ('StoredPhone is: ' + storedPhone);
+
+        var messageString = generateOtherAttendeesString(storedPhone);
+
+        console.log ('messageString is: ' + messageString);
+
+        var data = {phone: storedPhone , message: messageString};
         
+        console.log ('the data object has the following message: ' + data.message);
         responseList.push(data);
+        console.log ('counter is: ' + CGcounter); 
+        console.log ('The messsage ' + responseList[CGcounter].message + 
+            ' is queue\'d to be sent to: ' + responseList[CGcounter].phone);
     }
 
     return responseList;

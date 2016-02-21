@@ -16,6 +16,11 @@ var Schema = mongoose.Schema;
 
 
 
+var userSchema = new Schema({
+    name: String,
+    phone: String
+});
+
 // for date 
 var date = new Date();
 var testPromptTime = new Date();
@@ -23,7 +28,7 @@ var testConfirmTime = new Date();
 testPromptTime.setSeconds(0);
 testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(date.getMinutes()+ 1);
-testConfirmTime.setMinutes(date.getMinutes() + 1);
+testConfirmTime.setMinutes(date.getMinutes() + 2);
 var PromptTime = ' 20 06 03 * * 0-6';
 var ConfirmTime =  '00 01 03 * * 0-6';
 console.log('----- Set times');
@@ -38,8 +43,10 @@ console.log('----- Set times');
 
 
 
+
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages
+
 
 var promptMessage = 'Are you in for lunch at noon? Text \'YES\' to confirm and we\'ll let you know who else is interested!';
 var immediateYesResponse = 'Good call. We\'ll text you at noon to let you know who\'s going';
@@ -71,26 +78,6 @@ var userSchema = new Schema ({
 var user = mongoose.model('user2', userSchema );
 console.log('----- Created user 2.0 model');
 
-// var insertUser = new user ({name:'Ryan', phone:'+19721234567',group:'OENGPM', isGoing: false, isConfirmed:true });
-// insertUser.save (function (err, result) {
-//     console.log('saved 1 record to user2');
-// });
-
-
-
-
-// var testConfirmationObj = new confirmation ({
-//     phone: req.body.From,
-//     time: new Date().toISOString(),
-//     confirmationsent: false
-// });
-
-// testConfirmationObj.save (function (err, request) {
-//     if (err) return console.error(err);
-//     // console.dir(request);
-//     console.log('Yes: ' + req.body.From);
-//     sendText(req.body.From,immediateYesResponse, true);
-// });
 
 
 // Basic cron job
@@ -118,14 +105,14 @@ new CronJob({
  cronTime: testConfirmTime, //confirmTime
  onTick: function()
  {
-    // console.log('fetch confirmation');
-    // user.find
-    // ( function (err, result) 
-    //     {
-    //         //generateAllMessages(result);      
-    //         //generateAllMessageswhenGroupwillbeImplemented(users);                    
-    //     }
-    // );
+    console.log('fetch confirmation');
+    user.find
+    ( function (err, result) 
+        {
+            generateAllMessages(result);      
+            //generateAllMessageswhenGroupwillbeImplemented(users);                    
+        }
+    );
     //sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
 },
 start: true,
@@ -273,6 +260,7 @@ router.post('/', function(req, res) {
           || (new RegExp("YEA")).test(req.body.Body.toUpperCase())
           || (new RegExp("YA")).test(req.body.Body.toUpperCase()))
         {
+
             // Update status of user to 
             var conditions = { phone: req.body.From }
               , update = { isGoing: true };
@@ -282,6 +270,7 @@ router.post('/', function(req, res) {
               console.log('updated status for ' + conditions.phone)
               console.log(numAffected);
             });
+
         }
 
         // User is french
@@ -314,11 +303,17 @@ router.post('/', function(req, res) {
 
         else if ((new RegExp("REGISTER")).test(req.body.Body.toUpperCase()))
         {
+            var testBody = 'REGISTER Name: John, group: OENG';
             // Add new user
             // TODO: break apart string and add user, no need to ask for # because it is
             // hidden is the POST request
             // 
             // TODO: How do we get their name?
+            // var nameString = req.body.Body
+            // var insertUser = new user ({name:'Ryan', phone:req.body.From,group:'OENGPM', isGoing: false, isConfirmed:true });
+            // insertUser.save (function (err, result) {
+            //     console.log('saved 1 record to user2');
+            // });
         }
 
         // user sent some random message that didnt include the above

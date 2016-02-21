@@ -33,8 +33,8 @@ testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(d.getMinutes()+ 1);
 testConfirmTime.setMinutes(d.getMinutes() + 2);
 
-var promptTime = ' 00 30 19 * * 0-6';
-var confirmTime =  '00 00 20 * * 0-6';
+var PromptTime = ' 00 30 19 * * 0-6';
+var ConfirmTime =  '00 00 20 * * 0-6';
 
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages
@@ -46,7 +46,7 @@ var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 
 
 //basic cron job
 new CronJob({
- cronTime: PromptTime,
+ cronTime: testPromptTime,
  onTick: function(){
    sendGroupTexts(users, promptMessage)
 },
@@ -55,7 +55,7 @@ timeZone: 'America/Los_Angeles'
 });
 
 new CronJob({
- cronTime: ConfirmTime, //confirmTime
+ cronTime: testConfirmTime, //confirmTime
  onTick: function(){
     sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
 },

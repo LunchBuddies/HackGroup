@@ -1,8 +1,7 @@
 //    Declaration Section    //
-
 var express = require('express');
 var keys = require ('../Keys');
-var history = require ('../history');
+var history = require ('../History');
 var client = require('twilio')(keys.TWILIO_ACCOUNT_SID, keys.TWILIO_AUTH_KEY);
 var router = express.Router();
 var CronJob = require('cron').CronJob;
@@ -15,12 +14,12 @@ var mongoose = require('mongoose');
 var assert = require('assert');
 var Schema = mongoose.Schema;
 
-var userSchema = new Schema({
-    name: String,
-    phone: String
-});
+// var userSchema = new Schema({
+//     name: String,
+//     phone: String
+// });
 
-// for date 
+// We are setting prompt time and confirmation time for lunch
 var date = new Date();
 var testPromptTime = new Date();
 var testConfirmTime = new Date();
@@ -30,17 +29,8 @@ testPromptTime.setMinutes(date.getMinutes()+ 1);
 testConfirmTime.setMinutes(date.getMinutes() + 2);
 var PromptTime = ' 00 00 13 * * 0-6';
 var ConfirmTime =  '00 30 13 * * 0-6';
+
 console.log('----- Set times: done');
-
-// var confirmedAttendees = [];
-// var confirmationSchema = new Schema ({
-//     phone: String,
-//     time: String
-// });
-// people collection in mongodb
-//var confirmation = mongoose.model('confirmation', confirmationSchema );
-
-
 
 
 // ------------------------- Message Strings -----------------------------
@@ -100,6 +90,7 @@ function generateConfirmationMessage(namesString, suggestedCafe, signature){
     return optionsList[randomNumber] + signature;
 }
 
+
 // User object should contain following properties
 // name
 // phone
@@ -113,6 +104,7 @@ var userSchema = new Schema ({
     isGoing: Boolean,
     isConfirmed: Boolean 
 });
+
 var user = mongoose.model('user2', userSchema );
 console.log('----- Created user 2.0 model: done');
 
@@ -163,6 +155,7 @@ function promptCronLogic ()  {
     user.find( function (err, result) {
         if (!err) 
         { 
+
             console.log('----- fetch users in PromptCron: done');
             for (var i = 0; i < result.length ; i++)
             { 
@@ -175,15 +168,14 @@ function promptCronLogic ()  {
         {
             logHistoryEvent ('Error', err);
         }
-
     });
-
-    // 
+    
     var conditionsForResetDB = {}
       , updateForResetDB = { isGoing: false }
       , optionsForResetDB = {multi: true } ;
 
     user.update(conditionsForResetDB, updateForResetDB,  optionsForResetDB, function callback (err, numAffected) {
+
         if (!err)
         {
             // numAffected is the number of updated documents
@@ -194,8 +186,11 @@ function promptCronLogic ()  {
             logHistoryEvent ('Error', err);
         }  
             
+      // numAffected is the number of updated documents
+      console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
+
     });
-}
+};
 
 // Contains all the logic executed when the CONFIRM cron job ticks
 function confirmCronLogic () {
@@ -203,85 +198,19 @@ function confirmCronLogic () {
     user.find
     ( function (err, result) 
         {
+
             if (!err)
             {
                 generateAllMessages(result);      
-                //generateAllMessageswhenGroupwillbeImplemented(users);  
             }
             else
             {
                 logHistoryEvent ('Error', err);
             }
-                              
         }
     );
-    //sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
 }
 
-
-
-
-// ------------------------- Confirmation Texts -----------------------------
-
-// function generateAllMessageswhenGroupwillbeImplemented(users)
-// {
-//      var cafeNumber=randomCafe();
-
-//     for (var i=0;i<users.length;i++)
-//     {
-//         var phone=users[i].phone;
-//         var interestedNames=[];
-//         var messageString;
-//         var message;
-
-//         var group = users[i].group;
-
-//         if(users[i].isConfirmed=='YES')
-//         {
-//             for (var j=0;j<users.length;j++)
-//             {
-//                 if(
-//                     (users[j].isConfirmed=='YES')
-//                      && (group.localeCompare(users[j].group)==0)
-//                     && (phone.localeCompare(users[j].phone)!=0)
-//                  )
-//                     {
-//                         interestedNames.push(users[j].name);                        
-//                     }
-//             }
-
-//              if (interestedNames.length == 1)
-//         {
-//               message= interestedNames.join(', ');
-//         }
-
-//           else
-//           {
-//             message = [interestedNames.slice(0, -1).join(', '), 
-//             interestedNames.slice(-1)[0]].join(interestedNames.length 
-//                 < 2 ? '' : ' and ');
-//           }
-
-//         if(message=='')
-//                 {
-//                     messageString = onlyOneAttendee;
-//                 }
-//                 else
-//                 {
-//                     messageString = 'Enjoy lunch with '+ message +'. We suggest going to '+ cafeNumber;
-//                 }
-//         }
-//         else
-//         {
-//             continue;
-//         }
-         
-//       //sendText(phone,messsageString, true)
-//       console.log('for phone: '+ phone + ' the message is: '+ messageString);         
-
-//     }
-//   
-// }
 
 function generateAllMessages(users)
 {
@@ -297,12 +226,18 @@ function generateAllMessages(users)
         messageString = '';
         var message;
 
+        var group = users[i].group;
+
+        console.log ('Phone: ' + phone + ' has group: '+ group + ' and said: '+ users[i].isGoing);
+
         if(users[i].isGoing)
         {
             for (var j=0;j<users.length;j++)
             {
                 if((users[j].isGoing)
-                    && (phone.localeCompare(users[j].phone) != 0))
+                    && (phone.localeCompare(users[j].phone) != 0)
+                    && (group.localeCompare(users[j].group)==0)
+                   )
                     {
                         interestedNames.push(users[j].name);                        
                     }
@@ -334,7 +269,7 @@ function generateAllMessages(users)
         {
             continue;
         }
-        // console.log('for phone: '+ phone + ' the message is: '+ messageString);         
+         console.log('for phone: '+ phone + ' the message is: '+ messageString);         
 
         sendText(phone,messageString, true);
         console.log('==================== End: generateAllMessages ====================');
@@ -363,9 +298,7 @@ router.post('/', function(req, res) {
 
 
         // User sends any variation of yes
-        if ((new RegExp("YES")).test(req.body.Body.toUpperCase()) 
-          || (new RegExp("YEA")).test(req.body.Body.toUpperCase())
-          || (new RegExp("YA")).test(req.body.Body.toUpperCase()))
+        if ((new RegExp("YES")).test(req.body.Body.toUpperCase()))
         {
 
             // Update status of user to 
@@ -408,20 +341,58 @@ router.post('/', function(req, res) {
             // TODO add logic to break apart times
         }
 
-        else if ((new RegExp("REGISTER")).test(req.body.Body.toUpperCase()))
+        else if ((new RegExp("JOIN")).test(req.body.Body.toUpperCase()))
         {
-            var testBody = 'REGISTER John OENG';
-            // Add new user
-            // TODO: break apart string and add user, no need to ask for # because it is
-            // hidden is the POST request
-            // 
-            // TODO: How do we get their name?
-            // var nameString = req.body.Body
-            // var insertUser = new user ({name:'Ryan', phone:req.body.From,group:'OENGPM', isGoing: false, isConfirmed:true });
-            // insertUser.save (function (err, result) {
-            //     console.log('saved 1 record to user2');
-            // });
+            console.log (req.body.Body);
+            var testBody = req.body.Body;
+            var _user123 = GetUser(testBody);
+            var keyword = GetKeyword(testBody);
+            console.log ('user' + _user123);
+            console.log ('keyword' + keyword);
+            if(keyword == "JOIN")
+            {   
+                var insertUser = new user ({
+                    name:_user123, 
+                    phone:req.body.From,
+                    group:'OENGPM', 
+                    isGoing: false
+                });
+                console.log(insertUser);
+                insertUser.save (function (err, result) 
+                {
+                    if (!err){
+                        console.log('Inserted new record with name: '+ _user123);
+                        sendText(req.body.From, joinMessage,true); 
+                    }
+                    else
+                    {
+                        sendText(req.body.From,joinFailureMessage, true);  
+                    }
+                });
+            }
         }
+
+        // else if ((new RegExp("CLOSE")).test(req.body.Body.toUpperCase()))
+        // {
+            
+        //     var checkStop = req.body.Body.substr(0,3).toUpperCase();
+
+        //     if(checkStop == "CLOSE")
+        //     {
+
+                
+
+        //         user.deleteOne ({phone: req.body.From}, function (err, response) {
+        //             console.log ('remove user');
+        //         });
+                
+        //         // sendText(req.body.From, stopMessage,true); 
+        //     }
+        //     // else
+        //     // {
+        //     //     sendText(req.body.From,stopFailureMessage, true);  
+        //     // }
+        // }
 
         // user sent some random message that didnt include the above
         // TODO - make sure user can send multiple texts to us
@@ -440,10 +411,25 @@ router.post('/', function(req, res) {
 
 });
 
+
+function GetUser(body)
+{
+    return (body.split(" ")[1]);    
+}
+
+function GetKeyword(body)
+{
+    return (body.split(" ")[0].toUpperCase());    
+}
+
+
+
+
 // Sends a single message to a given phone number
 function sendText(phoneNumber, message, retry){
     console.log('==================== Begin: sendText ====================');
     console.log("----- " + message )
+    
     client.sendMessage( {
 
         to: phoneNumber, // Any number Twilio can deliver to
@@ -457,22 +443,23 @@ function sendText(phoneNumber, message, retry){
             // console.log(responseData.from + ' ' + responseData.body); // outputs "+14506667788"
             // console.log(responseData.body); // outputs "word to your mother."
             console.log('----- Sent text to ' + responseData.to + ': done')
-            logHistoryEvent ('SendText', {phoneNumber: responseData.to});
+            logHistoryEvent ('SendText', {phoneNumber: responseData.to, message: message});
         }
         else {
             console.log(err);
             // If it was the first time failed, try again
             logHistoryEvent ('Error', err);
-            if (retry)
-            {
-                sendText (phoneNumber, message, False);
-            }
+
+            // if (retry)
+            // {
+            //     sendText (phoneNumber, message, false);
+            // }
         }
     });
     console.log('==================== End: sendText ====================');
 }
 
-
+//
 function randomCafe (){
     return cafes[getRandomInt(0, cafes.length-1)];
 }
@@ -483,66 +470,3 @@ function getRandomInt(min, max) {
 
 module.exports = router;
 
-
-/*
-
-// // Sends the same message to a group of users 
-// function sendGroupTexts (groupOfUsers, message)
-// {
-//   for (counter=0;counter<groupOfUsers.length;counter++)
-//   {
-//      sendText(groupOfUsers[counter].phone,message, true)
-//    }
-// }
-// //Accepts an array of objects which contain a phone number and 
-// //the message to be sent to that number
-// function sendDifferentGroupTexts(responseList){
-//   for (counter=0;counter<responseList.length;counter++)
-//   {
-//      console.log('Sending '+ responseList[counter].phone + ' the following message: ' + 
-//         responseList[counter].message);
-     
-//      sendText(responseList[counter].phone,responseList[counter].message, true)
-//    }
-// }
-
-//Returns an array of objects with the phone number and message text 
-//for that confirmed attendee
-// function generateConfirmationMessages(listOfAttendees){
-//     console.log('The number of confirmed attendees is ' + listOfAttendees.length);
-//     var responseList = [];
-//     var cafeNumber=randomCafe();
-//      var messageString;
-    
-//     for(CGcounter=0; CGcounter<listOfAttendees.length;CGcounter++){
-//         var storedPhone=listOfAttendees[CGcounter].phone;
-        
-
-//         if(generateOtherAttendeesString(storedPhone)=='')
-//         {
-//             messageString = onlyOneAttendee;
-//         }
-//         else
-//         {
-//             messageString = 'Enjoy lunch with '+ generateOtherAttendeesString(storedPhone) +'. We suggest going to '+ cafeNumber;
-//         }
-
-//         console.log ('messageString is: ' + messageString);
-
-//         var data = {phone: storedPhone , message: messageString};
-        
-//         console.log ('the data object has the following message: ' + data.message);
-//         responseList.push(data);
-//         console.log ('counter is: ' + CGcounter); 
-//         console.log ('The messsage ' + responseList[CGcounter].message + 
-//             ' is queue\'d to be sent to: ' + responseList[CGcounter].phone);
-//     }
-
-//     return responseList;
-// }
-
-
-// Nick is annoying
-// so is mandeep
- 
-*/

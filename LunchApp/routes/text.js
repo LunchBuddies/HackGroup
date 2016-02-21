@@ -25,19 +25,17 @@ var confirmedAttendees = [];
  ];
 
 var d = new Date();
-var currentSecond = d.getSeconds();
-var currentMin = d.getMinutes();
-var currentHour = d.getHours();
-
-var promptTime2 = (currentSecond + 1) + ' ' + currentMin + ' ' + currentHour + ' * * 0-6';
-var confirmationTime2 =  (currentSecond) + ' ' + (currentMin + 2) + ' ' + currentHour + ' * * 0-6';
+var testPromptTime = new Date();
+var testConfirmTime = new Date();
+testPromptTime.setSeconds(0);
+testConfirmTime.setSeconds(0);
+testPromptTime.setMinutes(d.getMinutes() + 1);
+testConfirmTime.setMinutes(d.getMinutes() + 3);
 
 var promptTime = ' 00 18 17 * * 0-6';
-var confirmationTime =  '00 38 17 * * 0-6';
+var confirmTime =  '00 38 17 * * 0-6';
 
 
-console.log ('prompt time = ' + promptTime2);
-console.log ('confirmation time = ' + confirmationTime2);
 
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages
@@ -49,7 +47,7 @@ var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 
 
 //basic cron job
 new CronJob({
- cronTime: promptTime,
+ cronTime: testPromptTime, //promptTime
  onTick: function(){
     sendGroupTexts(users, promptMessage)
 },
@@ -58,7 +56,7 @@ timeZone: 'America/Los_Angeles'
 });
 
 new CronJob({
- cronTime: confirmationTime,
+ cronTime: testConfirmTime, //confirmTime
  onTick: function(){
     sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendeesTest))
 },

@@ -18,13 +18,12 @@ var users = [
 
 var confirmedAttendees = [];
 
-/*
- var confirmedAttendeesTest = [
-     {phone: '+16026164854'},
-     {phone: '+17174601902'},
-     {phone: '+14802367962'}
- ];
-*/
+ // var confirmedAttendeesTest = [
+ //     {phone: '+16026164854'},
+ //     {phone: '+17174601902'},
+ //     {phone: '+14802367962'},
+ //     {phone: '+19723658656'}
+ // ];
 
 var d = new Date();
 var testPromptTime = new Date();
@@ -32,12 +31,10 @@ var testConfirmTime = new Date();
 testPromptTime.setSeconds(0);
 testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(d.getMinutes()+ 1);
-testConfirmTime.setMinutes(d.getMinutes() + 3);
+testConfirmTime.setMinutes(d.getMinutes() + 1);
 
-var promptTime = ' 00 18 17 * * 0-6';
-var confirmTime =  '00 38 17 * * 0-6';
-
-
+var promptTime = ' 00 30 19 * * 0-6';
+var confirmTime =  '00 00 20 * * 0-6';
 
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages
@@ -49,7 +46,7 @@ var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 
 
 //basic cron job
 new CronJob({
- cronTime: testPromptTime, //promptTime
+ cronTime: testPromptTime,
  onTick: function(){
    sendGroupTexts(users, promptMessage)
 },
@@ -113,9 +110,16 @@ function generateOtherAttendeesString(phoneNumber)
            }
     }
     console.log('generateOtherAtendeesString is returning ' + interestedNames.join(', '));
-  return(interestedNames.join(', '));
+  
+  //If there are only two people who are interested
+  if (interestedNames.length == 1){
+    return(interestedNames.join(', '));
+  }
+  else{
+    return ([interestedNames.slice(0, -1).join(', '), 
+        interestedNames.slice(-1)[0]].join(interestedNames.length < 2 ? '' : ' and '));
+  }
 }
-
 
 // ------------------------- Receiving Texts -----------------------------
 // Not sure if this is needed... Twilio doesnt use GET commands

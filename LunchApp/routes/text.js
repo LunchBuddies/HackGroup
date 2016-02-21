@@ -20,7 +20,7 @@ var Schema = mongoose.Schema;
 var userSchema = new Schema({
     name: String,
     phone: String
-});
+/);
 
 var confirmationSchema = new Schema ({
     phone: String,
@@ -35,7 +35,7 @@ var testConfirmationObj = new confirmation ({
     time: new Date().toISOString()
 });
 
-testConfirmationObj.save (function (err, request) {
+testConfirmationObj.save(function (err, request) {
     if (err) return console.error(err);
     console.dir(request);
 });
@@ -190,7 +190,7 @@ router.post('/', function(req, res) {
 
             // User responded yes to text message
             // TODO: Add user to lunch list
-            console.log('Yes: ' + req.body.From);
+            console.log('Yes: ' + req);
             sendText(req.body.From,immediateYesResponse, true);
 
             var data = {phone:req.body.From};

@@ -7,6 +7,8 @@ var router = express.Router();
 var CronJob = require('cron').CronJob;
 var database = require('../db');
 
+var TwilioNumber = '+14693400518';
+
 // for Mongo
 var MongoClient = require('mongodb').MongoClient;
 var mongoose = require('mongoose');
@@ -23,12 +25,18 @@ var userModel = mongoose.model('User',
 			   'people'); // people collection in mongodb
 var users = [];
 
-userModel.find(function (err, result) {
-    for (var i = 0; i < result.length ; i++)
-    { 
-	users.push(result[i]);
-    }
-})
+// var findUsersFromMongo = userModel.find( function (err, result) {
+//     console.log('Fetched users from mongo');
+//     users = result;
+//     // for (var i = 0; i < result.length ; i++)
+//     // { 
+//     //     console.log('hi');
+//     //     users.push(result[i]);
+
+//     // }
+
+// });
+
 
 var confirmedAttendees = [];
 
@@ -53,8 +61,6 @@ console.log(d.toString());
 var promptTime = ' 00 59 05 * * 0-6';
 var confirmTime =  '00 56 21 * * 0-6';
 
-
-
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages
 
@@ -65,22 +71,33 @@ var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 
 
 //basic cron job
 new CronJob({
- cronTime: promptTime, //promptTime
+ cronTime: testPromptTime, //promptTime
  onTick: function(){
    // sendGroupTexts(users, promptMessage)
+   console.log('fetch users');
+    userModel.find( function (err, result) {
+        console.log('Fetched users from mongo');
+        for (var i = 0; i < result.length ; i++)
+        { 
+            console.log('hi');
+            sendText(result[i].phone,'Sent from callback', true)
+        }
+        console.log(result);
+
+    });
 },
 start: true,
 timeZone: 'America/Los_Angeles'
 });
 
-new CronJob({
- cronTime: testConfirmTime, //confirmTime
- onTick: function(){
-    sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
-},
-start: true,
-timeZone: 'America/Los_Angeles'
-});
+// new CronJob({
+//  cronTime: testConfirmTime, //confirmTime
+//  onTick: function(){
+//     sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
+// },
+// start: true,
+// timeZone: 'America/Los_Angeles'
+// });
 
 function lookUpName(phoneNumber, userList)
 {

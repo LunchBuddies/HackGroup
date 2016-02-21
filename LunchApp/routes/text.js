@@ -40,13 +40,13 @@ var ConfirmTime =  '00 00 20 * * 0-6';
 // These are the base strings for the messages
 
 var promptMessage = 'Are you in for lunch at noon? Text \'YES\' to confirm and we\'ll let you know who else is interested!';
-var immediateYesResponse = 'Good call. We\'ll let you know who\'s going at noon!';
+var immediateYesResponse = 'Good call. We\'ll text you at noon to let you know who\'s going';
 var immediateNoResponse = 'Aww! We\'ll miss you!';
 var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 31'];
 
 //basic cron job
 new CronJob({
- cronTime: testPromptTime,
+ cronTime: PromptTime,
  onTick: function(){
    sendGroupTexts(users, promptMessage)
 },
@@ -55,7 +55,7 @@ timeZone: 'America/Los_Angeles'
 });
 
 new CronJob({
- cronTime: testConfirmTime, //confirmTime
+ cronTime: ConfirmTime, //confirmTime
  onTick: function(){
     sendDifferentGroupTexts(generateConfirmationMessages(confirmedAttendees))
 },

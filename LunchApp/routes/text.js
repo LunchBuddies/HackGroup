@@ -300,9 +300,11 @@ router.post('/', function(req, res) {
             var testBody = req.body.Body;
             var user = GetUser(testBody);
             var keyword = GetKeyword(testBody);
-
+            console.log ('user' + user);
+            console.log ('keyword' + keyword);
             if(keyword == "JOIN")
-            {
+            {   
+
                 var insertUser = new user ({name:user, phone:req.body.From,group:'OENGPM', isGoing: false, isConfirmed:true });
                 insertUser.save (function (err, result) 
                 {

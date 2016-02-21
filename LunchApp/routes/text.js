@@ -7,23 +7,38 @@ var router = express.Router();
 var CronJob = require('cron').CronJob;
 var database = require('../db');
 
+
 var TwilioNumber = '+14693400518';
 
 // for Mongo
 var MongoClient = require('mongodb').MongoClient;
 var mongoose = require('mongoose');
 var assert = require('assert');
+var Schema = mongoose.Schema;
 
 
-var userSchema = mongoose.Schema({
+var userSchema = new Schema({
     name: String,
     phone: String
-})
+});
 
-var userModel = mongoose.model('User',
-			   userSchema,
-			   'people'); // people collection in mongodb
-var users = [];
+var confirmationSchema = new Schema ({
+    phone: String,
+    time: String
+});
+
+var user = mongoose.model('user', userSchema ); // people collection in mongodb
+var confirmation = mongoose.model('testconfirmation', confirmationSchema );
+
+var testConfirmationObj = new confirmation ({
+    phone: '+19723658656',
+    time: new Date().toISOString()
+});
+
+testConfirmationObj.save (function (err, request) {
+    if (err) return console.error(err);
+    console.dir(request);
+});
 
 // var findUsersFromMongo = userModel.find( function (err, result) {
 //     console.log('Fetched users from mongo');
@@ -75,16 +90,16 @@ new CronJob({
  onTick: function(){
    // sendGroupTexts(users, promptMessage)
    console.log('fetch users');
-    userModel.find( function (err, result) {
-        console.log('Fetched users from mongo');
-        for (var i = 0; i < result.length ; i++)
-        { 
-            console.log('hi');
-            sendText(result[i].phone,'Sent from callback', true)
-        }
-        console.log(result);
+    // userModel.find( function (err, result) {
+    //     console.log('Fetched users from mongo');
+    //     for (var i = 0; i < result.length ; i++)
+    //     { 
+    //         console.log('hi');
+    //         sendText(result[i].phone,'Sent from callback', true)
+    //     }
+    //     console.log(result);
 
-    });
+    // });
 },
 start: true,
 timeZone: 'America/Los_Angeles'
@@ -169,6 +184,10 @@ router.post('/', function(req, res) {
           || (new RegExp("YEA")).test(req.body.Body.toUpperCase())
           || (new RegExp("YA")).test(req.body.Body.toUpperCase()))
         {
+           
+            // PUT SAVE FUNCTION HERE
+
+
             // User responded yes to text message
             // TODO: Add user to lunch list
             console.log('Yes: ' + req.body.From);

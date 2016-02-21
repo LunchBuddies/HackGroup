@@ -306,13 +306,13 @@ router.post('/', function(req, res) {
             console.log ('keyword' + keyword);
             if(keyword == "JOIN")
             {   
-                var insertUser = new userSchema ({
+                var insertUser = new user ({
                     name:_user123, 
                     phone:req.body.From,
                     group:'OENGPM', isGoing: false, 
                     isConfirmed:true 
                 });
-                
+                console.log(insertUser);
                 insertUser.save (function (err, result) 
                 {
                     if (!err){
@@ -323,7 +323,6 @@ router.post('/', function(req, res) {
                     {
                         sendText(req.body.From,joinFailureMessage, true);  
                     }
-
                 });
             }
         }
@@ -346,15 +345,15 @@ router.post('/', function(req, res) {
 });
 
 
-// function GetUser(body)
-// {
-//     return (body.split(" ")[1]);    
-// }
+function GetUser(body)
+{
+    return (body.split(" ")[1]);    
+}
 
-// function GetKeyword(body)
-// {
-//     return (body.split(" ")[0].toUpperCase());    
-// }
+function GetKeyword(body)
+{
+    return (body.split(" ")[0].toUpperCase());    
+}
 
 
 

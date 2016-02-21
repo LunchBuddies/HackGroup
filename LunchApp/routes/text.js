@@ -271,6 +271,7 @@ router.post('/', function(req, res) {
               // numAffected is the number of updated documents
               console.log('updated status for ' + conditionsForUpdateDB.phone)
               // console.log(numAffected);
+              sendText(conditionsForUpdateDB.phone, immediateYesResponse, true );
             });
 
         }

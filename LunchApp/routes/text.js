@@ -41,8 +41,12 @@ var promptMessage = 'Are you in for lunch at noon? Text \'YES\' to confirm and w
 var immediateYesResponse = 'Good call. We\'ll text you at noon to let you know who\'s going';
 var immediateNoResponse = 'Aww! We\'ll miss you!';
 var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 31'];
-var onlyOneAttendee = 'Looks like no one else is interested today! Better luck next time.' //Message which is sent if only one person RSVPs
+var onlyOneAttendee = 'Looks like no one else is interested today! Better luck next time.'; //Message which is sent if only one person RSVPs
+var joinMessage = 'Thanks for joining!';
+var joinFailureMessage = 'Say that again? We didn\'t catch it! Text: Join <Your Name>';
 
+
+sendText(req.body.From,'Say that again? We didn\'t catch it!', true);   
 
 // User object should contain following properties
 // name
@@ -294,19 +298,26 @@ router.post('/', function(req, res) {
             // TODO add logic to break apart times
         }
 
-        else if ((new RegExp("REGISTER")).test(req.body.Body.toUpperCase()))
+        else if ((new RegExp("JOIN")).test(req.body.Body.toUpperCase()))
         {
-            var testBody = 'REGISTER John OENG';
-            // Add new user
-            // TODO: break apart string and add user, no need to ask for # because it is
-            // hidden is the POST request
-            // 
-            // TODO: How do we get their name?
-            // var nameString = req.body.Body
-            // var insertUser = new user ({name:'Ryan', phone:req.body.From,group:'OENGPM', isGoing: false, isConfirmed:true });
-            // insertUser.save (function (err, result) {
-            //     console.log('saved 1 record to user2');
-            // });
+            var testBody = req.body.Body;
+            var user = GetUser(testBody);
+            var keyword = GetKeyword(testBody);
+
+            if(keyword == "JOIN")
+            {
+                var insertUser = new user ({name:user, phone:req.body.From,group:'OENGPM', isGoing: false, isConfirmed:true });
+                insertUser.save (function (err, result) 
+                {
+                    console.log('Inserted new record with name: '+ user);
+                });
+
+                sendText(req.body.From, joinMessage,true); 
+            }
+            else
+            {
+                sendText(req.body.From,joinFailureMessage, true);  
+            }
         }
 
         // user sent some random message that didnt include the above
@@ -325,6 +336,18 @@ router.post('/', function(req, res) {
     // console.log('------ END ------');
 
 });
+
+
+function GetUser(body)
+{
+    return (body.split(" ")[1]);    
+}
+
+function GetKeyword(body)
+{
+    return (body.split(" ")[0].toUpperCase());    
+}
+
 
 // Sends a single message to a given phone number
 function sendText(phoneNumber, message, retry){

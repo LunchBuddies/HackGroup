@@ -45,9 +45,6 @@ var onlyOneAttendee = 'Looks like no one else is interested today! Better luck n
 var joinMessage = 'Thanks for joining!';
 var joinFailureMessage = 'Say that again? We didn\'t catch it! Text: Join <Your Name>';
 
-
-// sendText(req.body.From,'Say that again? We didn\'t catch it!', true);   
-
 // User object should contain following properties
 // name
 // phone

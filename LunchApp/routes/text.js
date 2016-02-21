@@ -31,7 +31,7 @@ var confirmationTime = '00 05 16 * * 0-6'
 // These are the base strings for the messages
 
 var promptMessage = 'Are you in for lunch at noon? Yes or No';
-var immediateYesResponse = 'Good call. We\'ll let you know who\'se going at noon!';
+var immediateYesResponse = 'Good call. We\'ll let you know who\'s going at noon!';
 var immediateNoResponse = 'Aww! We\'ll miss you!';
 
 //basic cron job

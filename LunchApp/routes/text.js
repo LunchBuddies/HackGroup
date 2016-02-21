@@ -89,7 +89,9 @@ function generateConfirmationMessage(namesString, suggestedCafe, signature){
     return optionsList[randomNumber] + signature;
 }
 
-var joinMessage = 'Thanks for joining!';
+var joinMessage = [
+'Thanks for joining! Happy Lunching'
+]
 var joinFailureMessage = 'Say that again? We didn\'t catch it! Text: Join <Your Name> to subscribe';
 var stopMessage = 'Sorry to see you go! Hope you will reconsider';
 var stopFailureMessage = 'Say that again? We didn\'t catch it! Text: STOP to unsubscribe';
@@ -365,7 +367,7 @@ router.post('/', function(req, res) {
                 {
                     if (!err){
                         console.log('Inserted new record with name: '+ _user123);
-                        sendText(req.body.From, joinMessage,true); 
+                        sendText(req.body.From, generateMessageWithSignature(joinMessage),true); 
                     }
                     else
                     {

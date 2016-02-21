@@ -309,8 +309,8 @@ router.post('/', function(req, res) {
                 var insertUser = new user ({
                     name:_user123, 
                     phone:req.body.From,
-                    group:'OENGPM', isGoing: false, 
-                    isConfirmed:true 
+                    group:'OENGPM', 
+                    isGoing: false
                 });
                 console.log(insertUser);
                 insertUser.save (function (err, result) 

@@ -5,12 +5,16 @@ var keys = require ('../Keys');
 var client = require('twilio')(keys.TWILIO_ACCOUNT_SID, keys.TWILIO_AUTH_KEY);
 var router = express.Router();
 var CronJob = require('cron').CronJob;
-// var database = require('db');
+var database = require('../db');
 
 // for Mongo
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 
+var collection = database.collection('documents');
+collection.insert ({hi : 10}, function (err, result) {
+    console.log ('text.js: insert into db' );
+});
 
 //connect to db running on local box
 // var url = 'mongodb://anugup-mongo.westus.cloudapp.azure.com:27017/test';

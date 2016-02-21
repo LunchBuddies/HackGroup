@@ -13,6 +13,7 @@ var routes = require('./routes/index');
 var user = require('./routes/user');
 var text = require('./routes/text');
 var textError = require('./routes/textError');
+var db = require ('./db');
 // var init = require('./routes/init');
 // var runner = require('./routes/runner');
 
@@ -23,12 +24,12 @@ app.locals.ENV = env;
 app.locals.ENV_DEVELOPMENT = env == 'development';
 
 
-mongoose.connect('mongodb://anugup-mongo.westus.cloudapp.azure.com:27017/test');
-var db = mongoose.connection;
-var collection = db.collection('documents');
-collection.insert ({Ryan : 10}, function (err, result) {
-    console.log ('insert into db' );
-});
+// mongoose.connect('mongodb://anugup-mongo.westus.cloudapp.azure.com:27017/test');
+// var db = mongoose.connection;
+// var collection = db.collection('documents');
+// collection.insert ({Ryan : 10}, function (err, result) {
+//     console.log ('insert into db' );
+// });
 
 
 //connect to db running on local box
@@ -118,6 +119,5 @@ app.use(function(err, req, res, next) {
     });
 });
 
-module.exports = db;
 module.exports = app;
 

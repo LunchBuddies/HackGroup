@@ -43,8 +43,7 @@ var defaultSignature = '\n - TheLunchBuddies'
 var promptMessages = [
     "Interested in lunch? Text \'YES\' by noon and we\'ll let you know who else is interested. ",
     "Free for lunch? Text \'YES\' by noon and we\'ll let you know who else is interested. ",
-    "Free for lunch? Come on, you know you want to. Text \'YES\' by noon and we\'ll let you know who else is interested. ",
-    "Text \'YES\' "
+    "Free for lunch? Come on, you know you want to. Text \'YES\' by noon and we\'ll let you know who else is interested. "
 ]
 
 //Message which sends right after a user confirms.
@@ -90,6 +89,10 @@ function generateConfirmationMessage(namesString, suggestedCafe, signature){
     return optionsList[randomNumber] + signature;
 }
 
+var joinMessage = 'Thanks for joining!';
+var joinFailureMessage = 'Say that again? We didn\'t catch it! Text: Join <Your Name> to subscribe';
+var stopMessage = 'Sorry to see you go! Hope you will reconsider';
+var stopFailureMessage = 'Say that again? We didn\'t catch it! Text: STOP to unsubscribe';
 
 // User object should contain following properties
 // name

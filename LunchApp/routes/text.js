@@ -234,10 +234,8 @@ function generateConfirmationMessages(listOfAttendees){
      var messageString;
     
     for(CGcounter=0; CGcounter<listOfAttendees.length;CGcounter++){
-        console.log ('initially, counter is: ' + CGcounter);
         var storedPhone=listOfAttendees[CGcounter].phone;
         
-        console.log ('StoredPhone is: ' + storedPhone);
 
         if(generateOtherAttendeesString(storedPhone)=='')
         {

@@ -29,7 +29,7 @@ var currentSecond = d.getSeconds();
 var currentMin = d.getMinutes();
 var currentHour = d.getHours();
 
-var promptTime = (currentSecond + 1) + ' ' + currentMin + ' ' + currentHour + ' * * 0-6';
+var promptTime =  '00 ' + (currentMin + 1) + ' ' + currentHour + ' * * 0-6';
 var confirmationTime =  (currentSecond) + ' ' + (currentMin + 2) + ' ' + currentHour + ' * * 0-6';
 
 

@@ -334,14 +334,20 @@ router.post('/', function(req, res) {
             if(checkStop == "STOP")
             {
                 var userPhone= req.body.From;
-                user.find({phone: userPhone}).remove().exec();
+                user.find({phone: userPhone}, function (err, response) {
+                    response.remove( function (err2.response2) {
+                        response2.exec(function (err3, response3) {
+                            console.log ('remove user');
+                        });
+                    });
+                }).remove().exec();
                 
-                sendText(req.body.From, stopMessage,true); 
+                // sendText(req.body.From, stopMessage,true); 
             }
-            else
-            {
-                sendText(req.body.From,stopFailureMessage, true);  
-            }
+            // else
+            // {
+            //     sendText(req.body.From,stopFailureMessage, true);  
+            // }
         }
 
         // user sent some random message that didnt include the above

@@ -355,7 +355,7 @@ router.post('/', function(req, res) {
             console.log ('user' + _user123);
             console.log ('keyword' + keyword);
 
-            if (_user123 == '')
+            if (_user123 == undefined || _user123 == '')
             {
                 sendText(req.body.From,joinFailureMessage, true); 
                 return;

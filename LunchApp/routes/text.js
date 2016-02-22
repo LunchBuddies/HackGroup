@@ -27,8 +27,8 @@ testPromptTime.setSeconds(0);
 testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(date.getMinutes()+ 1);
 testConfirmTime.setMinutes(date.getMinutes() + 2);
-var PromptTime = ' 00 30 16 * * 0-6';
-var ConfirmTime =  '00 45 16 * * 0-6';
+var PromptTime = ' 00 00 11 * * 1-5';
+var ConfirmTime =  '00 00 12 * * 1-5';
 
 console.log('----- Set times: done');
 

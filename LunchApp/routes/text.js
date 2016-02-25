@@ -227,7 +227,8 @@ function generateAllMessages(users)
     for (var i=0;i<users.length;i++)
     {
         var phone=users[i].phone;
-        var interestedNames=[];
+        var interestedNames = [];
+        var formattedNames = [];
         messageString = '';
         var message;
 

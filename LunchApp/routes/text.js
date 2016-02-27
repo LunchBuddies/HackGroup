@@ -173,26 +173,22 @@ function promptCronLogic ()  {
         }
     });
     
-    // var conditionsForResetDB = {}
-    //   , updateForResetDB = { isGoing: false }
-    //   , optionsForResetDB = {multi: true } ;
+    var conditionsForResetDB = {}
+      , updateForResetDB = { isGoing: false }
+      , optionsForResetDB = {multi: true } ;
 
-    // user.update(conditionsForResetDB, updateForResetDB,  optionsForResetDB, function callback (err, numAffected) {
+    user.update(conditionsForResetDB, updateForResetDB,  optionsForResetDB, function callback (err, numAffected) {
 
-    //     if (!err)
-    //     {
-    //         // numAffected is the number of updated documents
-    //         console.log('---- Reset ' + numAffected.nModified + ' accounts: done'); 
-    //     }  
-    //     else
-    //     {
-    //         logHistoryEvent ('Error', err);
-    //     }  
-            
-    //   // numAffected is the number of updated documents
-    //   // console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
-
-    // });
+        if (!err)
+        {
+            // numAffected is the number of updated documents
+            console.log('---- Reset ' + numAffected.nModified + ' accounts: done'); 
+        }  
+        else
+        {
+            logHistoryEvent ('Error', err);
+        }  
+    });
 
     console.log('==================== End: promptCronLogic ====================');
 };

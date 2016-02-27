@@ -115,7 +115,7 @@ console.log('----- Created user 2.0 model: done');
 
 // Cron job that prompts users to come to lunch
 new CronJob({
-    cronTime: PromptTime,
+    cronTime: testPromptTime,
     onTick: function(){
         promptCronLogic ();
     },
@@ -164,8 +164,8 @@ function promptCronLogic ()  {
             console.log('----- fetch users in PromptCron: done');
             for (var i = 0; i < result.length ; i++)
             { 
-                // console.log(result[i].phone);
-                sendText(result[i].phone, generateMessageWithSignature(promptMessages), true)
+                console.log(result[i].phone);
+                // sendText(result[i].phone, generateMessageWithSignature(promptMessages), true)
             }
             //console.log(result);
         }

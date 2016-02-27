@@ -154,7 +154,9 @@ function logHistoryEvent (_eventType, _params) {
         console.dir("----- logged 1 historical event");
     });
 }
+ 
 
+ // test
 // Contains all the logic executed when the PROMPT cron job ticks
 function promptCronLogic ()  {
     user.find( function (err, result) {

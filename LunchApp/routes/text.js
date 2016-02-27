@@ -159,6 +159,7 @@ function logHistoryEvent (_eventType, _params) {
  // test
 // Contains all the logic executed when the PROMPT cron job ticks
 function promptCronLogic ()  {
+    console.log('==================== Begin: promptCronLogic ====================');
     user.find( function (err, result) {
         if (!err) 
         { 
@@ -197,10 +198,13 @@ function promptCronLogic ()  {
       console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
 
     });
+
+    console.log('==================== End: promptCronLogic ====================');
 };
 
 // Contains all the logic executed when the CONFIRM cron job ticks
 function confirmCronLogic () {
+    console.log('==================== Begin: confirmCronLogic ====================');
     console.log('fetch confirmation');
     user.find
     ( function (err, result) 
@@ -216,6 +220,7 @@ function confirmCronLogic () {
             }
         }
     );
+    console.log('==================== End: confirmCronLogic ====================');
 }
 
 
@@ -351,12 +356,13 @@ router.post('/', function(req, res) {
 
         else if ((new RegExp("JOIN")).test(req.body.Body.toUpperCase()))
         {
-            console.log (req.body.Body);
+            console.log('==================== Begin: Join User ====================');
+            // console.log (req.body.Body);
             var testBody = req.body.Body;
             var _user123 = GetUser(testBody);
             var keyword = GetKeyword(testBody);
-            console.log ('user' + _user123);
-            console.log ('keyword' + keyword);
+            // console.log ('user' + _user123);
+            // console.log ('keyword' + keyword);
 
             if (_user123 == undefined || _user123 == '')
             {
@@ -370,7 +376,8 @@ router.post('/', function(req, res) {
                     name:_user123, 
                     phone:req.body.From,
                     group:'OENGPM', 
-                    isGoing: false
+                    isGoing: false,
+                    isActive: true
                 });
                 console.log(insertUser);
                 insertUser.save (function (err, result) 
@@ -389,12 +396,13 @@ router.post('/', function(req, res) {
                     }
                 });
             }
+            console.log('==================== End: Join User ====================');
         }
 
         else if ((new RegExp("STOP")).test(req.body.Body.toUpperCase()))
         {
+            console.log('==================== Begin: User Stop ====================');
             console.log('user stopped');
-            console.log(req.body.Body);
             // var checkStop = req.body.Body.substr(0,3).toUpperCase();
   
             var conditionsForDeleteUser = {phone: req.body.From}
@@ -407,6 +415,7 @@ router.post('/', function(req, res) {
                 {
                     // numAffected is the number of updated documents
                     console.log('---- stopped ' + req.body.From + ' account: done'); 
+                    logHistoryEvent ('Stop', {phone: req.body.From});
                 }  
                 else
                 {
@@ -417,12 +426,12 @@ router.post('/', function(req, res) {
               console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
 
             });
+            console.log('==================== End: User Stop ====================');
         }
 
         else if ((new RegExp("START")).test(req.body.Body.toUpperCase())) 
         {
-            console.log('user started');
-            console.log(req.body.Body);
+            console.log('==================== Begin: User Start ====================');
             // var checkStop = req.body.Body.substr(0,3).toUpperCase();
   
             var conditionsForDeleteUser = {phone: req.body.From}
@@ -435,6 +444,7 @@ router.post('/', function(req, res) {
                 {
                     // numAffected is the number of updated documents
                     console.log('---- Started ' + req.body.From + ' account: done'); 
+                    logHistoryEvent ('Start', {phone: req.body.From});
                 }  
                 else
                 {
@@ -445,6 +455,7 @@ router.post('/', function(req, res) {
               console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
 
             });
+            console.log('==================== End: User Start ====================');
         }
 
         // user sent some random message that didnt include the above
@@ -466,9 +477,6 @@ function GetKeyword(body)
 {
     return (body.split(" ")[0].toUpperCase());    
 }
-
-
-
 
 // Sends a single message to a given phone number
 function sendText(phoneNumber, message, retry){

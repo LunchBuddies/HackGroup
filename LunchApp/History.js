@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 
 var HistorySchema = new Schema ({
     time: Date,
-    event: {type: String, enum: ['Error', 'ReceiveText', 'SendText', 'Join', 'Stop','CreateGroup','DeleteGroup']},
+    event: {type: String, enum: ['Error', 'ReceiveText', 'SendText', 'Join', 'Stop','CreateGroup','DeleteGroup', 'Start']},
     params: Object
 });
 

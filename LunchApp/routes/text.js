@@ -378,11 +378,14 @@ router.post('/', function(req, res) {
                     if (!err){
                         console.log('Inserted new record with name: '+ _user123);
                         sendText(req.body.From, generateMessageWithSignature(joinMessage),true); 
+                        
+                        logHistoryEvent ('Join', {name:_user123, phone: req.body.From});
                         return;
                     }
                     else
                     {
-                        sendText(req.body.From,joinFailureMessage, true);  
+                        sendText(req.body.From,joinFailureMessage, true); 
+                        logHistoryEvent ('Error', err); 
                     }
                 });
             }

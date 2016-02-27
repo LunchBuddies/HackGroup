@@ -9,7 +9,7 @@ var database = require('../db');
 var TwilioNumber = '+14693400518';
 
 // for Mongo
-var MongoClient = require('mongodb').MongoClient;
+// var MongoClient = require('mongodb').MongoClient;
 var mongoose = require('mongoose');
 var assert = require('assert');
 var Schema = mongoose.Schema;
@@ -231,7 +231,7 @@ function generateAllMessages(users)
         var interestedNames = [];
         var formattedNames = [];
         messageString = '';
-        var message;
+        var message = '';
 
         var group = users[i].group;
 
@@ -239,7 +239,7 @@ function generateAllMessages(users)
 
         if(users[i].isGoing)
         {
-
+            
             for (var j=0;j<users.length;j++)
             {
                 if((users[j].isGoing)
@@ -251,27 +251,22 @@ function generateAllMessages(users)
                     }
             }
 
-             if (interestedNames.length == 1)
+            if (interestedNames.length > 1)
             {
-                message= interestedNames.join(', ');
+                //A list of names seperated by commas, and with an 'and', if appropriate
+                formattedNames = [interestedNames.slice(0, -1).join(', '), 
+                interestedNames.slice(-1)[0]].join(interestedNames.length < 2 ? '' : ' and ');
+                
+                messageString = generateConfirmationMessage(formattedNames, cafeNumber);
             }
-
-          else
-          {
-            //A list of names seperated by commas, and with an 'and', if appropriate
-            formattedNames = [interestedNames.slice(0, -1).join(', '), 
-            interestedNames.slice(-1)[0]].join(interestedNames.length 
-                < 2 ? '' : ' and ');
-          }
-
-        if(formattedNames=='')
-                {
-                    messageString = generateMessageWithSignature(onlyOneAttendeeMessages);
-                }
-                else
-                {
-                    messageString = generateConfirmationMessage(formattedNames, cafeNumber);
-                }
+            else if (interestedNames.length == 1)
+            {
+                messageString = 'Enjoy lunch with ' + interestedNames[0];
+            }
+            else
+            {
+                messageString = generateMessageWithSignature(onlyOneAttendeeMessages);
+            }
         }
         else
         {
@@ -280,8 +275,9 @@ function generateAllMessages(users)
          console.log('for phone: '+ phone + ' the message is: '+ messageString);         
 
         // sendText(phone,messageString, true);
-        console.log('==================== End: generateAllMessages ====================');
+        
     }
+    console.log('==================== End: generateAllMessages ====================');
 }
 
 

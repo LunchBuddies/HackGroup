@@ -107,7 +107,7 @@ var userSchema = new Schema ({
     phone: String,
     group: String,
     isGoing: Boolean,
-    isConfirmed: Boolean 
+    isActive: Boolean 
 });
 
 var user = mongoose.model('user2', userSchema );
@@ -396,22 +396,55 @@ router.post('/', function(req, res) {
             console.log('user stopped');
             console.log(req.body.Body);
             // var checkStop = req.body.Body.substr(0,3).toUpperCase();
+  
+            var conditionsForDeleteUser = {}
+              , updateForDeleteUser = { isActive: false }
+              , optionsForDeleteUser = {multi: true } ;
 
-            // if(checkStop == "CLOSE")
-            // {
+            user.update(conditionsForDeleteUser, updateForDeleteUser,  optionsForDeleteUser, function callback (err, numAffected) {
 
-                
+                if (!err)
+                {
+                    // numAffected is the number of updated documents
+                    console.log('---- stopped ' + req.body.From + ' account: done'); 
+                }  
+                else
+                {
+                    logHistoryEvent ('Error', err);
+                }  
+                    
+              // numAffected is the number of updated documents
+              console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
 
-                // user.deleteOne ({phone: req.body.From}, function (err, response) {
-                //     console.log ('remove user');
-                // });
-                
-                // sendText(req.body.From, stopMessage,true); 
-            // }
-            // else
-            // {
-            //     sendText(req.body.From,stopFailureMessage, true);  
-            // }
+            });
+        }
+
+        else if ((new RegExp("START")).test(req.body.Body.toUpperCase())) 
+        {
+            console.log('user started');
+            console.log(req.body.Body);
+            // var checkStop = req.body.Body.substr(0,3).toUpperCase();
+  
+            var conditionsForDeleteUser = {}
+              , updateForDeleteUser = { isActive: true }
+              , optionsForDeleteUser = {multi: true } ;
+
+            user.update(conditionsForDeleteUser, updateForDeleteUser,  optionsForDeleteUser, function callback (err, numAffected) {
+
+                if (!err)
+                {
+                    // numAffected is the number of updated documents
+                    console.log('---- Started ' + req.body.From + ' account: done'); 
+                }  
+                else
+                {
+                    logHistoryEvent ('Error', err);
+                }  
+                    
+              // numAffected is the number of updated documents
+              console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
+
+            });
         }
 
         // user sent some random message that didnt include the above

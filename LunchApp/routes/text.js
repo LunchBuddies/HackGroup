@@ -407,34 +407,34 @@ router.post('/', function(req, res) {
             console.log('==================== End: User Stop ====================');
         }
 
-        // else if ((new RegExp("START")).test(req.body.Body.toUpperCase())) 
-        // {
-        //     console.log('==================== Begin: User Start ====================');
-        //     // var checkStop = req.body.Body.substr(0,3).toUpperCase();
+        else if ((new RegExp("START")).test(req.body.Body.toUpperCase())) 
+        {
+            console.log('==================== Begin: User Start ====================');
+            // var checkStop = req.body.Body.substr(0,3).toUpperCase();
   
-        //     var conditionsForDeleteUser = {phone: req.body.From}
-        //       , updateForDeleteUser = { isActive: true }
-        //       , optionsForDeleteUser = {multi: true } ;
+            var conditionsForDeleteUser = {phone: req.body.From}
+              , updateForDeleteUser = { isActive: true }
+              , optionsForDeleteUser = {multi: true } ;
 
-        //     user.update(conditionsForDeleteUser, updateForDeleteUser,  optionsForDeleteUser, function callback (err, numAffected) {
+            user.update(conditionsForDeleteUser, updateForDeleteUser,  optionsForDeleteUser, function callback (err, numAffected) {
 
-        //         if (!err)
-        //         {
-        //             // numAffected is the number of updated documents
-        //             console.log('---- Started ' + req.body.From + ' account: done'); 
-        //             logHistoryEvent ('Start', {phone: req.body.From});
-        //         }  
-        //         else
-        //         {
-        //             logHistoryEvent ('Error', err);
-        //         }  
+                if (!err)
+                {
+                    // numAffected is the number of updated documents
+                    console.log('---- Started ' + req.body.From + ' account: done'); 
+                    logHistoryEvent ('Start', {phone: req.body.From});
+                }  
+                else
+                {
+                    logHistoryEvent ('Error', err);
+                }  
                     
-        //       // numAffected is the number of updated documents
-        //       console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
+              // numAffected is the number of updated documents
+              console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
 
-        //     });
-        //     console.log('==================== End: User Start ====================');
-        // }
+            });
+            console.log('==================== End: User Start ====================');
+        }
 
         // user sent some random message that didnt include the above
         // TODO - make sure user can send multiple texts to us

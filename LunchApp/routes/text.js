@@ -126,7 +126,7 @@ console.log('----- Start prompt cron: done');
 
 // Cron job that confirms to users at lunch time
 new CronJob({
-    cronTime: ConfirmTime, //confirmTime
+    cronTime: testConfirmTime, //confirmTime
     onTick: function()
     {
         confirmCronLogic();
@@ -160,15 +160,15 @@ function logHistoryEvent (_eventType, _params) {
 // Contains all the logic executed when the PROMPT cron job ticks
 function promptCronLogic ()  {
     console.log('==================== Begin: promptCronLogic ====================');
-    user.find( function (err, result) {
+    user.find(function (err, result) {
         if (!err) 
         { 
 
-            console.log('----- fetch users in PromptCron: done');
+            console.log('----- fetched ' + result.length + ' users in PromptCron: done');
             for (var i = 0; i < result.length ; i++)
             { 
                 console.log(result[i].phone);
-                // sendText(result[i].phone, generateMessageWithSignature(promptMessages), true)
+                sendText(result[i].phone, generateMessageWithSignature(promptMessages), true)
             }
             //console.log(result);
         }
@@ -195,7 +195,7 @@ function promptCronLogic ()  {
         }  
             
       // numAffected is the number of updated documents
-      console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
+      // console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
 
     });
 
@@ -205,21 +205,19 @@ function promptCronLogic ()  {
 // Contains all the logic executed when the CONFIRM cron job ticks
 function confirmCronLogic () {
     console.log('==================== Begin: confirmCronLogic ====================');
-    console.log('fetch confirmation');
-    user.find
-    ( function (err, result) 
+        user.find ( {isGoing: true}, function (err, result) 
+    {
+        
+        if (!err)
         {
-
-            if (!err)
-            {
-                generateAllMessages(result);      
-            }
-            else
-            {
-                logHistoryEvent ('Error', err);
-            }
+            generateAllMessages(result);  
+            console.log('----- Send confirmation to ' + result.length + ' users: done');    
         }
-    );
+        else
+        {
+            logHistoryEvent ('Error', err);
+        }
+    });
     console.log('==================== End: confirmCronLogic ====================');
 }
 

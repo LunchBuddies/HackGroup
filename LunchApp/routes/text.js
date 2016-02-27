@@ -391,27 +391,28 @@ router.post('/', function(req, res) {
             }
         }
 
-        // else if ((new RegExp("CLOSE")).test(req.body.Body.toUpperCase()))
-        // {
-            
-        //     var checkStop = req.body.Body.substr(0,3).toUpperCase();
+        else if ((new RegExp("STOP")).test(req.body.Body.toUpperCase()))
+        {
+            console.log('user stopped');
+            console.log(req.body.Body);
+            // var checkStop = req.body.Body.substr(0,3).toUpperCase();
 
-        //     if(checkStop == "CLOSE")
-        //     {
+            // if(checkStop == "CLOSE")
+            // {
 
                 
 
-        //         user.deleteOne ({phone: req.body.From}, function (err, response) {
-        //             console.log ('remove user');
-        //         });
+                // user.deleteOne ({phone: req.body.From}, function (err, response) {
+                //     console.log ('remove user');
+                // });
                 
-        //         // sendText(req.body.From, stopMessage,true); 
-        //     }
-        //     // else
-        //     // {
-        //     //     sendText(req.body.From,stopFailureMessage, true);  
-        //     // }
-        // }
+                // sendText(req.body.From, stopMessage,true); 
+            // }
+            // else
+            // {
+            //     sendText(req.body.From,stopFailureMessage, true);  
+            // }
+        }
 
         // user sent some random message that didnt include the above
         // TODO - make sure user can send multiple texts to us

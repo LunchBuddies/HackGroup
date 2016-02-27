@@ -168,7 +168,7 @@ function promptCronLogic ()  {
             for (var i = 0; i < result.length ; i++)
             { 
                 console.log(result[i].phone);
-                sendText(result[i].phone, generateMessageWithSignature(promptMessages), true)
+                // sendText(result[i].phone, generateMessageWithSignature(promptMessages), true)
             }
             //console.log(result);
         }
@@ -210,7 +210,7 @@ function confirmCronLogic () {
         
         if (!err)
         {
-            generateAllMessages(result);  
+            // generateAllMessages(result);  
             console.log('----- Send confirmation to ' + result.length + ' users: done');    
         }
         else

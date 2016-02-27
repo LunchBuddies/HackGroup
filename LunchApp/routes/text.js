@@ -415,14 +415,6 @@ router.post('/', function(req, res) {
             sendText(req.body.From,'Say that again? We didn\'t catch it!', true);   
         }
     }
-    // console.log(confirmedAttendees[0].phone);
-    // console.log('POST: message received');
-    // console.log('------ REQUEST ------');
-    // console.log(req);
-    // console.log('------ RESPONSE ------');
-    // console.log(res);
-    // console.log('------ END ------');
-
 });
 
 

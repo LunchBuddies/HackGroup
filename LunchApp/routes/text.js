@@ -26,7 +26,7 @@ var testConfirmTime = new Date();
 testPromptTime.setSeconds(0);
 testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(date.getMinutes()+ 1);
-testConfirmTime.setMinutes(date.getMinutes() + 2);
+testConfirmTime.setMinutes(date.getMinutes() + 1);
 var PromptTime = ' 00 00 11 * * 1-5';
 var ConfirmTime =  '00 00 12 * * 1-5';
 
@@ -96,18 +96,13 @@ var joinFailureMessage = 'Say that again? We didn\'t catch it! Text: Join <Your 
 var stopMessage = 'Sorry to see you go! Hope you will reconsider';
 var stopFailureMessage = 'Say that again? We didn\'t catch it! Text: STOP to unsubscribe';
 
-// User object should contain following properties
-// name
-// phone
-// group - right now, the value coule be just OENGPM
-// isConfirmed - default would be false
 
 var userSchema = new Schema ({
     name: String,
     phone: String,
     group: String,
-    isGoing: Boolean,
-    isActive: Boolean 
+    isGoing: Boolean
+    // isActive: Boolean 
 });
 
 var user = mongoose.model('user2', userSchema );
@@ -167,7 +162,7 @@ function promptCronLogic ()  {
             console.log('----- fetched ' + result.length + ' users in PromptCron: done');
             for (var i = 0; i < result.length ; i++)
             { 
-                console.log(result[i].phone);
+                // console.log(result[i].phone);
                 // sendText(result[i].phone, generateMessageWithSignature(promptMessages), true)
             }
             //console.log(result);
@@ -178,26 +173,26 @@ function promptCronLogic ()  {
         }
     });
     
-    var conditionsForResetDB = {}
-      , updateForResetDB = { isGoing: false }
-      , optionsForResetDB = {multi: true } ;
+    // var conditionsForResetDB = {}
+    //   , updateForResetDB = { isGoing: false }
+    //   , optionsForResetDB = {multi: true } ;
 
-    user.update(conditionsForResetDB, updateForResetDB,  optionsForResetDB, function callback (err, numAffected) {
+    // user.update(conditionsForResetDB, updateForResetDB,  optionsForResetDB, function callback (err, numAffected) {
 
-        if (!err)
-        {
-            // numAffected is the number of updated documents
-            console.log('---- Reset ' + numAffected.nModified + ' accounts: done'); 
-        }  
-        else
-        {
-            logHistoryEvent ('Error', err);
-        }  
+    //     if (!err)
+    //     {
+    //         // numAffected is the number of updated documents
+    //         console.log('---- Reset ' + numAffected.nModified + ' accounts: done'); 
+    //     }  
+    //     else
+    //     {
+    //         logHistoryEvent ('Error', err);
+    //     }  
             
-      // numAffected is the number of updated documents
-      // console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
+    //   // numAffected is the number of updated documents
+    //   // console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
 
-    });
+    // });
 
     console.log('==================== End: promptCronLogic ====================');
 };
@@ -205,12 +200,13 @@ function promptCronLogic ()  {
 // Contains all the logic executed when the CONFIRM cron job ticks
 function confirmCronLogic () {
     console.log('==================== Begin: confirmCronLogic ====================');
-        user.find ( {isGoing: true}, function (err, result) 
+        user.find ( function (err, result) 
     {
+        console.log (result);
         
         if (!err)
         {
-            // generateAllMessages(result);  
+            generateAllMessages(result);  
             console.log('----- Send confirmation to ' + result.length + ' users: done');    
         }
         else
@@ -243,6 +239,7 @@ function generateAllMessages(users)
 
         if(users[i].isGoing)
         {
+
             for (var j=0;j<users.length;j++)
             {
                 if((users[j].isGoing)
@@ -282,7 +279,7 @@ function generateAllMessages(users)
         }
          console.log('for phone: '+ phone + ' the message is: '+ messageString);         
 
-        sendText(phone,messageString, true);
+        // sendText(phone,messageString, true);
         console.log('==================== End: generateAllMessages ====================');
     }
 }
@@ -339,19 +336,6 @@ router.post('/', function(req, res) {
             sendText(req.body.From,generateMessageWithSignature(immediateNoResponsesMessages), true);
         }
 
-        else if ((new RegExp("ADJUST FIRST TEXT TIME: ")).test(req.body.Body.toUpperCase()))
-        {
-            // Adjust cron job times
-            // TODO add logic to break apart times
-
-        }
-
-        else if ((new RegExp("ADJUST SECOND TEXT TIME: ")).test(req.body.Body.toUpperCase()))
-        {
-            // Adjust cron job times
-            // TODO add logic to break apart times
-        }
-
         else if ((new RegExp("JOIN")).test(req.body.Body.toUpperCase()))
         {
             console.log('==================== Begin: Join User ====================');
@@ -374,8 +358,8 @@ router.post('/', function(req, res) {
                     name:_user123, 
                     phone:req.body.From,
                     group:'OENGPM', 
-                    isGoing: false,
-                    isActive: true
+                    isGoing: false
+                    // isActive: true
                 });
                 console.log(insertUser);
                 insertUser.save (function (err, result) 
@@ -384,7 +368,7 @@ router.post('/', function(req, res) {
                         console.log('Inserted new record with name: '+ _user123);
                         sendText(req.body.From, generateMessageWithSignature(joinMessage),true); 
                         
-                        logHistoryEvent ('Join', {name:_user123, phone: req.body.From});
+                        // logHistoryEvent ('Join', {name:_user123, phone: req.body.From});
                         return;
                     }
                     else
@@ -397,64 +381,64 @@ router.post('/', function(req, res) {
             console.log('==================== End: Join User ====================');
         }
 
-        else if ((new RegExp("STOP")).test(req.body.Body.toUpperCase()))
-        {
-            console.log('==================== Begin: User Stop ====================');
-            console.log('user stopped');
-            // var checkStop = req.body.Body.substr(0,3).toUpperCase();
+        // else if ((new RegExp("STOP")).test(req.body.Body.toUpperCase()))
+        // {
+        //     console.log('==================== Begin: User Stop ====================');
+        //     console.log('user stopped');
+        //     // var checkStop = req.body.Body.substr(0,3).toUpperCase();
   
-            var conditionsForDeleteUser = {phone: req.body.From}
-              , updateForDeleteUser = { isActive: false }
-              , optionsForDeleteUser = {multi: true } ;
+        //     var conditionsForDeleteUser = {phone: req.body.From}
+        //       , updateForDeleteUser = { isActive: false }
+        //       , optionsForDeleteUser = {multi: true } ;
 
-            user.update(conditionsForDeleteUser, updateForDeleteUser,  optionsForDeleteUser, function callback (err, numAffected) {
+        //     user.update(conditionsForDeleteUser, updateForDeleteUser,  optionsForDeleteUser, function callback (err, numAffected) {
 
-                if (!err)
-                {
-                    // numAffected is the number of updated documents
-                    console.log('---- stopped ' + req.body.From + ' account: done'); 
-                    logHistoryEvent ('Stop', {phone: req.body.From});
-                }  
-                else
-                {
-                    logHistoryEvent ('Error', err);
-                }  
+        //         if (!err)
+        //         {
+        //             // numAffected is the number of updated documents
+        //             console.log('---- stopped ' + req.body.From + ' account: done'); 
+        //             logHistoryEvent ('Stop', {phone: req.body.From});
+        //         }  
+        //         else
+        //         {
+        //             logHistoryEvent ('Error', err);
+        //         }  
                     
-              // numAffected is the number of updated documents
-              console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
+        //       // numAffected is the number of updated documents
+        //       console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
 
-            });
-            console.log('==================== End: User Stop ====================');
-        }
+        //     });
+        //     console.log('==================== End: User Stop ====================');
+        // }
 
-        else if ((new RegExp("START")).test(req.body.Body.toUpperCase())) 
-        {
-            console.log('==================== Begin: User Start ====================');
-            // var checkStop = req.body.Body.substr(0,3).toUpperCase();
+        // else if ((new RegExp("START")).test(req.body.Body.toUpperCase())) 
+        // {
+        //     console.log('==================== Begin: User Start ====================');
+        //     // var checkStop = req.body.Body.substr(0,3).toUpperCase();
   
-            var conditionsForDeleteUser = {phone: req.body.From}
-              , updateForDeleteUser = { isActive: true }
-              , optionsForDeleteUser = {multi: true } ;
+        //     var conditionsForDeleteUser = {phone: req.body.From}
+        //       , updateForDeleteUser = { isActive: true }
+        //       , optionsForDeleteUser = {multi: true } ;
 
-            user.update(conditionsForDeleteUser, updateForDeleteUser,  optionsForDeleteUser, function callback (err, numAffected) {
+        //     user.update(conditionsForDeleteUser, updateForDeleteUser,  optionsForDeleteUser, function callback (err, numAffected) {
 
-                if (!err)
-                {
-                    // numAffected is the number of updated documents
-                    console.log('---- Started ' + req.body.From + ' account: done'); 
-                    logHistoryEvent ('Start', {phone: req.body.From});
-                }  
-                else
-                {
-                    logHistoryEvent ('Error', err);
-                }  
+        //         if (!err)
+        //         {
+        //             // numAffected is the number of updated documents
+        //             console.log('---- Started ' + req.body.From + ' account: done'); 
+        //             logHistoryEvent ('Start', {phone: req.body.From});
+        //         }  
+        //         else
+        //         {
+        //             logHistoryEvent ('Error', err);
+        //         }  
                     
-              // numAffected is the number of updated documents
-              console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
+        //       // numAffected is the number of updated documents
+        //       console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
 
-            });
-            console.log('==================== End: User Start ====================');
-        }
+        //     });
+        //     console.log('==================== End: User Start ====================');
+        // }
 
         // user sent some random message that didnt include the above
         // TODO - make sure user can send multiple texts to us

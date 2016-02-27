@@ -360,7 +360,7 @@ router.post('/', function(req, res) {
                         console.log('Inserted new record with name: '+ _user123);
                         sendText(req.body.From, generateMessageWithSignature(joinMessage),true); 
                         
-                        // logHistoryEvent ('Join', {name:_user123, phone: req.body.From});
+                        logHistoryEvent ('Join', {name:_user123, phone: req.body.From});
                         return;
                     }
                     else

@@ -397,7 +397,7 @@ router.post('/', function(req, res) {
             console.log(req.body.Body);
             // var checkStop = req.body.Body.substr(0,3).toUpperCase();
   
-            var conditionsForDeleteUser = {}
+            var conditionsForDeleteUser = {phone: req.body.From}
               , updateForDeleteUser = { isActive: false }
               , optionsForDeleteUser = {multi: true } ;
 
@@ -425,7 +425,7 @@ router.post('/', function(req, res) {
             console.log(req.body.Body);
             // var checkStop = req.body.Body.substr(0,3).toUpperCase();
   
-            var conditionsForDeleteUser = {}
+            var conditionsForDeleteUser = {phone: req.body.From}
               , updateForDeleteUser = { isActive: true }
               , optionsForDeleteUser = {multi: true } ;
 

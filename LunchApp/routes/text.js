@@ -357,7 +357,7 @@ function JoinLogic (_phone, _message)
             // if they are not active, add them 
             else 
             {
-                logHistoryEvent('Join', _phone, {group: messageSplit[2]});
+                logHistoryEvent('Join', _phone, {group: messageSplit[2].toUpperCase()});
                 var conditionsForUpdateDB = { 'phone': _phone }
                 , updateForUpdateDB = { 'group': messageSplit[2], isActive: true };
                 

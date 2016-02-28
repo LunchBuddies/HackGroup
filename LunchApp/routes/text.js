@@ -335,7 +335,7 @@ function JoinLogic (_phone, _message)
             console.log (result)
             if (result[0].isActive)
             {
-                //sendText(_phone, "You're already in a group! Text 'Leave Group' to leave current group",true);
+                sendText(_phone, "You're already in a group! Text 'Leave Group' to leave current group",true);
                 return;
             }
 
@@ -385,7 +385,7 @@ router.post('/', function(req, res) {
     {
         // Log every text we get
         logHistoryEvent ('ReceiveText', {phoneNumber: req.body.From, message: req.body.Body});
-
+        console.log ("----- Received text from " + req.body.From + " with message " + req.body.Body );
 
         // User sends any variation of yes
         if ((new RegExp("YES")).test(req.body.Body.toUpperCase()))

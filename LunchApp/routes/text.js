@@ -95,7 +95,7 @@ var joinMessage = [
 var joinFailureMessage = 'Say that again? We didn\'t catch it! Text: Join <Your Name> to subscribe';
 var stopMessage = 'Sorry to see you go! Hope you will reconsider';
 var stopFailureMessage = 'Say that again? We didn\'t catch it! Text: STOP to unsubscribe';
-var LeaveMessage = 'Your group is going to miss you! Text Join <GroupName> to join again!';
+var LeaveMessage = "Your group is going to miss you! Text 'Join <YourName> <GroupName>' to join again!";
 
 var userSchema = new Schema ({
     name: String,
@@ -329,11 +329,12 @@ function JoinLogic (_phone, _message)
         return;
     }
 
-    user.find({'phone': _phone}, function (err, result) {
+    user.find({'phone': _phone, isActive: false}, function (err, result) {
         
         if (result.length >= 1)
         {
             console.log('You are already in a group!');
+            sendText(_phone, "Youre already in a group! Text 'Leave Group' to leave current group",true); 
             return;
         }
         console.log ('User is not in a group, lets try to add them');
@@ -342,6 +343,7 @@ function JoinLogic (_phone, _message)
         {
             console.log ('join needs 3 parameters');
             // send text
+            sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
             return;
         }
         console.log ('User has sent enough params');
@@ -350,18 +352,6 @@ function JoinLogic (_phone, _message)
         // we add them to the db
         insertUser (messageSplit[1], _phone, messageSplit[2]);
 
-        // user.find ({'group': messageSplit[2].toUpperCase()}, function (err, innerResult) {
-        //     if  (innerResult.length >= 1)
-        //     {
-        //         console.log('The group exists');
-        //         sendText(_phone,"That group already exists!", true); 
-        //     }
-        //     else 
-        //     {
-        //         console.log ('The group was created');
-        //         insertUser (messageSplit[1], _phone, messageSplit[2]);
-        //     }
-        // });
     });
 } 
 
@@ -512,7 +502,7 @@ router.post('/', function(req, res) {
                     // numAffected is the number of updated documents
                     console.log('---- ' + req.body.From + ' left the group: done'); 
                     logHistoryEvent ('Leave', {phone: req.body.From});
-                    sendText(req.body.From,LeaveMessage, true); 
+                    sendText(req.body.From, LeaveMessage, true); 
                 }  
                 else
                 {

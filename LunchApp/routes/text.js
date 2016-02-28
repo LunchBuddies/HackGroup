@@ -154,6 +154,8 @@ function logHistoryEvent (_eventType, _params) {
  // test
 // Contains all the logic executed when the PROMPT cron job ticks
 function promptCronLogic ()  {
+
+
     console.log('==================== Begin: promptCronLogic ====================');
     user.find({isActive: true}, function (err, result) {
         if (!err) 
@@ -289,6 +291,74 @@ router.get('/', function(req, res) {
     };
 });
 
+function insertUser (_name, _phone, _group) 
+{
+    var insertUser = new user ({
+        name:_name, 
+        phone:_phone,
+        group:_group, 
+        isGoing: false,
+        isActive: true
+    });
+    console.log(insertUser);
+    insertUser.save (function (err, result) 
+    {
+        if (!err){
+            console.log('Inserted new record with name: '+ _name);
+            sendText(req.body.From, generateMessageWithSignature(joinMessage),true); 
+            
+            logHistoryEvent ('Join', {name:_name, phone: _phone});
+            return;
+        }
+        else
+        {
+            sendText(_phone,joinFailureMessage, true); 
+            logHistoryEvent ('Error', err); 
+        }
+    });
+}
+
+function JoinLogic (_phone, _message)
+{
+    var testJoinMessage = "Join Ryan";
+    var testFromNumber = '+1972658656';
+
+    user.find({'phone': _phone}, function (err, result) {
+        
+        if (result.length >= 1)
+        {
+            console.log('You are already in a group!');
+            return;
+        }
+
+        var messageSplit = _message.split (' ')
+        
+        if (messageSplit.length != 3)
+        {
+            console.log ('join needs 3 parameters');
+            // send text
+            return;
+        }
+
+        if ( messageSplit[0].toUpperCase() == 'JOIN' )
+        {
+            user.find ({'group': messageSplit[2].toUpperCase()}, function (err, innerResult) {
+                
+                if  (innerResult.length >= 1)
+                {
+                    console.log('The group exists');
+                }
+                else 
+                {
+                    console.log ('The group was created');
+                    insertUser (messageSplit[1], _phone, messageSplit[2]);
+                }
+            });
+        }
+    });
+} 
+
+
 // Post function for calls from Twilio
 router.post('/', function(req, res) {
     if (req._body) 
@@ -331,45 +401,9 @@ router.post('/', function(req, res) {
         else if ((new RegExp("JOIN")).test(req.body.Body.toUpperCase()))
         {
             console.log('==================== Begin: Join User ====================');
-            // console.log (req.body.Body);
-            var testBody = req.body.Body;
-            var _user123 = GetUser(testBody);
-            var keyword = GetKeyword(testBody);
-            // console.log ('user' + _user123);
-            // console.log ('keyword' + keyword);
+           
+            JoinLogic(req.body.From, req.body.Body);
 
-            if (_user123 == undefined || _user123 == '')
-            {
-                sendText(req.body.From,joinFailureMessage, true); 
-                return;
-            }
-
-            if(keyword == "JOIN")
-            {   
-                var insertUser = new user ({
-                    name:_user123, 
-                    phone:req.body.From,
-                    group:'OENGPM', 
-                    isGoing: false,
-                    isActive: true
-                });
-                console.log(insertUser);
-                insertUser.save (function (err, result) 
-                {
-                    if (!err){
-                        console.log('Inserted new record with name: '+ _user123);
-                        sendText(req.body.From, generateMessageWithSignature(joinMessage),true); 
-                        
-                        logHistoryEvent ('Join', {name:_user123, phone: req.body.From});
-                        return;
-                    }
-                    else
-                    {
-                        sendText(req.body.From,joinFailureMessage, true); 
-                        logHistoryEvent ('Error', err); 
-                    }
-                });
-            }
             console.log('==================== End: Join User ====================');
         }
 

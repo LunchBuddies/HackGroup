@@ -360,25 +360,29 @@ function JoinLogic (_phone, _message)
                 logHistoryEvent('Join', _phone, {group: messageSplit[2]});
                 var conditionsForUpdateDB = { 'phone': _phone }
                 , updateForUpdateDB = { 'group': messageSplit[2], isActive: true };
+                
                 console.log("send readd message" + readdMessage);
+                
                 updateUserObject(conditionsForUpdateDB, updateForUpdateDB, readdMessage );
                 return;
             }
         }
-        // console.log ('User is not in a group, lets try to add them');
-        // if (messageSplit.length != 3)
-        // {
-        //     console.log ('join needs 3 parameters');
-        //     // send text
-        //     sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
-        //     return;
-        // }
+
+        // if the user has never existed in our system before, and they have 
+        // the correct message structure, add them 
+        console.log ('User is not in a group, lets try to add them');
+        if (messageSplit.length != 3)
+        {
+            console.log ('join needs 3 parameters');
+            // send text
+            sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
+            return;
+        }
         
-        // console.log ('User has sent enough params');
-        
-        // // If the user has sent atleast 3 params and is not currently in a group
-        // // we add them to the db
-        // insertUser (messageSplit[1], _phone, messageSplit[2]);
+        console.log ('User has sent enough params');
+
+        // Actually add the user 
+        insertUser (messageSplit[1], _phone, messageSplit[2]);
     });
 } 
 

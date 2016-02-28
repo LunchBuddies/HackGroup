@@ -144,7 +144,7 @@ function logHistoryEvent (_eventType, _params) {
     historyEventToSend.save(function(err, thor) {
         if (err) 
         {
-            logHistoryEvent ('Error', err);
+            logHistoryEvent ('Error', '',err);
             return console.error(err);
         }
         console.dir("----- logged 1 historical event");
@@ -172,7 +172,7 @@ function promptCronLogic ()  {
         }
         else
         {
-            logHistoryEvent ('Error', err);
+            logHistoryEvent ('Error', '',  err);
         }
     });
     
@@ -189,7 +189,7 @@ function promptCronLogic ()  {
         }  
         else
         {
-            logHistoryEvent ('Error', err);
+            logHistoryEvent ('Error','', err);
         }  
     });
 
@@ -210,7 +210,7 @@ function confirmCronLogic () {
         }
         else
         {
-            logHistoryEvent ('Error', err);
+            logHistoryEvent ('Error','', err);
         }
     });
     console.log('==================== End: confirmCronLogic ====================');
@@ -309,13 +309,13 @@ function insertUser (_name, _phone, _group)
             console.log('Inserted new record with name: '+ _name);
             sendText(_phone, generateMessageWithSignature(joinMessage),true); 
             
-            logHistoryEvent ('Join', {name:_name, phone: _phone});
+            logHistoryEvent ('Join', _phone, {name:_name});
             return;
         }
         else
         {
             sendText(_phone,joinFailureMessage, true); 
-            logHistoryEvent ('Error', err); 
+            logHistoryEvent ('Error','', err); 
         }
     });
 }
@@ -384,7 +384,7 @@ router.post('/', function(req, res) {
     if (req._body) 
     {
         // Log every text we get
-        logHistoryEvent ('ReceiveText', {phoneNumber: req.body.From, message: req.body.Body});
+        logHistoryEvent ('ReceiveText', req.body.From, {message: req.body.Body});
         console.log ("----- Received text from " + req.body.From + " with message " + req.body.Body );
 
         // User sends any variation of yes
@@ -437,11 +437,11 @@ router.post('/', function(req, res) {
                 {
                     // numAffected is the number of updated documents
                     console.log('---- stopped ' + req.body.From + ' account: done'); 
-                    logHistoryEvent ('Stop', {phone: req.body.From});
+                    logHistoryEvent ('Stop', req.body.From, {});
                 }  
                 else
                 {
-                    logHistoryEvent ('Error', err);
+                    logHistoryEvent ('Error', req.body.From, err);
                 }  
                     
               // numAffected is the number of updated documents
@@ -466,11 +466,11 @@ router.post('/', function(req, res) {
                 {
                     // numAffected is the number of updated documents
                     console.log('---- Started ' + req.body.From + ' account: done'); 
-                    logHistoryEvent ('Start', {phone: req.body.From});
+                    logHistoryEvent ('Start', req.body.From, {});
                 }  
                 else
                 {
-                    logHistoryEvent ('Error', err);
+                    logHistoryEvent ('Error', req.body.From, err);
                 }  
                     
               // numAffected is the number of updated documents
@@ -493,12 +493,12 @@ router.post('/', function(req, res) {
                 {
                     // numAffected is the number of updated documents
                     console.log('---- ' + req.body.From + ' left the group: done'); 
-                    logHistoryEvent ('Leave', {phone: req.body.From});
+                    logHistoryEvent ('Leave', req.body.From, {});
                     sendText(req.body.From, LeaveMessage, true); 
                 }  
                 else
                 {
-                    logHistoryEvent ('Error', err);
+                    logHistoryEvent ('Error', req.body.From, err);
                 }  
                     
               // numAffected is the number of updated documents
@@ -546,12 +546,12 @@ function sendText(phoneNumber, message, retry){
             // console.log(responseData.from + ' ' + responseData.body); // outputs "+14506667788"
             // console.log(responseData.body); // outputs "word to your mother."
             console.log('----- Sent text to ' + responseData.to + ': done')
-            logHistoryEvent ('SendText', {phoneNumber: responseData.to, message: message});
+            logHistoryEvent ('SendText', responseData.to, {message: message});
         }
         else {
             console.log(err);
             // If it was the first time failed, try again
-            logHistoryEvent ('Error', err);
+            logHistoryEvent ('Error', responseData.to, err);
 
             // if (retry)
             // {

@@ -133,11 +133,12 @@ new CronJob({
 console.log('----- Start Confirmation cron: done');
 
 
-function logHistoryEvent (_eventType, _params) {
+function logHistoryEvent (_eventType, _phone, _params) {
     
     var historyEventToSend = new history ({
         time: new Date(),
         event: _eventType,
+        phone: _phone, 
         params: _params
     });
 

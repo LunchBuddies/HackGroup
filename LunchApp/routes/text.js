@@ -337,17 +337,24 @@ function JoinLogic (_phone, _message)
         return;
     }
 
+    // If the user sent the correct messag structure, find if the user already exists in the mongo
     user.find({'phone': _phone}, function (err, result) {
         
+        // if the user exists, result.length will be >= 1. There should never be more 
+        // than one user with the same phone number in the db, thus == should work,
+        // but keeping >= just in case.
         if (result.length >= 1)
         {
             console.log (result)
+
+            // If the user is active, they are already in a group
             if (result[0].isActive)
             {
                 sendText(_phone, "You're already in a group! Text 'Leave Group' to leave current group",true);
                 return;
             }
 
+            // if they are not active, add them 
             else 
             {
                 logHistoryEvent('Join', _phone, {group: messageSplit[2]});
@@ -358,22 +365,20 @@ function JoinLogic (_phone, _message)
                 return;
             }
         }
-        console.log ('User is not in a group, lets try to add them');
-        if (messageSplit.length != 3)
-        {
-            console.log ('join needs 3 parameters');
-            // send text
-            sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
-            return;
-        }
+        // console.log ('User is not in a group, lets try to add them');
+        // if (messageSplit.length != 3)
+        // {
+        //     console.log ('join needs 3 parameters');
+        //     // send text
+        //     sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
+        //     return;
+        // }
         
-        console.log ('User has sent enough params');
+        // console.log ('User has sent enough params');
         
-        // If the user has sent atleast 3 params and is not currently in a group
-        // we add them to the db
-        insertUser (messageSplit[1], _phone, messageSplit[2]);
-            
-
+        // // If the user has sent atleast 3 params and is not currently in a group
+        // // we add them to the db
+        // insertUser (messageSplit[1], _phone, messageSplit[2]);
     });
 } 
 
@@ -411,7 +416,7 @@ router.post('/', function(req, res) {
         // User is french
         else if ((new RegExp("OUI")).test(req.body.Body.toUpperCase()))
         {
-          sendText(req.body.From,'We dont like the french...', true);
+            sendText(req.body.From,'We dont like the french...', true);
         }
 
         // User responsed no

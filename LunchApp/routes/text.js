@@ -436,8 +436,8 @@ router.post('/', function(req, res) {
         {
             console.log('==================== Begin: User Leave Group ====================');
             var conditionsForLeaveGroup = {phone: req.body.From}
-              , updateForDeleteUser = { isActive: false, group: undefined }
-              , optionsForDeleteUser = {multi: true } ;
+              , updateForLeaveGroup = { isActive: false, group: undefined }
+              , optionsForLeaveGroup = {multi: true } ;
 
             user.update(conditionsForLeaveGroup, updateForLeaveGroup,  optionsForLeaveGroup, function callback (err, numAffected) {
 

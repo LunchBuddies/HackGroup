@@ -27,8 +27,8 @@ testPromptTime.setSeconds(0);
 testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(date.getMinutes()+ 1);
 testConfirmTime.setMinutes(date.getMinutes() + 2);
-var PromptTime = ' 00 50 14 * * 0-5';
-var ConfirmTime =  '00 00 15 * * 0-5';
+var PromptTime = ' 00 05 15 * * 0-5';
+var ConfirmTime =  '00 10 15 * * 0-5';
 
 console.log('----- Set times: done');
 
@@ -261,7 +261,7 @@ function generateAllMessages(users)
             }
             else if (interestedNames.length == 1)
             {
-                messageString = 'Enjoy lunch with ' + interestedNames[0];
+                messageString = generateConfirmationMessage(interestedNames[0], cafeNumber);;
             }
             else
             {

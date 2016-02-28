@@ -96,6 +96,7 @@ var joinFailureMessage = 'Say that again? We didn\'t catch it! Text: Join <Your 
 var stopMessage = 'Sorry to see you go! Hope you will reconsider';
 var stopFailureMessage = 'Say that again? We didn\'t catch it! Text: STOP to unsubscribe';
 var LeaveMessage = "Your group is going to miss you! Text 'Join <YourName> <GroupName>' to join again!";
+var readdMessage = "We have added you to a group";
 
 var userSchema = new Schema ({
     name: String,
@@ -343,7 +344,7 @@ function JoinLogic (_phone, _message)
                 var conditionsForUpdateDB = { 'phone': _phone }
                 , updateForUpdateDB = { 'group': messageSplit[2], isActive: true };
 
-                updateUserObject(conditionsForUpdateDB, updateForUpdateDB, "We have added you to a group");
+                updateUserObject(conditionsForUpdateDB, updateForUpdateDB, readdMessage );
                 return;
             }
         }

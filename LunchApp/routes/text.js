@@ -359,7 +359,7 @@ function JoinLogic (_phone, _message)
             {
                 logHistoryEvent('Join', _phone, {group: messageSplit[2].toUpperCase()});
                 var conditionsForUpdateDB = { 'phone': _phone }
-                , updateForUpdateDB = { 'group': messageSplit[2], isActive: true };
+                , updateForUpdateDB = { 'group': messageSplit[2].toUpperCase(), isActive: true };
                 
                 console.log("send readd message" + readdMessage);
                 

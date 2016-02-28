@@ -329,6 +329,14 @@ function JoinLogic (_phone, _message)
         return;
     }
 
+    if (messageSplit.length != 3)
+    {
+        console.log ('join needs 3 parameters');
+        // send text
+        sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
+        return;
+    }
+
     user.find({'phone': _phone}, function (err, result) {
         
         if (result.length >= 1)
@@ -350,7 +358,6 @@ function JoinLogic (_phone, _message)
             }
         }
         console.log ('User is not in a group, lets try to add them');
-        
         if (messageSplit.length != 3)
         {
             console.log ('join needs 3 parameters');
@@ -358,6 +365,7 @@ function JoinLogic (_phone, _message)
             sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
             return;
         }
+        
         console.log ('User has sent enough params');
         
         // If the user has sent atleast 3 params and is not currently in a group

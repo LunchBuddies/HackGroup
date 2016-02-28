@@ -366,31 +366,6 @@ function JoinLogic (_phone, _message)
     });
 } 
 
-// function CreateLogic (_phone, _message)
-// {
-//     _message = 'Create oloop';
-//     var messageSplit = _message.split (' ');
-//     if (messageSplit[0].toUpperCase() != 'CREATE')
-//     {
-//         return;
-//     }
-
-//     user.find ({'group': messageSplit[2].toUpperCase()}, function (err, innerResult) {
-            
-//         if  (innerResult.length >= 1)
-//         {
-//             console.log('The group exists');
-//             sendText(_phone,"That group already exists!", true); 
-//         }
-//         else 
-//         {
-//             console.log ('The group was created');
-//             insertUser (messageSplit[1], _phone, messageSplit[2]);
-//         }
-//     });
-
-// }
-
 function updateUserObject (_conditionsForUpdateDB, _updateForUpdateDB, _confirmation)
 {
     user.update(_conditionsForUpdateDB, _updateForUpdateDB, function callback (err, numAffected) {

@@ -293,6 +293,7 @@ router.get('/', function(req, res) {
 
 function insertUser (_name, _phone, _group) 
 {
+    console.log ('inser user');
     var insertUser = new user ({
         name:_name, 
         phone:_phone,

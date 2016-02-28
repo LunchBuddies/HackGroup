@@ -305,7 +305,7 @@ function insertUser (_name, _phone, _group)
     {
         if (!err){
             console.log('Inserted new record with name: '+ _name);
-            sendText(req.body.From, generateMessageWithSignature(joinMessage),true); 
+            sendText(_phone, generateMessageWithSignature(joinMessage),true); 
             
             logHistoryEvent ('Join', {name:_name, phone: _phone});
             return;
@@ -330,6 +330,7 @@ function JoinLogic (_phone, _message)
             console.log('You are already in a group!');
             return;
         }
+        console.log ('User is not in a group, lets try to add them');
 
         var messageSplit = _message.split (' ')
         
@@ -339,6 +340,7 @@ function JoinLogic (_phone, _message)
             // send text
             return;
         }
+        console.log ('User has sent enough params');
 
         if ( messageSplit[0].toUpperCase() == 'JOIN' )
         {

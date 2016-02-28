@@ -350,9 +350,10 @@ function JoinLogic (_phone, _message)
 
             else 
             {
+                logHistoryEvent('Join', _phone, {group: messageSplit[2]});
                 var conditionsForUpdateDB = { 'phone': _phone }
                 , updateForUpdateDB = { 'group': messageSplit[2], isActive: true };
-
+                console.log("send readd message" + readdMessage);
                 updateUserObject(conditionsForUpdateDB, updateForUpdateDB, readdMessage );
                 return;
             }

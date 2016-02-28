@@ -322,6 +322,11 @@ function JoinLogic (_phone, _message)
 {
     var testJoinMessage = "Join Ryan";
     var testFromNumber = '+1972658656';
+    var messageSplit = _message.split (' ');
+    if (messageSplit[0].toUpperCase() != 'JOIN')
+    {
+        return;
+    }
 
     user.find({'phone': _phone}, function (err, result) {
         
@@ -331,8 +336,6 @@ function JoinLogic (_phone, _message)
             return;
         }
         console.log ('User is not in a group, lets try to add them');
-
-        var messageSplit = _message.split (' ')
         
         if (messageSplit.length != 3)
         {
@@ -341,24 +344,50 @@ function JoinLogic (_phone, _message)
             return;
         }
         console.log ('User has sent enough params');
+        
+        // If the user has sent atleast 3 params and is not currently in a group
+        // we add them to the db
+        insertUser (messageSplit[1], _phone, messageSplit[2]);
 
-        if ( messageSplit[0].toUpperCase() == 'JOIN' )
-        {
-            user.find ({'group': messageSplit[2].toUpperCase()}, function (err, innerResult) {
-                
-                if  (innerResult.length >= 1)
-                {
-                    console.log('The group exists');
-                }
-                else 
-                {
-                    console.log ('The group was created');
-                    insertUser (messageSplit[1], _phone, messageSplit[2]);
-                }
-            });
-        }
+        // user.find ({'group': messageSplit[2].toUpperCase()}, function (err, innerResult) {
+        //     if  (innerResult.length >= 1)
+        //     {
+        //         console.log('The group exists');
+        //         sendText(_phone,"That group already exists!", true); 
+        //     }
+        //     else 
+        //     {
+        //         console.log ('The group was created');
+        //         insertUser (messageSplit[1], _phone, messageSplit[2]);
+        //     }
+        // });
     });
 } 
+
+// function CreateLogic (_phone, _message)
+// {
+//     _message = 'Create oloop';
+//     var messageSplit = _message.split (' ');
+//     if (messageSplit[0].toUpperCase() != 'CREATE')
+//     {
+//         return;
+//     }
+
+//     user.find ({'group': messageSplit[2].toUpperCase()}, function (err, innerResult) {
+            
+//         if  (innerResult.length >= 1)
+//         {
+//             console.log('The group exists');
+//             sendText(_phone,"That group already exists!", true); 
+//         }
+//         else 
+//         {
+//             console.log ('The group was created');
+//             insertUser (messageSplit[1], _phone, messageSplit[2]);
+//         }
+//     });
+
+// }
 
 
 // Post function for calls from Twilio

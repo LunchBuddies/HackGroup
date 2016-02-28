@@ -95,7 +95,7 @@ var joinMessage = [
 var joinFailureMessage = 'Say that again? We didn\'t catch it! Text: Join <Your Name> to subscribe';
 var stopMessage = 'Sorry to see you go! Hope you will reconsider';
 var stopFailureMessage = 'Say that again? We didn\'t catch it! Text: STOP to unsubscribe';
-
+var LeaveMessage = 'Your group is going to miss you! Text Join <GroupName> to join again!';
 
 var userSchema = new Schema ({
     name: String,
@@ -445,7 +445,8 @@ router.post('/', function(req, res) {
                 {
                     // numAffected is the number of updated documents
                     console.log('---- ' + req.body.From + ' left the group: done'); 
-                    logHistoryEvent ('Start', {phone: req.body.From});
+                    logHistoryEvent ('Leave', {phone: req.body.From});
+                    sendText(req.body.From,LeaveMessage, true); 
                 }  
                 else
                 {

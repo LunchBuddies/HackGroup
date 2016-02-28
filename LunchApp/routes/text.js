@@ -397,7 +397,7 @@ function updateUserObject (_conditionsForUpdateDB, _updateForUpdateDB, _confirma
 {
     user.update(_conditionsForUpdateDB, _updateForUpdateDB, function callback (err, numAffected) {
       // numAffected is the number of updated documents
-      console.log('updated status for ' + conditionsForUpdateDB.phone)
+      console.log('updated status for ' + _conditionsForUpdateDB.phone)
       // console.log(numAffected);
 
       sendText(_conditionsForUpdateDB.phone, generateMessageWithSignature(_confirmation), true );

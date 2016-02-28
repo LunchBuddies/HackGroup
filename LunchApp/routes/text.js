@@ -27,7 +27,7 @@ testPromptTime.setSeconds(0);
 testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(date.getMinutes()+ 1);
 testConfirmTime.setMinutes(date.getMinutes() + 2);
-var PromptTime = ' 00 45 14 * * 0-5';
+var PromptTime = ' 00 50 14 * * 0-5';
 var ConfirmTime =  '00 00 15 * * 0-5';
 
 console.log('----- Set times: done');
@@ -167,7 +167,7 @@ function promptCronLogic ()  {
             for (var i = 0; i < result.length ; i++)
             { 
                 // console.log(result[i].phone);
-                // sendText(result[i].phone, generateMessageWithSignature(promptMessages), true)
+                sendText(result[i].phone, generateMessageWithSignature(promptMessages), true)
             }
             //console.log(result);
         }
@@ -274,7 +274,7 @@ function generateAllMessages(users)
         }
          console.log('for phone: '+ phone + ' the message is: '+ messageString);         
 
-        // sendText(phone,messageString, true);
+        sendText(phone,messageString, true);
         
     }
     console.log('==================== End: generateAllMessages ====================');

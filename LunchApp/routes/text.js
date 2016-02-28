@@ -329,13 +329,25 @@ function JoinLogic (_phone, _message)
         return;
     }
 
-    user.find({'phone': _phone, isActive: false}, function (err, result) {
+    user.find({'phone': _phone}, function (err, result) {
         
         if (result.length >= 1)
         {
             console.log('You are already in a group!');
-            sendText(_phone, "Youre already in a group! Text 'Leave Group' to leave current group",true); 
-            return;
+            if (result[0].isActive)
+            {
+                sendText(_phone, "You're already in a group! Text 'Leave Group' to leave current group",true);
+                return;
+            }
+
+            else 
+            {
+                var conditionsForUpdateDB = { 'phone': _phone }
+                , updateForUpdateDB = { 'group': messageSplit[2], isActive: true };
+
+                updateUserObject(conditionsForUpdateDB, updateForUpdateDB, "We have added you to a group");
+                return;
+            }
         }
         console.log ('User is not in a group, lets try to add them');
         
@@ -351,6 +363,7 @@ function JoinLogic (_phone, _message)
         // If the user has sent atleast 3 params and is not currently in a group
         // we add them to the db
         insertUser (messageSplit[1], _phone, messageSplit[2]);
+            
 
     });
 } 
@@ -380,6 +393,17 @@ function JoinLogic (_phone, _message)
 
 // }
 
+function updateUserObject (_conditionsForUpdateDB, _updateForUpdateDB, _confirmation)
+{
+    user.update(_conditionsForUpdateDB, _updateForUpdateDB, function callback (err, numAffected) {
+      // numAffected is the number of updated documents
+      console.log('updated status for ' + conditionsForUpdateDB.phone)
+      // console.log(numAffected);
+
+      sendText(_conditionsForUpdateDB.phone, generateMessageWithSignature(_confirmation), true );
+    });
+}
+
 
 // Post function for calls from Twilio
 router.post('/', function(req, res) {
@@ -396,14 +420,8 @@ router.post('/', function(req, res) {
             // Update status of user to 
             var conditionsForUpdateDB = { phone: req.body.From }
               , updateForUpdateDB = { isGoing: true };
-
-            user.update(conditionsForUpdateDB, updateForUpdateDB, function callback (err, numAffected) {
-              // numAffected is the number of updated documents
-              console.log('updated status for ' + conditionsForUpdateDB.phone)
-              // console.log(numAffected);
-
-              sendText(conditionsForUpdateDB.phone,generateMessageWithSignature(immediateYesResponsesMessages), true );
-            });
+            updateUserObject(conditionsForUpdateDB, updateForUpdateDB, immediateYesResponsesMessages);
+            
         }
 
         // User is french

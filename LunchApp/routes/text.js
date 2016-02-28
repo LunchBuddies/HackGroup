@@ -27,8 +27,8 @@ testPromptTime.setSeconds(0);
 testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(date.getMinutes()+ 1);
 testConfirmTime.setMinutes(date.getMinutes() + 2);
-var PromptTime = ' 00 00 11 * * 1-5';
-var ConfirmTime =  '00 00 12 * * 1-5';
+var PromptTime = ' 00 45 14 * * 0-5';
+var ConfirmTime =  '00 00 15 * * 0-5';
 
 console.log('----- Set times: done');
 
@@ -111,7 +111,7 @@ console.log('----- Created user 2.0 model: done');
 
 // Cron job that prompts users to come to lunch
 new CronJob({
-    cronTime: testPromptTime,
+    cronTime: PromptTime,
     onTick: function(){
         promptCronLogic ();
     },
@@ -122,7 +122,7 @@ console.log('----- Start prompt cron: done');
 
 // Cron job that confirms to users at lunch time
 new CronJob({
-    cronTime: testConfirmTime, //confirmTime
+    cronTime: ConfirmTime, //confirmTime
     onTick: function()
     {
         confirmCronLogic();

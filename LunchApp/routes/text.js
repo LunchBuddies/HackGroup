@@ -321,8 +321,6 @@ function insertUser (_name, _phone, _group)
 
 function JoinLogic (_phone, _message)
 {
-    var testJoinMessage = "Join Ryan";
-    var testFromNumber = '+1972658656';
     var messageSplit = _message.split (' ');
     if (messageSplit[0].toUpperCase() != 'JOIN')
     {
@@ -333,10 +331,10 @@ function JoinLogic (_phone, _message)
         
         if (result.length >= 1)
         {
-            console.log('You are already in a group!');
+            console.log (result)
             if (result[0].isActive)
             {
-                sendText(_phone, "You're already in a group! Text 'Leave Group' to leave current group",true);
+                //sendText(_phone, "You're already in a group! Text 'Leave Group' to leave current group",true);
                 return;
             }
 

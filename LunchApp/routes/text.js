@@ -101,8 +101,8 @@ var userSchema = new Schema ({
     name: String,
     phone: String,
     group: String,
-    isGoing: Boolean
-    // isActive: Boolean 
+    isGoing: Boolean,
+    isActive: Boolean 
 });
 
 var user = mongoose.model('user2', userSchema );
@@ -155,7 +155,7 @@ function logHistoryEvent (_eventType, _params) {
 // Contains all the logic executed when the PROMPT cron job ticks
 function promptCronLogic ()  {
     console.log('==================== Begin: promptCronLogic ====================');
-    user.find(function (err, result) {
+    user.find({isActive: true}, function (err, result) {
         if (!err) 
         { 
 
@@ -350,8 +350,8 @@ router.post('/', function(req, res) {
                     name:_user123, 
                     phone:req.body.From,
                     group:'OENGPM', 
-                    isGoing: false
-                    // isActive: true
+                    isGoing: false,
+                    isActive: true
                 });
                 console.log(insertUser);
                 insertUser.save (function (err, result) 

@@ -196,7 +196,7 @@ function promptCronLogic ()  {
 // Contains all the logic executed when the CONFIRM cron job ticks
 function confirmCronLogic () {
     console.log('==================== Begin: confirmCronLogic ====================');
-        user.find ( function (err, result) 
+        user.find ({isGoing: true, isActive: true}, function (err, result) 
     {
         console.log (result);
         
@@ -430,6 +430,33 @@ router.post('/', function(req, res) {
 
             });
             console.log('==================== End: User Start ====================');
+        }
+
+        else if ((new RegExp("LEAVE GROUP")).test(req.body.Body.toUpperCase())) 
+        {
+            console.log('==================== Begin: User Leave Group ====================');
+            var conditionsForLeaveGroup = {phone: req.body.From}
+              , updateForDeleteUser = { isActive: false, group: undefined }
+              , optionsForDeleteUser = {multi: true } ;
+
+            user.update(conditionsForLeaveGroup, updateForLeaveGroup,  optionsForLeaveGroup, function callback (err, numAffected) {
+
+                if (!err)
+                {
+                    // numAffected is the number of updated documents
+                    console.log('---- ' + req.body.From + ' left the group: done'); 
+                    logHistoryEvent ('Start', {phone: req.body.From});
+                }  
+                else
+                {
+                    logHistoryEvent ('Error', err);
+                }  
+                    
+              // numAffected is the number of updated documents
+              // console.log('---- ' + numAffected.nModified + ' accounts effected: done');
+
+            });
+            console.log('==================== End: User Leave Group ====================');
         }
 
         // user sent some random message that didnt include the above

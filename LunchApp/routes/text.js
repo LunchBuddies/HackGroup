@@ -156,8 +156,6 @@ function logHistoryEvent (_eventType, _phone, _params) {
  // test
 // Contains all the logic executed when the PROMPT cron job ticks
 function promptCronLogic ()  {
-
-
     console.log('==================== Begin: promptCronLogic ====================');
     user.find({isActive: true}, function (err, result) {
         if (!err) 
@@ -321,6 +319,7 @@ function insertUser (_name, _phone, _group)
     });
 }
 
+
 function JoinLogic (_phone, _message)
 {
     var messageSplit = _message.split (' ');
@@ -338,7 +337,8 @@ function JoinLogic (_phone, _message)
     }
 
     // If the user sent the correct messag structure, find if the user already exists in the mongo
-    user.find({'phone': _phone}, function (err, result) {
+    user.find({'phone': _phone}, function (err, result) 
+    {
         
         // if the user exists, result.length will be >= 1. There should never be more 
         // than one user with the same phone number in the db, thus == should work,
@@ -364,6 +364,9 @@ function JoinLogic (_phone, _message)
                 console.log("send readd message" + readdMessage);
                 
                 updateUserObject(conditionsForUpdateDB, updateForUpdateDB, readdMessage );
+
+                sendText(conditionsForUpdateDB.phone, generateMessageWithSignature(readdMessage), true );
+
                 return;
             }
         }
@@ -393,7 +396,7 @@ function updateUserObject (_conditionsForUpdateDB, _updateForUpdateDB, _confirma
       console.log('updated status for ' + _conditionsForUpdateDB.phone)
       // console.log(numAffected);
 
-      sendText(_conditionsForUpdateDB.phone, generateMessageWithSignature(_confirmation), true );
+      //sendText(_conditionsForUpdateDB.phone, generateMessageWithSignature(_confirmation), true );
     });
 }
 
@@ -414,6 +417,9 @@ router.post('/', function(req, res) {
             var conditionsForUpdateDB = { phone: req.body.From }
               , updateForUpdateDB = { isGoing: true };
             updateUserObject(conditionsForUpdateDB, updateForUpdateDB, immediateYesResponsesMessages);
+
+            sendText(conditionsForUpdateDB.phone, generateMessageWithSignature(immediateYesResponsesMessages), true );
+
             
         }
 

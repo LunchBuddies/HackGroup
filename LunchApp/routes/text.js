@@ -67,6 +67,8 @@ var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 
 
 //Generates a message from an array of messages and appends the default signature
 function generateMessageWithSignature(messageArray, signature){
+    console.log("generateMessageWithSignature has message as: "+ messageArray);
+    
     if (signature = 'undefined'){
         signature = defaultSignature;
     }
@@ -363,7 +365,7 @@ function JoinLogic (_phone, _message)
                 
                 console.log("send readd message" + readdMessage);
                 
-                updateUserObject(conditionsForUpdateDB, updateForUpdateDB, " Welcome Back!" );
+                updateUserObject(conditionsForUpdateDB, updateForUpdateDB, readdMessage);
 
                 return;
             }
@@ -391,11 +393,12 @@ function updateUserObject (_conditionsForUpdateDB, _updateForUpdateDB, _confirma
 {
     user.update(_conditionsForUpdateDB, _updateForUpdateDB, function callback (err, numAffected) {
       // numAffected is the number of updated documents
-      console.log('updated status for ' + _conditionsForUpdateDB.phone)
+      console.log('updateuserobject: updated status for ' + _conditionsForUpdateDB.phone)
       // console.log(numAffected);
 
+      console.log("the message is: " + _confirmation);
 
-      sendText(_conditionsForUpdateDB.phone, generateMessageWithSignature(_confirmation), true );
+        sendText(_conditionsForUpdateDB.phone, generateMessageWithSignature(_confirmation), true );
     });
 }
 

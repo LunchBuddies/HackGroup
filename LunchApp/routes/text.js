@@ -396,6 +396,7 @@ function updateUserObject (_conditionsForUpdateDB, _updateForUpdateDB, _confirma
       console.log('updated status for ' + _conditionsForUpdateDB.phone)
       // console.log(numAffected);
 
+
       //sendText(_conditionsForUpdateDB.phone, generateMessageWithSignature(_confirmation), true );
     });
 }

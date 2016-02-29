@@ -17,7 +17,8 @@
     "morgan": "^1.6.1",
     "serve-favicon": "^2.3.0",
     "textbelt": "0.0.3",
-    "twilio": "^3.3.0-edge"
+    "twilio": "^3.3.0-edge",
+    "node-inspector":"0.12.7"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

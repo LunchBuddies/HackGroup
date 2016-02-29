@@ -86,14 +86,30 @@ function generateConfirmationMessage(namesString, suggestedCafe, signature){
     if (signature = 'undefined'){
         signature = defaultSignature;
     }
-    var optionsList = [
-        namesString + ' are free! We suggest ' + suggestedCafe + '. Have fun you crazy kids!',
-        'Have the time of your life with ' + namesString + '. We\'ve heard good things about ' + suggestedCafe + '...',
-        'Enjoy lunch with ' + namesString + '. Might we suggest ' + suggestedCafe + '?',
-        namesString + ' said they would absolutely love to go. We suggest ' + suggestedCafe + '.'
-    ]
-    var randomNumber = getRandomInt(0, optionsList.length-1);
-    return optionsList[randomNumber] + signature;
+
+    if(suggestedCafe != '')
+    {
+        var optionsList = [
+            namesString + ' are free! We suggest ' + suggestedCafe + '. Have fun you crazy kids!',
+            'Have the time of your life with ' + namesString + '. We\'ve heard good things about ' + suggestedCafe + '...',
+            'Enjoy lunch with ' + namesString + '. Might we suggest ' + suggestedCafe + '?',
+            namesString + ' said they would absolutely love to go. We suggest ' + suggestedCafe + '.'
+        ]
+        var randomNumber = getRandomInt(0, optionsList.length-1);
+        return optionsList[randomNumber] + signature;
+    }
+    else
+    {
+         var optionsList = [
+            namesString + ' are free! Have fun you crazy kids!',
+            'Have the time of your life with ' + namesString + '.',
+            'Enjoy lunch with ' + namesString + '.',
+            namesString + ' said they would absolutely love to go.'
+        ]
+
+        var randomNumber = getRandomInt(0, optionsList.length-1);
+        return optionsList[randomNumber] + signature;
+    }
 }
 
 var joinMessage = [
@@ -227,6 +243,7 @@ function generateAllMessages(users)
 {
     console.log('==================== Begin: generateAllMessages ====================');
     // console.log(users);
+
      var cafeNumber=randomCafe();
      var messageString;
 
@@ -262,7 +279,10 @@ function generateAllMessages(users)
                 formattedNames = [interestedNames.slice(0, -1).join(', '), 
                 interestedNames.slice(-1)[0]].join(interestedNames.length < 2 ? '' : ' and ');
                 
-                messageString = generateConfirmationMessage(formattedNames, cafeNumber);
+                if(group != 'OSTC')
+                  messageString = generateConfirmationMessage(formattedNames, cafeNumber);
+                else
+                  messageString = generateConfirmationMessage(formattedNames, '');
             }
             else if (interestedNames.length == 1)
             {

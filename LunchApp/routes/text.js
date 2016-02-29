@@ -90,7 +90,7 @@ function generateConfirmationMessage(namesString, suggestedCafe, signature){
     if(suggestedCafe != '')
     {
         var optionsList = [
-            namesString + ' are free! We suggest ' + suggestedCafe + '. Have fun you crazy kids!',
+            //namesString + ' are free! We suggest ' + suggestedCafe + '. Have fun you crazy kids!',
             'Have the time of your life with ' + namesString + '. We\'ve heard good things about ' + suggestedCafe + '...',
             'Enjoy lunch with ' + namesString + '. Might we suggest ' + suggestedCafe + '?',
             namesString + ' said they would absolutely love to go. We suggest ' + suggestedCafe + '.'
@@ -101,7 +101,7 @@ function generateConfirmationMessage(namesString, suggestedCafe, signature){
     else
     {
          var optionsList = [
-            namesString + ' are free! Have fun you crazy kids!',
+            //namesString + ' are free! Have fun you crazy kids!',
             'Have the time of your life with ' + namesString + '.',
             'Enjoy lunch with ' + namesString + '.',
             namesString + ' said they would absolutely love to go.'

@@ -27,8 +27,8 @@ testPromptTime.setSeconds(0);
 testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(date.getMinutes()+ 1);
 testConfirmTime.setMinutes(date.getMinutes() + 2);
-var PromptTime = ' 00 22 18 * * 0-5';
-var ConfirmTime =  '00 24 18 * * 0-5';
+var PromptTime = ' 00 34 18 * * 0-5';
+var ConfirmTime =  '00 35 18 * * 0-5';
 
 console.log('----- Set times: done');
 
@@ -266,7 +266,7 @@ function generateAllMessages(users)
             {
                 if((users[j].isGoing)
                     && (phone.localeCompare(users[j].phone) != 0)
-                    && (group.localeCompare(users[j].group)==0)
+                    && (group.localeCompare((users[j].group).toUpperCase())==0)
                    )
                     {
                         interestedNames.push(users[j].name);                        
@@ -274,24 +274,27 @@ function generateAllMessages(users)
             }
 
             if (interestedNames.length > 1)
-            {
-                //A list of names seperated by commas, and with an 'and', if appropriate
-                formattedNames = [interestedNames.slice(0, -1).join(', '), 
-                interestedNames.slice(-1)[0]].join(interestedNames.length < 2 ? '' : ' and ');
-                
-                if(group != 'OSTC')
-                  messageString = generateConfirmationMessage(formattedNames, cafeNumber);
-                else
-                  messageString = generateConfirmationMessage(formattedNames, '');
-            }
+                {
+                    //A list of names seperated by commas, and with an 'and', if appropriate
+                    formattedNames = [interestedNames.slice(0, -1).join(', '), 
+                    interestedNames.slice(-1)[0]].join(interestedNames.length < 2 ? '' : ' and ');
+                    
+                    if(group != 'OSTC')
+                      messageString = generateConfirmationMessage(formattedNames, cafeNumber);
+                    else
+                      messageString = generateConfirmationMessage(formattedNames, '');
+                }
             else if (interestedNames.length == 1)
-            {
-                messageString = generateConfirmationMessage(interestedNames[0], cafeNumber);;
-            }
+                {
+                    if(group != 'OSTC')
+                      messageString = generateConfirmationMessage(interestedNames[0], cafeNumber);
+                    else
+                      messageString = generateConfirmationMessage(interestedNames[0], '');
+                }
             else
-            {
-                messageString = generateMessageWithSignature(onlyOneAttendeeMessages);
-            }
+                {
+                    messageString = generateMessageWithSignature(onlyOneAttendeeMessages);
+                }
         }
         else
         {

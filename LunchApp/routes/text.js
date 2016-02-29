@@ -74,6 +74,7 @@ function generateMessageWithSignature(messageArray, signature){
     }
 
     var text = messageArray[getRandomInt(0, messageArray.length-1)] + signature;
+
     console.log("the text value in signature is: "+ text);
 
     return text;
@@ -98,11 +99,11 @@ function generateConfirmationMessage(namesString, suggestedCafe, signature){
 var joinMessage = [
 'Thanks for joining! Happy Lunching'
 ]
-var joinFailureMessage = 'Say that again? We didn\'t catch it! Text: Join <Your Name> to subscribe';
-var stopMessage = 'Sorry to see you go! Hope you will reconsider';
-var stopFailureMessage = 'Say that again? We didn\'t catch it! Text: STOP to unsubscribe';
-var LeaveMessage = "Your group is going to miss you! Text 'Join <YourName> <GroupName>' to join again!";
-var readdMessage = "We have added you to a group";
+var joinFailureMessage = ['Say that again? We didn\'t catch it! Text: Join <Your Name> to subscribe'];
+var stopMessage = ['Sorry to see you go! Hope you will reconsider'];
+var stopFailureMessage = ['Say that again? We didn\'t catch it! Text: STOP to unsubscribe'];
+var LeaveMessage = ["Your group is going to miss you! Text 'Join <YourName> <GroupName>' to join again!"];
+var readdMessage = ['We have added you to a group'];
 
 var userSchema = new Schema ({
     name: String,

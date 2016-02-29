@@ -363,9 +363,7 @@ function JoinLogic (_phone, _message)
                 
                 console.log("send readd message" + readdMessage);
                 
-                updateUserObject(conditionsForUpdateDB, updateForUpdateDB, readdMessage );
-
-                sendText(conditionsForUpdateDB.phone, generateMessageWithSignature(readdMessage), true );
+                updateUserObject(conditionsForUpdateDB, updateForUpdateDB, " Welcome Back!" );
 
                 return;
             }
@@ -397,7 +395,7 @@ function updateUserObject (_conditionsForUpdateDB, _updateForUpdateDB, _confirma
       // console.log(numAffected);
 
 
-      //sendText(_conditionsForUpdateDB.phone, generateMessageWithSignature(_confirmation), true );
+      sendText(_conditionsForUpdateDB.phone, generateMessageWithSignature(_confirmation), true );
     });
 }
 
@@ -418,9 +416,6 @@ router.post('/', function(req, res) {
             var conditionsForUpdateDB = { phone: req.body.From }
               , updateForUpdateDB = { isGoing: true };
             updateUserObject(conditionsForUpdateDB, updateForUpdateDB, immediateYesResponsesMessages);
-
-            sendText(conditionsForUpdateDB.phone, generateMessageWithSignature(immediateYesResponsesMessages), true );
-
             
         }
 

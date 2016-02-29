@@ -72,7 +72,11 @@ function generateMessageWithSignature(messageArray, signature){
     if (signature = 'undefined'){
         signature = defaultSignature;
     }
-    return messageArray[getRandomInt(0, messageArray.length-1)] + signature;
+
+    var text = messageArray[getRandomInt(0, messageArray.length-1)] + signature;
+    console.log("the text value in signature is: "+ text);
+
+    return text;
 }
 
 //Given a list of names and a suggestedCafe to insert, generages a confirmation message with a signature.
@@ -396,9 +400,13 @@ function updateUserObject (_conditionsForUpdateDB, _updateForUpdateDB, _confirma
       console.log('updateuserobject: updated status for ' + _conditionsForUpdateDB.phone)
       // console.log(numAffected);
 
-      console.log("the message is: " + _confirmation);
+      console.log("the updateuserobject message is: " + _confirmation);
 
-        sendText(_conditionsForUpdateDB.phone, generateMessageWithSignature(_confirmation), true );
+      var text = generateMessageWithSignature(_confirmation);
+
+      console.log ("the message for text in updateuserobject: "+ text);
+
+        sendText(_conditionsForUpdateDB.phone, text, true );
     });
 }
 

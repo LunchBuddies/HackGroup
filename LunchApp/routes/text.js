@@ -27,8 +27,8 @@ testPromptTime.setSeconds(0);
 testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(date.getMinutes()+ 1);
 testConfirmTime.setMinutes(date.getMinutes() + 2);
-var PromptTime = ' 00 05 18 * * 0-5';
-var ConfirmTime =  '00 10 18 * * 0-5';
+var PromptTime = ' 00 22 18 * * 0-5';
+var ConfirmTime =  '00 24 18 * * 0-5';
 
 console.log('----- Set times: done');
 
@@ -255,7 +255,7 @@ function generateAllMessages(users)
         messageString = '';
         var message = '';
 
-        var group = users[i].group;
+        var group = users[i].group.toUpperCase();
 
         console.log ('Phone: ' + phone + ' has group: '+ group + ' and said: '+ users[i].isGoing);
 
@@ -324,7 +324,7 @@ function insertUser (_name, _phone, _group)
     var insertUser = new user ({
         name:_name, 
         phone:_phone,
-        group:_group, 
+        group:_group.toUpperCase(), 
         isGoing: false,
         isActive: true
     });

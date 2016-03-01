@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 
 
 
-mongoose.connect('mongodb://anugup-mongo.westus.cloudapp.azure.com:27017/test');
+mongoose.connect('mongodb://anugup-mongo.westus.cloudapp.azure.com:27018/test');
 var db = mongoose.connection;
 // var collection = db.collection('documents');
 // collection.insert ({John : 10}, function (err, result) {

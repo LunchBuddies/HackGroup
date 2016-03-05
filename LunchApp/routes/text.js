@@ -8,6 +8,7 @@ var CronJob = require('cron').CronJob;
 var database = require('../db');
 var TwilioNumber = '+14693400518';
 
+
 // for Mongo
 // var MongoClient = require('mongodb').MongoClient;
 var mongoose = require('mongoose');
@@ -31,7 +32,6 @@ var PromptTime = '00 00 11 * * 1-5';
 var ConfirmTime =  '00 00 12 * * 1-5';
 
 console.log('----- Set times: done');
-
 
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages
@@ -134,7 +134,7 @@ console.log('----- Created user 2.0 model: done');
 
 // Cron job that prompts users to come to lunch
 new CronJob({
-    cronTime: PromptTime,
+    cronTime: testPromptTime,
     onTick: function(){
         promptCronLogic ();
     },
@@ -145,7 +145,7 @@ console.log('----- Start prompt cron: done');
 
 // Cron job that confirms to users at lunch time
 new CronJob({
-    cronTime: ConfirmTime, //confirmTime
+    cronTime: testConfirmTime, //confirmTime
     onTick: function()
     {
         confirmCronLogic();
@@ -188,7 +188,7 @@ function promptCronLogic ()  {
             for (var i = 0; i < result.length ; i++)
             { 
                 // console.log(result[i].phone);
-                sendText(result[i].phone, generateMessageWithSignature(promptMessages), true)
+                // sendText(result[i].phone, generateMessageWithSignature(promptMessages), true)
             }
             //console.log(result);
         }
@@ -302,7 +302,7 @@ function generateAllMessages(users)
         }
          console.log('for phone: '+ phone + ' the message is: '+ messageString);         
 
-        sendText(phone,messageString, true);
+        // sendText(phone,messageString, true);
         
     }
     console.log('==================== End: generateAllMessages ====================');
@@ -336,14 +336,14 @@ function insertUser (_name, _phone, _group)
     {
         if (!err){
             console.log('Inserted new record with name: '+ _name);
-            sendText(_phone, generateMessageWithSignature(joinMessage),true); 
+            // sendText(_phone, generateMessageWithSignature(joinMessage),true); 
             
             logHistoryEvent ('Join', _phone, {name:_name});
             return;
         }
         else
         {
-            sendText(_phone,joinFailureMessage, true); 
+            // sendText(_phone,joinFailureMessage, true); 
             logHistoryEvent ('Error','', err); 
         }
     });
@@ -362,7 +362,7 @@ function JoinLogic (_phone, _message)
     {
         console.log ('join needs 3 parameters');
         // send text
-        sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
+        // sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
         return;
     }
 
@@ -380,7 +380,7 @@ function JoinLogic (_phone, _message)
             // If the user is active, they are already in a group
             if (result[0].isActive)
             {
-                sendText(_phone, "You're already in a group! Text 'Leave Group' to leave current group",true);
+                // sendText(_phone, "You're already in a group! Text 'Leave Group' to leave current group",true);
                 return;
             }
 
@@ -406,7 +406,7 @@ function JoinLogic (_phone, _message)
         {
             console.log ('join needs 3 parameters');
             // send text
-            sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
+            // sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
             return;
         }
         
@@ -430,7 +430,7 @@ function updateUserObject (_conditionsForUpdateDB, _updateForUpdateDB, _confirma
 
       console.log ("the message for text in updateuserobject: "+ text);
 
-        sendText(_conditionsForUpdateDB.phone, text, true );
+        // sendText(_conditionsForUpdateDB.phone, text, true );
     });
 }
 

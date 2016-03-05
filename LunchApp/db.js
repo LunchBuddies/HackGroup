@@ -1,14 +1,37 @@
 var express = require('express');
 var mongoose = require('mongoose');
+var nconf = require('nconf');
+
+nconf.argv().env().file({ file: './config/development.json' });
+
+// 
+// Setup nconf to use (in-order): 
+//   1. Command-line arguments 
+//   2. Environment variables 
+//   3. A file located at 'path/to/config.json' 
+// 
+
+// console.log("mongodb://" + nconf.get('db') 
+// 	+ ":" 
+// 	+ nconf.get('port') 
+// 	+ "/" 
+// 	+ nconf.get('table'));
+mongoose.connect("mongodb://" + nconf.get('db') 
+	+ ":" 
+	+ nconf.get('port') 
+	+ "/" 
+	+ nconf.get('table'));
 
 
-
-mongoose.connect('mongodb://anugup-mongo.westus.cloudapp.azure.com:27018/test');
 var db = mongoose.connection;
 // var collection = db.collection('documents');
 // collection.insert ({John : 10}, function (err, result) {
 //     console.log ('db.js: insert into db' );
 // });
-console.log('----- Load DB: done');
+console.log('----- Load DB at ' + nconf.get('db') 
+	+ ":" 
+	+ nconf.get('port') 
+	+ "/" 
+	+ nconf.get('table') + ': done');
 
 module.exports = db;

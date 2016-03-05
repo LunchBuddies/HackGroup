@@ -5,7 +5,7 @@ var nconf = require('nconf');
 // Grab JSON config files in this order:
 //   1. production.js
 //   2. development.js
-nconf.file('prod','./config/production.json' ).file('dev','./config/development.json' );
+nconf.argv().file('prod','./config/production.json' ).file('dev','./config/development.json' );
 
 mongoose.connect("mongodb://" + nconf.get('db') 
 	+ ":" + nconf.get('port') 

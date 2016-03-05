@@ -1,6 +1,5 @@
 {
 	"db": "anugup-mongo.westus.cloudapp.azure.com",
 	"port":"27018",
-	"table":"test",
-	"promptCronType":"testPromptTime"
+	"table":"test"
 }

@@ -5,7 +5,6 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-var nconf = require('nconf');
 
 var routes = require('./routes/index');
 var user = require('./routes/user');
@@ -23,7 +22,6 @@ console.log('----- App imports: done');
 //   2. Environment variables 
 //   3. A file located at 'path/to/config.json' 
 // 
-nconf.argv().env().file({ file: './config/development.json' });
 
 var app = express();
 

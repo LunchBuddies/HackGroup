@@ -2,7 +2,7 @@ var express = require('express');
 var mongoose = require('mongoose');
 var nconf = require('nconf');
 
-nconf.argv().env().file({ file: './config/development.json' });
+nconf.file('prod','./config/production.json' ).file('dev','./config/development.json' );
 
 // 
 // Setup nconf to use (in-order): 

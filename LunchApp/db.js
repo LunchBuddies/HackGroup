@@ -33,5 +33,5 @@ console.log('----- Load DB at ' + nconf.get('db')
 	+ nconf.get('port') 
 	+ "/" 
 	+ nconf.get('table') + ': done');
-
+//test
 module.exports = db;

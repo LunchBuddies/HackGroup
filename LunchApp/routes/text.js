@@ -41,35 +41,14 @@ var PromptTime = '00 00 11 * * 1-5',
 console.log('----- Set times: done');
 
 // ------------------------- Message Strings -----------------------------
-// These are the base strings for the messages
 
-//Message which prompts users to respond.
-var promptMessages = [
-    "Interested in lunch? Text \'YES\' by noon and we\'ll let you know who else is interested. ",
-    "Free for lunch? Text \'YES\' by noon and we\'ll let you know who else is interested. ",
-    "Free for lunch? Come on, you know you want to. Text \'YES\' by noon and we\'ll let you know who else is interested. "
-]
-
-//Message which sends right after a user confirms.
-var immediateYesResponsesMessages = [
-    "You've never made a better decision. Ever. Good call. Seriously. We\'ll text you at noon to let you know who\'s going.",
-    "Got it! We\'ll text you at noon to let you know who\'s going.",
-    "Lunch, lunch, lunchy-lunch lunch. We\'ll text you at noon to let you know who\'s going."
-]
 
 //Message which 
-var immediateNoResponsesMessages = [
-    "Aww! We\'ll miss you."
-]
 
-//Message which will be sent if there is only one attendee
-var onlyOneAttendeeMessages = [
-    "Looks like no one else is interested today! Better luck next time."    
-]
 
 var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 31'];
 
-updateUserObject({},{},{}, null);
+updateUserObject({},{},{}, '');
 
 //Generates a message from an array of messages and appends the default signature
 function generateMessageWithSignature(messageArray, signature){
@@ -118,15 +97,6 @@ function generateConfirmationMessage(namesString, suggestedCafe, signature){
     }
 }
 
-var joinMessage = [
-'Thanks for joining! Happy Lunching'
-]
-var joinFailureMessage = ['Say that again? We didn\'t catch it! Text: Join <Your Name> to subscribe'];
-var stopMessage = ['Sorry to see you go! Hope you will reconsider'];
-var stopFailureMessage = ['Say that again? We didn\'t catch it! Text: STOP to unsubscribe'];
-var LeaveMessage = ["Your group is going to miss you! Text 'Join <YourName> <GroupName>' to join again!"];
-var readdMessage = ['We have added you to a group'];
-
 
 console.log('----- Created user 2.0 model: done');
 
@@ -165,7 +135,7 @@ function promptCronLogic ()  {
             for (var i = 0; i < result.length ; i++)
             { 
                 // console.log(result[i].phone);
-                sendText(result[i].phone, generateMessageWithSignature(promptMessages))
+                sendText(result[i].phone, generateMessageWithSignature(strings.promptMessages))
             }
             //console.log(result);
         }
@@ -258,7 +228,7 @@ function generateAllMessages(users)
                 }
             else
                 {
-                    messageString = generateMessageWithSignature(onlyOneAttendeeMessages);
+                    messageString = generateMessageWithSignature(strings.onlyOneAttendeeMessages);
                 }
         }
         else
@@ -308,7 +278,7 @@ function insertUser (_name, _phone, _group)
         }
         else
         {
-            // sendText(_phone,joinFailureMessage); 
+            // sendText(_phone,strings.joinFailureMessage); 
             logHistoryEvent ('Error','', err); 
         }
     });
@@ -398,7 +368,7 @@ router.post('/', function(req, res) {
             // Update status of user to 
             var conditionsForUpdateDB = { phone: req.body.From }
               , updateForUpdateDB = { isGoing: true };
-            updateUserObject(conditionsForUpdateDB, updateForUpdateDB, {}, immediateYesResponsesMessages);
+            updateUserObject(conditionsForUpdateDB, updateForUpdateDB, {}, strings.immediateYesResponsesMessages);
             
         }
 
@@ -413,7 +383,7 @@ router.post('/', function(req, res) {
         {
             // Nothing should happen here
             console.log('No');
-            sendText(req.body.From,generateMessageWithSignature(immediateNoResponsesMessages));
+            sendText(req.body.From,generateMessageWithSignature(strings.immediateNoResponsesMessages));
         }
 
         else if ((new RegExp("JOIN")).test(req.body.Body.toUpperCase()))
@@ -435,23 +405,8 @@ router.post('/', function(req, res) {
               , updateForDeleteUser = { isActive: false }
               , optionsForDeleteUser = {multi: true } ;
 
-            user.update(conditionsForDeleteUser, updateForDeleteUser,  optionsForDeleteUser, function callback (err, numAffected) {
+            updateUserObject(conditionsForDeleteUser, updateForDeleteUser,  optionsForDeleteUser, null);
 
-                if (!err)
-                {
-                    // numAffected is the number of updated documents
-                    console.log('---- stopped ' + req.body.From + ' account: done'); 
-                    logHistoryEvent ('Stop', req.body.From, {});
-                }  
-                else
-                {
-                    logHistoryEvent ('Error', req.body.From, err);
-                }  
-                    
-              // numAffected is the number of updated documents
-              console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
-
-            });
             console.log('==================== End: User Stop ====================');
         }
 
@@ -464,23 +419,9 @@ router.post('/', function(req, res) {
               , updateForDeleteUser = { isActive: true }
               , optionsForDeleteUser = {multi: true } ;
 
-            user.update(conditionsForDeleteUser, updateForDeleteUser,  optionsForDeleteUser, function callback (err, numAffected) {
+            updateUserObject(conditionsForDeleteUser, updateForDeleteUser,  optionsForDeleteUser, null);
 
-                if (!err)
-                {
-                    // numAffected is the number of updated documents
-                    console.log('---- Started ' + req.body.From + ' account: done'); 
-                    logHistoryEvent ('Start', req.body.From, {});
-                }  
-                else
-                {
-                    logHistoryEvent ('Error', req.body.From, err);
-                }  
-                    
-              // numAffected is the number of updated documents
-              console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
-
-            });
+            
             console.log('==================== End: User Start ====================');
         }
 
@@ -491,24 +432,8 @@ router.post('/', function(req, res) {
               , updateForLeaveGroup = { isActive: false, group: undefined }
               , optionsForLeaveGroup = {multi: true } ;
 
-            user.update(conditionsForLeaveGroup, updateForLeaveGroup,  optionsForLeaveGroup, function callback (err, numAffected) {
+            updateUserObject(conditionsForLeaveGroup, updateForLeaveGroup,  optionsForLeaveGroup, strings.leaveMessage);
 
-                if (!err)
-                {
-                    // numAffected is the number of updated documents
-                    console.log('---- ' + req.body.From + ' left the group: done'); 
-                    logHistoryEvent ('Leave', req.body.From, {});
-                    sendText(req.body.From, LeaveMessage); 
-                }  
-                else
-                {
-                    logHistoryEvent ('Error', req.body.From, err);
-                }  
-                    
-              // numAffected is the number of updated documents
-              // console.log('---- ' + numAffected.nModified + ' accounts effected: done');
-
-            });
             console.log('==================== End: User Leave Group ====================');
         }
 

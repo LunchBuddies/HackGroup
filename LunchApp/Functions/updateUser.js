@@ -6,6 +6,10 @@ var express = require('express'),
 // This is done, but needs to import the user model once that has been fixed
 module.exports = function (_conditionsForUpdateDB, _updateForUpdateDB, _optionsForResetDB, _confirmation) 
 {
+	// if (_updateForUpdateDB == {})
+	// {
+	// 	return;
+	// }
     user.update(_conditionsForUpdateDB, _updateForUpdateDB, function callback (err, numAffected) {
       // numAffected is the number of updated documents
       console.log('updateuserobject: updated status for ' + _conditionsForUpdateDB.phone)
@@ -13,11 +17,12 @@ module.exports = function (_conditionsForUpdateDB, _updateForUpdateDB, _optionsF
 
       console.log("the updateuserobject message is: " + _confirmation);
 
-      if (_confirmation == '')
+      if (_confirmation != null || _confirmation != '')
       {
-      	var text = _confirmation + strings.signature;
-      	console.log('=== Send: ' + text);
-      	// sendText(_conditionsForUpdateDB.phone, text );
+      	return;
       }
+      var text = _confirmation + strings.signature;
+      	console.log('=== Send: ' + text);
+		// sendText(_conditionsForUpdateDB.phone, text );
     });
 }

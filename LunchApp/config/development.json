@@ -3,7 +3,5 @@
 	"db": "localhost",
 	"port":"27019",
 	"table":"test",
-	"root":"./",
-	"promptTime":"testPromptTime",
-	"confirmTime":"testConfirmTime"
+	"root":"./"
 }

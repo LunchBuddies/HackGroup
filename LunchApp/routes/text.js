@@ -21,6 +21,16 @@ var express = require('express'),
 //   3. development.js
 nconf.argv().file('prod','./config/production.json' ).file('dev','./config/development.json' );
 
+if (nconf.get('enviornment') == 'dev') 
+{
+    console.log("----- Loaded DEV config");
+}
+else if (nconf.get('enviornment') == 'prod') 
+{
+    console.log("----- Loaded PROD config");
+}
+
+
 // if nconf is using dev config, set cron to first just after deployed to server
 var promptTime,
     confirmTime;
@@ -52,16 +62,19 @@ var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 
 
 //Generates a message from an array of messages and appends the default signature
 function generateMessageWithSignature(messageArray, signature){
-    console.log("generateMessageWithSignature has message as: "+ messageArray);
-    
+    if (nconf.get('enviornment') == 'dev') {
+        console.log("generateMessageWithSignature has message as: "+ messageArray);
+    }
+
     if (signature = 'undefined'){
         signature = strings.signature;
     }
 
     var text = messageArray[getRandomInt(0, messageArray.length-1)] + signature;
-
-    console.log("the text value in signature is: "+ text);
-
+    if (nconf.get('enviornment') == 'dev')
+    {
+        console.log("the text value in signature is: "+ text);
+    }
     return text;
 }
 
@@ -236,7 +249,10 @@ function generateAllMessages(users)
         {
             continue;
         }
-         console.log('for phone: '+ phone + ' the message is: '+ messageString);         
+        if (nconf.get('enviornment') == 'dev'){
+
+            console.log('for phone: '+ phone + ' the message is: '+ messageString);         
+        }
 
         sendText (phone,messageString);
         
@@ -282,8 +298,10 @@ function JoinLogic (_phone, _message)
         // than one user with the same phone number in the db, thus == should work,
         // but keeping >= just in case.
         if (result.length >= 1)
-        {
-            console.log (result)
+        { 
+            if (nconf.get('enviornment') == 'dev') {
+                console.log(results);
+            }
 
             // If the user is active, they are already in a group
             if (result[0].isActive)

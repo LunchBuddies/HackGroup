@@ -10,4 +10,8 @@ var userSchema = new Schema ({
     isInsider: Boolean
 });
 
-mongoose.model('user', userSchema );
+var user = mongoose.model('user', userSchema );
+
+console.log('----- Initialize History Collection: done');
+
+module.exports = user;

@@ -1,6 +1,6 @@
-var express = require('express');
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var express = require('express'),
+	mongoose = require('mongoose'),
+	Schema = mongoose.Schema;
 
 var HistorySchema = new Schema ({
     time: Date,

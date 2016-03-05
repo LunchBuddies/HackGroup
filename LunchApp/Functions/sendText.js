@@ -1,7 +1,8 @@
-var express = require('express');
-var TwilioNumber = '+14693400518';
-var keys = require ('../Keys');
-var client = require('twilio')(keys.TWILIO_ACCOUNT_SID, keys.TWILIO_AUTH_KEY);
+var express = require('express'),
+    TwilioNumber = '+14693400518',
+    keys = require ('../Keys'),
+    logHistoryEvent = require ('../Functions/logHistoryEvent'),
+    client = require('twilio')(keys.TWILIO_ACCOUNT_SID, keys.TWILIO_AUTH_KEY);
 
 module.exports = function (phoneNumber, message) {
   // Sends a single message to a given phone number

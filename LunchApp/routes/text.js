@@ -1,5 +1,5 @@
 //    Declaration Section    //
-var express = require('express');
+var express = require('express'),
     history = require ('../History'),
     router = express.Router(),
     CronJob = require('cron').CronJob,
@@ -9,7 +9,10 @@ var express = require('express');
     nconf = require('nconf'),
     glob = require('glob'),
     mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+    Schema = mongoose.Schema,
+    user = require ('../Models/user'),
+    strings = require ('../strings'),
+    logHistoryEvent = require ('../Functions/logHistoryEvent');
 
 nconf.file('prod','./config/production.json' ).file('dev','./config/development.json' );
 
@@ -24,26 +27,21 @@ testConfirmTime.setMinutes(date.getMinutes() + 2);
 var PromptTime = '00 00 11 * * 1-5',
     ConfirmTime =  '00 00 12 * * 1-5';
 
-var userSchema = new Schema ({
-    name: String,
-    phone: String,
-    group: String,
-    isGoing: Boolean,
-    isActive: Boolean,
-    isInsider: Boolean
-});
+// var userSchema = new Schema ({
+//     name: String,
+//     phone: String,
+//     group: String,
+//     isGoing: Boolean,
+//     isActive: Boolean,
+//     isInsider: Boolean
+// });
 
-var user = mongoose.model('user', userSchema );
-
-
+// var user = mongoose.model('user', userSchema );
 
 console.log('----- Set times: done');
 
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages
-
-//Signature for the end of our messages
-var defaultSignature = '\n - TheLunchBuddies'
 
 //Message which prompts users to respond.
 var promptMessages = [
@@ -71,16 +69,14 @@ var onlyOneAttendeeMessages = [
 
 var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 31'];
 
-
-// updateUserObject({}, {}, "");
-
+updateUserObject({},{},{}, null);
 
 //Generates a message from an array of messages and appends the default signature
 function generateMessageWithSignature(messageArray, signature){
     console.log("generateMessageWithSignature has message as: "+ messageArray);
     
     if (signature = 'undefined'){
-        signature = defaultSignature;
+        signature = strings.signature;
     }
 
     var text = messageArray[getRandomInt(0, messageArray.length-1)] + signature;
@@ -94,7 +90,7 @@ function generateMessageWithSignature(messageArray, signature){
 //If no signature is provided, the default signature will be used. 
 function generateConfirmationMessage(namesString, suggestedCafe, signature){
     if (signature = 'undefined'){
-        signature = defaultSignature;
+        signature = strings.signature;
     }
 
     if(suggestedCafe != '')
@@ -157,25 +153,6 @@ new CronJob({
 });
 console.log('----- Start Confirmation cron: done');
 
-
-function logHistoryEvent (_eventType, _phone, _params) {
-    
-    var historyEventToSend = new history ({
-        time: new Date(),
-        event: _eventType,
-        phone: _phone, 
-        params: _params
-    });
-
-    historyEventToSend.save(function(err, thor) {
-        if (err) 
-        {
-            logHistoryEvent ('Error', '',err);
-            return console.error(err);
-        }
-        console.dir("----- logged 1 historical event");
-    });
-}
  
 // Contains all the logic executed when the PROMPT cron job ticks
 function promptCronLogic ()  {
@@ -201,19 +178,7 @@ function promptCronLogic ()  {
     var conditionsForResetDB = {}
       , updateForResetDB = { isGoing: false }
       , optionsForResetDB = {multi: true } ;
-
-    user.update(conditionsForResetDB, updateForResetDB,  optionsForResetDB, function callback (err, numAffected) {
-
-        if (!err)
-        {
-            // numAffected is the number of updated documents
-            console.log('---- Reset ' + numAffected.nModified + ' accounts: done'); 
-        }  
-        else
-        {
-            logHistoryEvent ('Error','', err);
-        }  
-    });
+    updateUserObject(conditionsForResetDB, updateForResetDB, optionsForResetDB, '');
 
     console.log('==================== End: promptCronLogic ====================');
 };
@@ -393,7 +358,7 @@ function JoinLogic (_phone, _message)
                 
                 console.log("send readd message" + readdMessage);
                 
-                updateUserObject(conditionsForUpdateDB, updateForUpdateDB, readdMessage);
+                updateUserObject(conditionsForUpdateDB, updateForUpdateDB, {}, readdMessage);
 
                 return;
             }
@@ -417,23 +382,6 @@ function JoinLogic (_phone, _message)
     });
 } 
 
-function updateUserObject (_conditionsForUpdateDB, _updateForUpdateDB, _confirmation)
-{
-    user.update(_conditionsForUpdateDB, _updateForUpdateDB, function callback (err, numAffected) {
-      // numAffected is the number of updated documents
-      console.log('updateuserobject: updated status for ' + _conditionsForUpdateDB.phone)
-      // console.log(numAffected);
-
-      console.log("the updateuserobject message is: " + _confirmation);
-
-      var text = generateMessageWithSignature(_confirmation);
-
-      console.log ("the message for text in updateuserobject: "+ text);
-
-        // sendText(_conditionsForUpdateDB.phone, text );
-    });
-}
-
 
 // Post function for calls from Twilio
 router.post('/', function(req, res) {
@@ -450,7 +398,7 @@ router.post('/', function(req, res) {
             // Update status of user to 
             var conditionsForUpdateDB = { phone: req.body.From }
               , updateForUpdateDB = { isGoing: true };
-            updateUserObject(conditionsForUpdateDB, updateForUpdateDB, immediateYesResponsesMessages);
+            updateUserObject(conditionsForUpdateDB, updateForUpdateDB, {}, immediateYesResponsesMessages);
             
         }
 

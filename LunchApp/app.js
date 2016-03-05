@@ -1,23 +1,22 @@
-
-
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-//var MongoClient = require('mongodb').MongoClient;
 var mongoose = require('mongoose');
+var nconf = require('nconf');
 
 var routes = require('./routes/index');
 var user = require('./routes/user');
 var text = require('./routes/text');
 var textError = require('./routes/textError');
 var db = require ('./db');
-// var init = require('./routes/init');
-// var runner = require('./routes/runner');
+
 
 console.log('----- App imports: done');
+
+nconf.argv().env().file({ file: './config/development.json' });
 
 var app = express();
 

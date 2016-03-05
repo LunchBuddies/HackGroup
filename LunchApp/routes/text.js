@@ -27,11 +27,12 @@ var promptTime,
 if (nconf.get('enviornment') == 'dev')
 {
     console.log ('----- Using DEV cron jobs');
-    promptTime = new Date(),
-    confirmTime = new Date();
+    promptTime = new Date();
     promptTime.setSeconds(0);
-    confirmTime.setSeconds(0);
     promptTime.setMinutes(promptTime.getMinutes()+ 1);
+    
+    confirmTime = new Date();
+    confirmTime.setSeconds(0);
     confirmTime.setMinutes(confirmTime.getMinutes() + 2);
 }
 
@@ -237,7 +238,7 @@ function generateAllMessages(users)
         }
          console.log('for phone: '+ phone + ' the message is: '+ messageString);         
 
-        // sendText(phone,messageString);
+        sendText (phone,messageString);
         
     }
     console.log('==================== End: generateAllMessages ====================');
@@ -269,7 +270,7 @@ function JoinLogic (_phone, _message)
     {
         console.log ('join needs 3 parameters');
         // send text
-        // sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>"); 
+        sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>"); 
         return;
     }
 
@@ -287,7 +288,7 @@ function JoinLogic (_phone, _message)
             // If the user is active, they are already in a group
             if (result[0].isActive)
             {
-                // sendText(_phone, "You're already in a group! Text 'Leave Group' to leave current group");
+                sendText(_phone, "You're already in a group! Text 'Leave Group' to leave current group");
                 return;
             }
 
@@ -313,7 +314,7 @@ function JoinLogic (_phone, _message)
         {
             console.log ('join needs 3 parameters');
             // send text
-            // sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>"); 
+            sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>"); 
             return;
         }
         

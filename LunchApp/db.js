@@ -1,6 +1,6 @@
-var express = require('express');
-var mongoose = require('mongoose');
-var nconf = require('nconf');
+var express = require('express'),
+	mongoose = require('mongoose'),
+	nconf = require('nconf');
 
 // Grab JSON config files in this order:
 //   1. Arguments passed to node

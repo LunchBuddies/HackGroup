@@ -1,6 +1,6 @@
 var express = require('express'),
     TwilioNumber = '+14693400518',
-    keys = require ('../Keys'),
+    keys = require ('../Resources/Keys'),
     logHistoryEvent = require ('../Functions/logHistoryEvent'),
     client = require('twilio')(keys.TWILIO_ACCOUNT_SID, keys.TWILIO_AUTH_KEY);
 

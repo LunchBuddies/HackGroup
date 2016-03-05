@@ -12,7 +12,7 @@ var express = require('express'),
     mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     user = require ('../Models/user'),
-    strings = require ('../strings'),
+    strings = require ('../Resources/strings'),
     logHistoryEvent = require ('../Functions/logHistoryEvent');
 
 // Grab JSON config files in this order:
@@ -26,6 +26,7 @@ var promptTime,
     confirmTime;
 if (nconf.get('enviornment') == 'dev')
 {
+    console.log ('----- Using DEV cron jobs');
     promptTime = new Date(),
     confirmTime = new Date();
     promptTime.setSeconds(0);
@@ -37,6 +38,7 @@ if (nconf.get('enviornment') == 'dev')
 // If we are in a production enviornment, set to normal cron times
 else if (nconf.get('enviornment') == 'prod')
 {
+    console.log ('----- Using PROD cron jobs');
     promptTime = '00 00 11 * * 1-5',
     confirmTime = '00 00 12 * * 1-5';
 }

@@ -399,11 +399,15 @@ router.post('/', function(req, res) {
             console.log('==================== End: User Leave Group ====================');
         }
 
+        else if ((new RegExp("HELP")).test(req.body.Body.toUpperCase())) 
+        {
+            sendText(req.body.From, strings.help);
+        }
+
         // user sent some random message that didnt include the above
-        // TODO - make sure user can send multiple texts to us
         else
         {
-            sendText(req.body.From,'Say that again? We didn\'t catch it!');   
+            sendText(req.body.From,strings.stopFailureMessage);   
         }
     }
 });

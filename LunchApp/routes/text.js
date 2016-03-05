@@ -21,16 +21,28 @@ var express = require('express'),
 //   3. development.js
 nconf.argv().file('prod','./config/production.json' ).file('dev','./config/development.json' );
 
+// if nconf is using dev config, set cron to first just after deployed to server
+var promptTime,
+    confirmTime;
+if (nconf.get('enviornment') == 'dev')
+{
+    promptTime = new Date(),
+    confirmTime = new Date();
+    promptTime.setSeconds(0);
+    confirmTime.setSeconds(0);
+    promptTime.setMinutes(promptTime.getMinutes()+ 1);
+    confirmTime.setMinutes(confirmTime.getMinutes() + 2);
+}
+
+// If we are in a production enviornment, set to normal cron times
+else
+{
+    promptTime = '00 00 11 * * 1-5',
+    confirmTime = '00 00 12 * * 1-5';
+}
 // We are setting prompt time and confirmation time for lunch
-var date = new Date(),
-    testPromptTime = new Date(),
-    testConfirmTime = new Date();
-testPromptTime.setSeconds(0);
-testConfirmTime.setSeconds(0);
-testPromptTime.setMinutes(date.getMinutes()+ 1);
-testConfirmTime.setMinutes(date.getMinutes() + 2);
-var PromptTime = '00 00 11 * * 1-5',
-    ConfirmTime =  '00 00 12 * * 1-5';
+
+
 
 
 console.log('----- Set times: done');
@@ -92,7 +104,7 @@ console.log('----- Created user 2.0 model: done');
 
 // Cron job that prompts users to come to lunch
 new CronJob({
-    cronTime: testPromptTime,
+    cronTime: promptTime,
     onTick: function(){
         promptCronLogic ();
     },
@@ -103,7 +115,7 @@ console.log('----- Start prompt cron: done');
 
 // Cron job that confirms to users at lunch time
 new CronJob({
-    cronTime: testConfirmTime, //confirmTime
+    cronTime: confirmTime,//nconf.get('confirmTime'), 
     onTick: function()
     {
         confirmCronLogic();

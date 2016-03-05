@@ -5,17 +5,16 @@ var nconf = require('nconf');
 // Loads production first, then dev
 nconf.file('prod','./config/production.json' ).file('dev','./config/development.json' );
 
-// console.log("mongodb://" + nconf.get('db') 
-// 	+ ":" 
-// 	+ nconf.get('port') 
-// 	+ "/" 
-// 	+ nconf.get('table'));
-// mongoose.connect("mongodb://" + nconf.get('db') 
-// 	+ ":" 
-// 	+ nconf.get('port') 
-// 	+ "/" 
-// 	+ nconf.get('table'));
 
+mongoose.connect("mongodb://" + nconf.get('db') 
+	+ ":" + nconf.get('port') 
+	+ "/" + nconf.get('table'));
+
+var db = mongoose.connection;
+
+db.on('error', function () {
+  throw new Error('unable to connect to database at ' + config.db);
+});
 
 // var db = mongoose.connection;
 // var collection = db.collection('documents');
@@ -28,4 +27,4 @@ console.log('----- Load DB at ' + nconf.get('db')
 	+ "/" 
 	+ nconf.get('table') + ': done');
 
-// module.exports = db;
+module.exports = db;

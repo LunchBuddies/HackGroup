@@ -1,32 +1,40 @@
 //    Declaration Section    //
 var express = require('express');
-var history = require ('../History');
-var router = express.Router();
-var CronJob = require('cron').CronJob;
-var database = require('../db');
-var sendText = require('../sendText');
-
-var nconf = require('nconf');
+    history = require ('../History'),
+    router = express.Router(),
+    CronJob = require('cron').CronJob,
+    sendText = require('../Functions/sendText'),
+    updateUserObject = require('../Functions/updateUser'),
+    database = require('../db'),
+    nconf = require('nconf'),
+    glob = require('glob'),
+    mongoose = require('mongoose'),
+    Schema = mongoose.Schema;
 
 nconf.file('prod','./config/production.json' ).file('dev','./config/development.json' );
 
-// for Mongo
-// var MongoClient = require('mongodb').MongoClient;
-var mongoose = require('mongoose');
-var assert = require('assert');
-var Schema = mongoose.Schema;
-
-
 // We are setting prompt time and confirmation time for lunch
-var date = new Date();
-var testPromptTime = new Date();
-var testConfirmTime = new Date();
+var date = new Date(),
+    testPromptTime = new Date(),
+    testConfirmTime = new Date();
 testPromptTime.setSeconds(0);
 testConfirmTime.setSeconds(0);
 testPromptTime.setMinutes(date.getMinutes()+ 1);
 testConfirmTime.setMinutes(date.getMinutes() + 2);
-var PromptTime = '00 00 11 * * 1-5';
-var ConfirmTime =  '00 00 12 * * 1-5';
+var PromptTime = '00 00 11 * * 1-5',
+    ConfirmTime =  '00 00 12 * * 1-5';
+
+var userSchema = new Schema ({
+    name: String,
+    phone: String,
+    group: String,
+    isGoing: Boolean,
+    isActive: Boolean,
+    isInsider: Boolean
+});
+
+var user = mongoose.model('user', userSchema );
+
 
 
 console.log('----- Set times: done');
@@ -62,6 +70,10 @@ var onlyOneAttendeeMessages = [
 ]
 
 var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 31'];
+
+
+// updateUserObject({}, {}, "");
+
 
 //Generates a message from an array of messages and appends the default signature
 function generateMessageWithSignature(messageArray, signature){
@@ -119,15 +131,7 @@ var stopFailureMessage = ['Say that again? We didn\'t catch it! Text: STOP to un
 var LeaveMessage = ["Your group is going to miss you! Text 'Join <YourName> <GroupName>' to join again!"];
 var readdMessage = ['We have added you to a group'];
 
-var userSchema = new Schema ({
-    name: String,
-    phone: String,
-    group: String,
-    isGoing: Boolean,
-    isActive: Boolean 
-});
 
-var user = mongoose.model('user2', userSchema );
 console.log('----- Created user 2.0 model: done');
 
 // Cron job that prompts users to come to lunch
@@ -184,7 +188,7 @@ function promptCronLogic ()  {
             for (var i = 0; i < result.length ; i++)
             { 
                 // console.log(result[i].phone);
-                // sendText(result[i].phone, generateMessageWithSignature(promptMessages))
+                sendText(result[i].phone, generateMessageWithSignature(promptMessages))
             }
             //console.log(result);
         }
@@ -453,7 +457,7 @@ router.post('/', function(req, res) {
         // User is french
         else if ((new RegExp("OUI")).test(req.body.Body.toUpperCase()))
         {
-            sendText(req.body.From,'We dont like the french...';
+            sendText(req.body.From,'We dont like the french...');
         }
 
         // User responsed no
@@ -590,4 +594,3 @@ function getRandomInt(min, max) {
 }
 
 module.exports = router;
-

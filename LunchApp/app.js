@@ -3,14 +3,17 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
+var bodyParser = require('body-parser'),
+    mongoose = require('mongoose'),
+    glob = require('glob');
 
 var routes = require('./routes/index');
 var user = require('./routes/user');
 var text = require('./routes/text');
-var textError = require('./routes/textError');
-var db = require ('./db');
+var textError = require('./routes/textError'),
+    nconf = require('nconf');
+
+nconf.file('prod','./config/production.json' ).file('dev','./config/development.json' );
 
 
 console.log('----- App imports: done');
@@ -22,6 +25,13 @@ console.log('----- App imports: done');
 //   2. Environment variables 
 //   3. A file located at 'path/to/config.json' 
 // 
+
+// var models = glob.sync('./Models/*.js');
+// console.log(models);
+// models.forEach(function (model) {
+//   require(model);
+//   console.log('hey');
+// });
 
 var app = express();
 

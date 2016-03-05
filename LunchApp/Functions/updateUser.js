@@ -6,10 +6,11 @@ var express = require('express'),
 // This is done, but needs to import the user model once that has been fixed
 module.exports = function (_conditionsForUpdateDB, _updateForUpdateDB, _optionsForResetDB, _confirmation) 
 {
-	// if (_updateForUpdateDB == {})
-	// {
-	// 	return;
-	// }
+	if (_updateForUpdateDB == {})
+	{
+		console.warn ('----- UdateUser: WARN - no updates specified')
+		return;
+	}
     user.update(_conditionsForUpdateDB, _updateForUpdateDB, function callback (err, numAffected) {
       // numAffected is the number of updated documents
       console.log('updateuserobject: updated status for ' + _conditionsForUpdateDB.phone)

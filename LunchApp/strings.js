@@ -23,5 +23,4 @@ module.exports = {
 	"stopFailureMessage" : ['Say that again? We didn\'t catch it! Text: STOP to unsubscribe'],
 	"LeaveMessage" : ["Your group is going to miss you! Text 'Join <YourName> <GroupName>' to join again!"],
 	"readdMessage" : ['We have added you to a group']
-
 }

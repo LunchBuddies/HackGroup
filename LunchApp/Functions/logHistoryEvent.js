@@ -1,5 +1,5 @@
 var express = require('express'),
-	history = require ('../History');
+	history = require ('../Models/History');
 
 module.exports = function (_eventType, _phone, _params) {
     

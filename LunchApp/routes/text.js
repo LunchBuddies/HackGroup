@@ -1,6 +1,6 @@
 //    Declaration Section    //
 var express = require('express'),
-    history = require ('../History'),
+    history = require ('../Models/History'),
     router = express.Router(),
     CronJob = require('cron').CronJob,
     sendText = require('../Functions/sendText'),
@@ -28,26 +28,12 @@ testConfirmTime.setMinutes(date.getMinutes() + 2);
 var PromptTime = '00 00 11 * * 1-5',
     ConfirmTime =  '00 00 12 * * 1-5';
 
-// var userSchema = new Schema ({
-//     name: String,
-//     phone: String,
-//     group: String,
-//     isGoing: Boolean,
-//     isActive: Boolean,
-//     isInsider: Boolean
-// });
-
-// var user = mongoose.model('user', userSchema );
 
 console.log('----- Set times: done');
 
 // ------------------------- Message Strings -----------------------------
 
-
-
 var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 31'];
-
-insertUser('John', '', 'Oloop');
 
 //Generates a message from an array of messages and appends the default signature
 function generateMessageWithSignature(messageArray, signature){
@@ -96,7 +82,7 @@ function generateConfirmationMessage(namesString, suggestedCafe, signature){
     }
 }
 
-
+updateUserObject({},{},{},'');
 console.log('----- Created user 2.0 model: done');
 
 // Cron job that prompts users to come to lunch

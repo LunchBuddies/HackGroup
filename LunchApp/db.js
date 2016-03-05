@@ -3,8 +3,9 @@ var mongoose = require('mongoose');
 var nconf = require('nconf');
 
 // Grab JSON config files in this order:
-//   1. production.js
-//   2. development.js
+//   1. Arguments passed to node
+//   2. production.js
+//   3. development.js
 nconf.argv().file('prod','./config/production.json' ).file('dev','./config/development.json' );
 
 mongoose.connect("mongodb://" + nconf.get('db') 

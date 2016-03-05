@@ -12,9 +12,10 @@ var express = require('express'),
     nconf = require('nconf');
 
 // Grab JSON config files in this order:
-//   1. production.js
-//   2. development.js
-nconf.file('prod','./config/production.json' ).file('dev','./config/development.json' );
+//   1. Arguments passed to node
+//   2. production.js
+//   3. development.js
+nconf.argv().file('prod','./config/production.json' ).file('dev','./config/development.json' );
 
 
 console.log('----- App imports: done');

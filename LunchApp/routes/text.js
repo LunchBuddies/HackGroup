@@ -16,9 +16,10 @@ var express = require('express'),
     logHistoryEvent = require ('../Functions/logHistoryEvent');
 
 // Grab JSON config files in this order:
-//   1. production.js
-//   2. development.js
-nconf.file('prod','./config/production.json' ).file('dev','./config/development.json' );
+//   1. Arguments passed to node
+//   2. production.js
+//   3. development.js
+nconf.argv().file('prod','./config/production.json' ).file('dev','./config/development.json' );
 
 // We are setting prompt time and confirmation time for lunch
 var date = new Date(),
@@ -59,29 +60,31 @@ function generateConfirmationMessage(namesString, suggestedCafe, signature){
     if (signature = 'undefined'){
         signature = strings.signature;
     }
+    var optionsListWithoutCafe = [
+        //namesString + ' are free! Have fun you crazy kids!',
+        'Have the time of your life with ' + namesString + '.',
+        'Enjoy lunch with ' + namesString + '.',
+        namesString + ' said they would absolutely love to go.'
+    ]
+    var optionsListWithCafe = [
+        //namesString + ' are free! We suggest ' + suggestedCafe + '. Have fun you crazy kids!',
+        'Have the time of your life with ' + namesString + '. We\'ve heard good things about ' + suggestedCafe + '...',
+        'Enjoy lunch with ' + namesString + '. Might we suggest ' + suggestedCafe + '?',
+        namesString + ' said they would absolutely love to go. We suggest ' + suggestedCafe + '.'
+    ]
 
     if(suggestedCafe != '')
     {
-        var optionsList = [
-            //namesString + ' are free! We suggest ' + suggestedCafe + '. Have fun you crazy kids!',
-            'Have the time of your life with ' + namesString + '. We\'ve heard good things about ' + suggestedCafe + '...',
-            'Enjoy lunch with ' + namesString + '. Might we suggest ' + suggestedCafe + '?',
-            namesString + ' said they would absolutely love to go. We suggest ' + suggestedCafe + '.'
-        ]
-        var randomNumber = getRandomInt(0, optionsList.length-1);
-        return optionsList[randomNumber] + signature;
+        
+        var randomNumber = getRandomInt(0, optionsListWithCafe.length-1);
+        return optionsListWithCafe[randomNumber] + signature;
     }
     else
     {
-         var optionsList = [
-            //namesString + ' are free! Have fun you crazy kids!',
-            'Have the time of your life with ' + namesString + '.',
-            'Enjoy lunch with ' + namesString + '.',
-            namesString + ' said they would absolutely love to go.'
-        ]
+         
 
-        var randomNumber = getRandomInt(0, optionsList.length-1);
-        return optionsList[randomNumber] + signature;
+        var randomNumber = getRandomInt(0, optionsListWithoutCafe.length-1);
+        return optionsListWithoutCafe[randomNumber] + signature;
     }
 }
 

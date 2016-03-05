@@ -1,13 +1,14 @@
 //    Declaration Section    //
 var express = require('express');
-var keys = require ('../Keys');
 var history = require ('../History');
-var client = require('twilio')(keys.TWILIO_ACCOUNT_SID, keys.TWILIO_AUTH_KEY);
 var router = express.Router();
 var CronJob = require('cron').CronJob;
 var database = require('../db');
-var TwilioNumber = '+14693400518';
+var sendText = require('../sendText');
 
+var nconf = require('nconf');
+
+nconf.file('prod','./config/production.json' ).file('dev','./config/development.json' );
 
 // for Mongo
 // var MongoClient = require('mongodb').MongoClient;
@@ -15,10 +16,6 @@ var mongoose = require('mongoose');
 var assert = require('assert');
 var Schema = mongoose.Schema;
 
-// var userSchema = new Schema({
-//     name: String,
-//     phone: String
-// });
 
 // We are setting prompt time and confirmation time for lunch
 var date = new Date();
@@ -30,6 +27,7 @@ testPromptTime.setMinutes(date.getMinutes()+ 1);
 testConfirmTime.setMinutes(date.getMinutes() + 2);
 var PromptTime = '00 00 11 * * 1-5';
 var ConfirmTime =  '00 00 12 * * 1-5';
+
 
 console.log('----- Set times: done');
 
@@ -175,8 +173,6 @@ function logHistoryEvent (_eventType, _phone, _params) {
     });
 }
  
-
- // test
 // Contains all the logic executed when the PROMPT cron job ticks
 function promptCronLogic ()  {
     console.log('==================== Begin: promptCronLogic ====================');
@@ -188,7 +184,7 @@ function promptCronLogic ()  {
             for (var i = 0; i < result.length ; i++)
             { 
                 // console.log(result[i].phone);
-                // sendText(result[i].phone, generateMessageWithSignature(promptMessages), true)
+                // sendText(result[i].phone, generateMessageWithSignature(promptMessages))
             }
             //console.log(result);
         }
@@ -302,7 +298,7 @@ function generateAllMessages(users)
         }
          console.log('for phone: '+ phone + ' the message is: '+ messageString);         
 
-        // sendText(phone,messageString, true);
+        // sendText(phone,messageString);
         
     }
     console.log('==================== End: generateAllMessages ====================');
@@ -336,14 +332,14 @@ function insertUser (_name, _phone, _group)
     {
         if (!err){
             console.log('Inserted new record with name: '+ _name);
-            // sendText(_phone, generateMessageWithSignature(joinMessage),true); 
+            // sendText(_phone, generateMessageWithSignature(joinMessage)); 
             
             logHistoryEvent ('Join', _phone, {name:_name});
             return;
         }
         else
         {
-            // sendText(_phone,joinFailureMessage, true); 
+            // sendText(_phone,joinFailureMessage); 
             logHistoryEvent ('Error','', err); 
         }
     });
@@ -362,7 +358,7 @@ function JoinLogic (_phone, _message)
     {
         console.log ('join needs 3 parameters');
         // send text
-        // sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
+        // sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>"); 
         return;
     }
 
@@ -380,7 +376,7 @@ function JoinLogic (_phone, _message)
             // If the user is active, they are already in a group
             if (result[0].isActive)
             {
-                // sendText(_phone, "You're already in a group! Text 'Leave Group' to leave current group",true);
+                // sendText(_phone, "You're already in a group! Text 'Leave Group' to leave current group");
                 return;
             }
 
@@ -406,7 +402,7 @@ function JoinLogic (_phone, _message)
         {
             console.log ('join needs 3 parameters');
             // send text
-            // sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
+            // sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>"); 
             return;
         }
         
@@ -430,7 +426,7 @@ function updateUserObject (_conditionsForUpdateDB, _updateForUpdateDB, _confirma
 
       console.log ("the message for text in updateuserobject: "+ text);
 
-        // sendText(_conditionsForUpdateDB.phone, text, true );
+        // sendText(_conditionsForUpdateDB.phone, text );
     });
 }
 
@@ -457,7 +453,7 @@ router.post('/', function(req, res) {
         // User is french
         else if ((new RegExp("OUI")).test(req.body.Body.toUpperCase()))
         {
-            sendText(req.body.From,'We dont like the french...', true);
+            sendText(req.body.From,'We dont like the french...';
         }
 
         // User responsed no
@@ -465,7 +461,7 @@ router.post('/', function(req, res) {
         {
             // Nothing should happen here
             console.log('No');
-            sendText(req.body.From,generateMessageWithSignature(immediateNoResponsesMessages), true);
+            sendText(req.body.From,generateMessageWithSignature(immediateNoResponsesMessages));
         }
 
         else if ((new RegExp("JOIN")).test(req.body.Body.toUpperCase()))
@@ -550,7 +546,7 @@ router.post('/', function(req, res) {
                     // numAffected is the number of updated documents
                     console.log('---- ' + req.body.From + ' left the group: done'); 
                     logHistoryEvent ('Leave', req.body.From, {});
-                    sendText(req.body.From, LeaveMessage, true); 
+                    sendText(req.body.From, LeaveMessage); 
                 }  
                 else
                 {
@@ -568,7 +564,7 @@ router.post('/', function(req, res) {
         // TODO - make sure user can send multiple texts to us
         else
         {
-            sendText(req.body.From,'Say that again? We didn\'t catch it!', true);   
+            sendText(req.body.From,'Say that again? We didn\'t catch it!');   
         }
     }
 });
@@ -582,40 +578,6 @@ function GetUser(body)
 function GetKeyword(body)
 {
     return (body.split(" ")[0].toUpperCase());    
-}
-
-// Sends a single message to a given phone number
-function sendText(phoneNumber, message, retry){
-    console.log('==================== Begin: sendText ====================');
-    console.log("----- " + message )
-    
-    client.sendMessage( {
-
-        to: phoneNumber, // Any number Twilio can deliver to
-        from: TwilioNumber, 
-        body: message // body of the SMS message
-
-    }, function(err, responseData) { //this function is executed when a response is received from Twilio
-
-        if (!err) { // "err" is an error received during the request, if any
-
-            // console.log(responseData.from + ' ' + responseData.body); // outputs "+14506667788"
-            // console.log(responseData.body); // outputs "word to your mother."
-            console.log('----- Sent text to ' + responseData.to + ': done')
-            logHistoryEvent ('SendText', responseData.to, {message: message});
-        }
-        else {
-            console.log(err);
-            // If it was the first time failed, try again
-            logHistoryEvent ('Error', responseData.to, err);
-
-            // if (retry)
-            // {
-            //     sendText (phoneNumber, message, false);
-            // }
-        }
-    });
-    console.log('==================== End: sendText ====================');
 }
 
 //

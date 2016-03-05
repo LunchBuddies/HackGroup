@@ -5,6 +5,7 @@ var express = require('express'),
     CronJob = require('cron').CronJob,
     sendText = require('../Functions/sendText'),
     updateUserObject = require('../Functions/updateUser'),
+    insertUser = require('../Functions/insertUser'),
     database = require('../db'),
     nconf = require('nconf'),
     glob = require('glob'),
@@ -43,12 +44,10 @@ console.log('----- Set times: done');
 // ------------------------- Message Strings -----------------------------
 
 
-//Message which 
-
 
 var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 31'];
 
-updateUserObject({},{},{}, '');
+insertUser('John', '', 'Oloop');
 
 //Generates a message from an array of messages and appends the default signature
 function generateMessageWithSignature(messageArray, signature){
@@ -255,34 +254,6 @@ router.get('/', function(req, res) {
        confirmCronLogic();
     };
 });
-
-function insertUser (_name, _phone, _group) 
-{
-    console.log ('inser user');
-    var insertUser = new user ({
-        name:_name, 
-        phone:_phone,
-        group:_group.toUpperCase(), 
-        isGoing: false,
-        isActive: true
-    });
-    console.log(insertUser);
-    insertUser.save (function (err, result) 
-    {
-        if (!err){
-            console.log('Inserted new record with name: '+ _name);
-            // sendText(_phone, generateMessageWithSignature(joinMessage)); 
-            
-            logHistoryEvent ('Join', _phone, {name:_name});
-            return;
-        }
-        else
-        {
-            // sendText(_phone,strings.joinFailureMessage); 
-            logHistoryEvent ('Error','', err); 
-        }
-    });
-}
 
 
 function JoinLogic (_phone, _message)

@@ -1,5 +1,5 @@
 var express = require('express'),
-	user = require('../Models/user'),
+    user = require('../Models/user'),
 	logHistoryEvent = require ('../Functions/logHistoryEvent'),
 	strings = require('../Resources/strings');
 

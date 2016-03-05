@@ -1,37 +1,23 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser'),
+var express = require('express'),
+    path = require('path'),
+    favicon = require('serve-favicon'),
+    logger = require('morgan'),
+    cookieParser = require('cookie-parser'),
+    bodyParser = require('body-parser'),
     mongoose = require('mongoose'),
-    glob = require('glob');
-
-var routes = require('./routes/index');
-var user = require('./routes/user');
-var text = require('./routes/text');
-var textError = require('./routes/textError'),
+    glob = require('glob'),
+    routes = require('./routes/index'),
+    text = require('./routes/text'),
+    textError = require('./routes/textError'),
     nconf = require('nconf');
 
+// Grab JSON config files in this order:
+//   1. production.js
+//   2. development.js
 nconf.file('prod','./config/production.json' ).file('dev','./config/development.json' );
 
 
 console.log('----- App imports: done');
-  
-
-// 
-// Setup nconf to use (in-order): 
-//   1. Command-line arguments 
-//   2. Environment variables 
-//   3. A file located at 'path/to/config.json' 
-// 
-
-// var models = glob.sync('./Models/*.js');
-// console.log(models);
-// models.forEach(function (model) {
-//   require(model);
-//   console.log('hey');
-// });
 
 var app = express();
 
@@ -57,7 +43,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/user', user);
 app.use('/text', text);
 app.use('/textError', textError);
 
@@ -74,7 +59,6 @@ app.use(function(req, res, next) {
 
 // development error handler
 // will print stacktrace
-
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);

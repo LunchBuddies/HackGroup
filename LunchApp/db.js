@@ -2,9 +2,10 @@ var express = require('express');
 var mongoose = require('mongoose');
 var nconf = require('nconf');
 
-// Loads production first, then dev
+// Grab JSON config files in this order:
+//   1. production.js
+//   2. development.js
 nconf.file('prod','./config/production.json' ).file('dev','./config/development.json' );
-
 
 mongoose.connect("mongodb://" + nconf.get('db') 
 	+ ":" + nconf.get('port') 

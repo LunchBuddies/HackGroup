@@ -15,6 +15,9 @@ var express = require('express'),
     strings = require ('../strings'),
     logHistoryEvent = require ('../Functions/logHistoryEvent');
 
+// Grab JSON config files in this order:
+//   1. production.js
+//   2. development.js
 nconf.file('prod','./config/production.json' ).file('dev','./config/development.json' );
 
 // We are setting prompt time and confirmation time for lunch
@@ -82,7 +85,6 @@ function generateConfirmationMessage(namesString, suggestedCafe, signature){
     }
 }
 
-updateUserObject({},{},{},'');
 console.log('----- Created user 2.0 model: done');
 
 // Cron job that prompts users to come to lunch
@@ -141,7 +143,7 @@ function promptCronLogic ()  {
 // Contains all the logic executed when the CONFIRM cron job ticks
 function confirmCronLogic () {
     console.log('==================== Begin: confirmCronLogic ====================');
-        user.find ({isGoing: true, isActive: true}, function (err, result) 
+    user.find ({isGoing: true, isActive: true}, function (err, result) 
     {
         console.log (result);
         

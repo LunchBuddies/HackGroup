@@ -15,6 +15,9 @@ mongoose.connect("mongodb://" + nconf.get('db')
 var db = mongoose.connection;
 
 db.on('error', function () {
+	console.warn('---- tried connecting to db at '+ nconf.get('db') 
+	+ ":" + nconf.get('port') 
+	+ "/" + nconf.get('table'));
   throw new Error('unable to connect to database at ' + config.db);
 });
 
@@ -24,9 +27,7 @@ db.on('error', function () {
 //     console.log ('db.js: insert into db' );
 // });
 console.log('----- Load DB at ' + nconf.get('db') 
-	+ ":" 
-	+ nconf.get('port') 
-	+ "/" 
-	+ nconf.get('table') + ': done');
+	+ ":" + nconf.get('port') 
+	+ "/" + nconf.get('table') + ': done');
 
 module.exports = db;

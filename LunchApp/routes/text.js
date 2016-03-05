@@ -413,6 +413,7 @@ router.post('/', function(req, res) {
 });
 
 
+// Some helper functions
 function GetUser(body)
 {
     return (body.split(" ")[1]);    

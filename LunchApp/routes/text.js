@@ -35,15 +35,11 @@ if (nconf.get('enviornment') == 'dev')
 }
 
 // If we are in a production enviornment, set to normal cron times
-else
+else if (nconf.get('enviornment') == 'prod')
 {
     promptTime = '00 00 11 * * 1-5',
     confirmTime = '00 00 12 * * 1-5';
 }
-// We are setting prompt time and confirmation time for lunch
-
-
-
 
 console.log('----- Set times: done');
 
@@ -115,7 +111,7 @@ console.log('----- Start prompt cron: done');
 
 // Cron job that confirms to users at lunch time
 new CronJob({
-    cronTime: confirmTime,//nconf.get('confirmTime'), 
+    cronTime: confirmTime,
     onTick: function()
     {
         confirmCronLogic();

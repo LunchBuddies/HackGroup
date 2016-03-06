@@ -602,14 +602,34 @@ router.post('/', function(req, res) {
     }
 });
 
-function who(phoneNumber)
+function WhoLogic(phoneNumber)
 {
         console.log('==================== Begin: WhoLogic ====================');
 
-        user.find ({isGoing: true, isActive: true}, function (err, result) 
-    {
-        getList(result,phoneNumber);
-    });
+
+            // check time of joining and if it is between 11 AM - noon, then we will send them prompt message as well.       
+                var date = new Date();
+                var current_time = date.toLocaleTimeString();
+                var current_hour = current_time.split(":")[0];
+                var AMorPM = current_time.split(" ")[1];
+
+                console.log("The hour is: " + current_hour);
+                console.log("The AMorPM is: " + AMorPM);
+
+                if (current_hour == 11 && AMorPM == "AM")
+                {
+                    console.log("Time between 11 and 12, so Who is eligible");
+
+                    user.find ({isGoing: true, isActive: true}, function (err, result) 
+                    {
+                        getList(result,phoneNumber);
+                    });
+                }
+                else
+                {
+                    console.log("Out of Who support time");
+                    sendText(_phone, generateMessageWithSignature("Who command can only be used between 11-12 on weekdays."), true);
+                }
 
     console.log('==================== End: WhoLogic ====================');
 
@@ -697,9 +717,6 @@ function sendText(phoneNumber, message, retry){
     });
     console.log('==================== End: sendText ====================');
 }
-
-
-
 
 //
 function randomCafe (){

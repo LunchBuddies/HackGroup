@@ -10,6 +10,6 @@ var HistorySchema = new Schema ({
 
 var historyEvent = mongoose.model('EventLog', HistorySchema );
 
-console.log('----- Initialize History Collection: done');
+console.log('-----Initialize History Collection: done');
 
 module.exports = historyEvent;

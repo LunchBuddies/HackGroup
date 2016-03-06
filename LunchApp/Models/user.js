@@ -12,6 +12,6 @@ var userSchema = new Schema ({
 
 var user = mongoose.model('user', userSchema );
 
-console.log('----- Initialize History Collection: done');
+console.log('----- Initialize User Collection: done');
 
 module.exports = user;

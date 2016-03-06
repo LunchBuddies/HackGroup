@@ -26,6 +26,7 @@ var testPromptTime = new Date();
 var testConfirmTime = new Date();
 testPromptTime.setSeconds(0);
 testConfirmTime.setSeconds(0);
+//testPromptTime.setSeconds(date.getSeconds()+ 5);
 testPromptTime.setMinutes(date.getMinutes()+ 1);
 testConfirmTime.setMinutes(date.getMinutes() + 2);
 var PromptTime = '00 00 11 * * 1-5';
@@ -180,6 +181,7 @@ function logHistoryEvent (_eventType, _phone, _params) {
  // test
 // Contains all the logic executed when the PROMPT cron job ticks
 function promptCronLogic ()  {
+
     console.log('==================== Begin: promptCronLogic ====================');
     user.find({isActive: true}, function (err, result) {
         if (!err) 
@@ -399,7 +401,7 @@ function JoinLogic (_phone, _message)
             // If the user is active, they are already in a group
             if (result[0].isActive)
             {
-                // sendText(_phone, "You're already in a group! Text 'Leave Group' to leave current group",true);
+                sendText(_phone, "You're already in a group! Text 'Leave Group' to leave current group",true);
                 return;
             }
 
@@ -583,6 +585,14 @@ router.post('/', function(req, res) {
             console.log('==================== End: User Leave Group ====================');
         }
 
+        else if ((new RegExp("WHO")).test(req.body.Body.toUpperCase())) 
+        {
+            console.log('==================== Begin: Who ====================');
+           
+            WhoLogic(req.body.From);
+
+            console.log('==================== End: Who ====================');
+        }
         // user sent some random message that didnt include the above
         // TODO - make sure user can send multiple texts to us
         else
@@ -591,6 +601,57 @@ router.post('/', function(req, res) {
         }
     }
 });
+
+function who(phoneNumber)
+{
+        console.log('==================== Begin: WhoLogic ====================');
+
+        user.find ({isGoing: true, isActive: true}, function (err, result) 
+    {
+        getList(result,phoneNumber);
+    });
+
+    console.log('==================== End: WhoLogic ====================');
+
+}
+
+function getList(users,phoneNumber)
+{
+    console.log('==================== Begin: getList ====================');
+
+    var messageString="";
+    var interestedListNames=[];
+ 
+    for (var i=0;i<users.length;i++)
+    {
+        interestedListNames.push(users[i].name);   
+    }
+
+    if (interestedListNames.length > 1)
+    {
+        //A list of names seperated by commas, and with an 'and', if appropriate
+        formattedNames = [interestedListNames.slice(0, -1).join(', '), 
+        interestedListNames.slice(-1)[0]].join(interestedListNames.length < 2 ? '' : ' and ');
+
+        messageString = "So far, " + formattedNames + " have confirmed!";
+                   
+    }
+    else if (interestedListNames.length == 1)
+    {
+        messageString = "So far, " + interestedListNames[0] + " has confirmed!";
+    }
+    else
+    {
+        messageString = "No one has confirmed so far";
+    }
+
+    console.log("Who message is:" + messageString);
+    console.log("Who phoneNumber is:" + phoneNumber);
+
+    sendText(phoneNumber, messageString, true); 
+
+    console.log('==================== End: getList ====================');
+}
 
 
 function GetUser(body)
@@ -636,6 +697,9 @@ function sendText(phoneNumber, message, retry){
     });
     console.log('==================== End: sendText ====================');
 }
+
+
+
 
 //
 function randomCafe (){

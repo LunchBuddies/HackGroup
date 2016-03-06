@@ -57,7 +57,7 @@ var immediateYesResponsesMessages = [
 
 //Message which 
 var immediateNoResponsesMessages = [
-    "Aww! We\'ll miss you."
+    "Aww! We\'ll miss you. If you change your mind, don't worry! Just text \'YES\' before noon and we will take care of everything else!"
 ]
 
 //Message which will be sent if there is only one attendee
@@ -327,6 +327,8 @@ router.get('/', function(req, res) {
 
 function insertUser (_name, _phone, _group) 
 {
+    console.log('==================== Start: insertUser ====================');
+
     console.log ('inser user');
     var insertUser = new user ({
         name:_name, 
@@ -369,11 +371,16 @@ function insertUser (_name, _phone, _group)
             logHistoryEvent ('Error','', err); 
         }
     });
+
+console.log('==================== End: insertUser ====================');
+
 }
 
 
 function JoinLogic (_phone, _message)
 {
+    console.log('==================== Start: JoinLogic ====================');
+
     var messageSplit = _message.split (' ');
     if (messageSplit[0].toUpperCase() != 'JOIN')
     {
@@ -436,10 +443,16 @@ function JoinLogic (_phone, _message)
         // Actually add the user 
         insertUser (messageSplit[1], _phone, messageSplit[2]);
     });
+
+    console.log('==================== End: JoinLogic ====================');
+
 } 
 
 function updateUserObject (_conditionsForUpdateDB, _updateForUpdateDB, _confirmation)
 {
+
+    console.log('==================== Start: updateUserObject ====================');
+
     user.update(_conditionsForUpdateDB, _updateForUpdateDB, function callback (err, numAffected) {
       // numAffected is the number of updated documents
       console.log('updateuserobject: updated status for ' + _conditionsForUpdateDB.phone)
@@ -453,11 +466,23 @@ function updateUserObject (_conditionsForUpdateDB, _updateForUpdateDB, _confirma
 
      sendText(_conditionsForUpdateDB.phone, text, true );
     });
+
+    console.log('==================== End: updateUserObject ====================');
 }
 
 
 // Post function for calls from Twilio
 router.post('/', function(req, res) {
+
+    var date = new Date();
+    var current_time = date.toLocaleTimeString();
+    var current_hour = current_time.split(":")[0];
+    var AMorPM = current_time.split(" ")[1];
+
+    console.log("The hour is: " + current_hour);
+    console.log("The AMorPM is: " + AMorPM);
+
+
     if (req._body) 
     {
         // Log every text we get
@@ -467,13 +492,26 @@ router.post('/', function(req, res) {
         // User sends any variation of yes
         if ((new RegExp("YES")).test(req.body.Body.toUpperCase()))
         {
+            console.log('==================== Start: YES ====================');
 
-            // Update status of user to 
-            var conditionsForUpdateDB = { phone: req.body.From }
-              , updateForUpdateDB = { isGoing: true };
-            updateUserObject(conditionsForUpdateDB, updateForUpdateDB, immediateYesResponsesMessages);
-            
+            if(current_hour == 11 && AMorPM == "AM")
+            {
+                // Update status of user to 
+                var conditionsForUpdateDB = { phone: req.body.From }
+                  , updateForUpdateDB = { isGoing: true };
+                updateUserObject(conditionsForUpdateDB, updateForUpdateDB, immediateYesResponsesMessages);
+            }
+            else
+            {
+                console.log(req.body.From + 'said Yes after eligible hours');
+
+                sendText(req.body.From,'Sorry, your team has already gone. Try again between 11-12 on any weekday.', true);
+            }     
+
+            console.log('==================== End: YES ====================');
+
         }
+
 
         // User is french
         else if ((new RegExp("OUI")).test(req.body.Body.toUpperCase()))
@@ -484,9 +522,23 @@ router.post('/', function(req, res) {
         // User responsed no
         else if ((new RegExp("NO")).test(req.body.Body.toUpperCase()))
         {
-            // Nothing should happen here
-            console.log('No');
-            sendText(req.body.From,generateMessageWithSignature(immediateNoResponsesMessages), true);
+            console.log('==================== Start: No ====================');
+
+            if(current_hour == 11 && AMorPM == "AM")
+            {
+                // Nothing should happen here
+                console.log('No');
+                sendText(req.body.From,generateMessageWithSignature(immediateNoResponsesMessages), true);
+            }
+            else
+            {
+                console.log(req.body.From + 'said No after eligible hours');
+
+                sendText(req.body.From,'Confirmation window is between 11-12 on weekdays.', true);
+            }
+    
+             console.log('==================== End: No ====================');
+
         }
 
         else if ((new RegExp("JOIN")).test(req.body.Body.toUpperCase()))
@@ -589,7 +641,16 @@ router.post('/', function(req, res) {
         {
             console.log('==================== Begin: Who ====================');
            
-            WhoLogic(req.body.From);
+            if (current_hour == 11 && AMorPM == "AM")
+            {
+                console.log("Time between 11 and 12, so Who is eligible");
+                WhoLogic(req.body.From);
+            }
+            else
+            {
+                console.log("Out of Who support time");
+                sendText(_phone, generateMessageWithSignature("Who command can only be used between 11-12 on weekdays."), true);
+            }
 
             console.log('==================== End: Who ====================');
         }
@@ -606,30 +667,10 @@ function WhoLogic(phoneNumber)
 {
         console.log('==================== Begin: WhoLogic ====================');
 
-
-            // check time of joining and if it is between 11 AM - noon, then we will send them prompt message as well.       
-                var date = new Date();
-                var current_time = date.toLocaleTimeString();
-                var current_hour = current_time.split(":")[0];
-                var AMorPM = current_time.split(" ")[1];
-
-                console.log("The hour is: " + current_hour);
-                console.log("The AMorPM is: " + AMorPM);
-
-                if (current_hour == 11 && AMorPM == "AM")
-                {
-                    console.log("Time between 11 and 12, so Who is eligible");
-
-                    user.find ({isGoing: true, isActive: true}, function (err, result) 
-                    {
-                        getList(result,phoneNumber);
-                    });
-                }
-                else
-                {
-                    console.log("Out of Who support time");
-                    sendText(_phone, generateMessageWithSignature("Who command can only be used between 11-12 on weekdays."), true);
-                }
+        user.find ({isGoing: true, isActive: true}, function (err, result) 
+            {
+                getList(result,phoneNumber);
+            });
 
     console.log('==================== End: WhoLogic ====================');
 

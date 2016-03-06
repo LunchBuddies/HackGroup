@@ -42,9 +42,9 @@ var defaultSignature = '\n - TheLunchBuddies'
 
 //Message which prompts users to respond.
 var promptMessages = [
-    "Interested in lunch? Text \'YES\' by noon and we\'ll let you know who else is interested. ",
-    "Free for lunch? Text \'YES\' by noon and we\'ll let you know who else is interested. ",
-    "Free for lunch? Come on, you know you want to. Text \'YES\' by noon and we\'ll let you know who else is interested. "
+    "Interested in lunch? Text \'YES\' by noon and we\'ll let you know who else is interested. Also, don't forget to fill MS Poll",
+    "Free for lunch? Text \'YES\' by noon and we\'ll let you know who else is interested. Also, don't forget to fill MS Poll",
+    "Free for lunch? Come on, you know you want to. Text \'YES\' by noon and we\'ll let you know who else is interested. Also, don't forget to fill MS Poll"
 ]
 
 //Message which sends right after a user confirms.

@@ -135,7 +135,7 @@ console.log('----- Created user 2.0 model: done');
 
 // Cron job that prompts users to come to lunch
 new CronJob({
-    cronTime: testPromptTime,
+    cronTime: PromptTime,
     onTick: function(){
         promptCronLogic ();
     },
@@ -146,7 +146,7 @@ console.log('----- Start prompt cron: done');
 
 // Cron job that confirms to users at lunch time
 new CronJob({
-    cronTime: testConfirmTime, //confirmTime
+    cronTime: ConfirmTime, //confirmTime
     onTick: function()
     {
         confirmCronLogic();
@@ -180,64 +180,64 @@ function logHistoryEvent (_eventType, _phone, _params) {
  // test
 // Contains all the logic executed when the PROMPT cron job ticks
 function promptCronLogic ()  {
-    insertUser("ABC", "1234567890","OENGPM");
-    // console.log('==================== Begin: promptCronLogic ====================');
-    // user.find({isActive: true}, function (err, result) {
-    //     if (!err) 
-    //     { 
+    console.log('==================== Begin: promptCronLogic ====================');
+    user.find({isActive: true}, function (err, result) {
+        if (!err) 
+        { 
 
-    //         console.log('----- fetched ' + result.length + ' users in PromptCron: done');
-    //         for (var i = 0; i < result.length ; i++)
-    //         { 
-    //             // console.log(result[i].phone);
-    //             // sendText(result[i].phone, generateMessageWithSignature(promptMessages), true)
-    //         }
-    //         //console.log(result);
-    //     }
-    //     else
-    //     {
-    //         logHistoryEvent ('Error', '',  err);
-    //     }
-    // });
+            console.log('----- fetched ' + result.length + ' users in PromptCron: done');
+            for (var i = 0; i < result.length ; i++)
+            { 
+                console.log(result[i].phone);
+                sendText(result[i].phone, generateMessageWithSignature(promptMessages), true)
+            }
+            
+            console.log(result);
+        }
+        else
+        {
+            logHistoryEvent ('Error', '',  err);
+        }
+    });
     
-    // var conditionsForResetDB = {}
-    //   , updateForResetDB = { isGoing: false }
-    //   , optionsForResetDB = {multi: true } ;
+    var conditionsForResetDB = {}
+      , updateForResetDB = { isGoing: false }
+      , optionsForResetDB = {multi: true } ;
 
-    // user.update(conditionsForResetDB, updateForResetDB,  optionsForResetDB, function callback (err, numAffected) {
+    user.update(conditionsForResetDB, updateForResetDB,  optionsForResetDB, function callback (err, numAffected) {
 
-    //     if (!err)
-    //     {
-    //         // numAffected is the number of updated documents
-    //         console.log('---- Reset ' + numAffected.nModified + ' accounts: done'); 
-    //     }  
-    //     else
-    //     {
-    //         logHistoryEvent ('Error','', err);
-    //     }  
-    // });
+        if (!err)
+        {
+            // numAffected is the number of updated documents
+            console.log('---- Reset ' + numAffected.nModified + ' accounts: done'); 
+        }  
+        else
+        {
+            logHistoryEvent ('Error','', err);
+        }  
+    });
 
-    // console.log('==================== End: promptCronLogic ====================');
+    console.log('==================== End: promptCronLogic ====================');
 };
 
 // Contains all the logic executed when the CONFIRM cron job ticks
 function confirmCronLogic () {
-    // console.log('==================== Begin: confirmCronLogic ====================');
-    //     user.find ({isGoing: true, isActive: true}, function (err, result) 
-    // {
-    //     console.log (result);
+    console.log('==================== Begin: confirmCronLogic ====================');
+        user.find ({isGoing: true, isActive: true}, function (err, result) 
+    {
+        console.log (result);
         
-    //     if (!err)
-    //     {
-    //         generateAllMessages(result);  
-    //         console.log('----- Send confirmation to ' + result.length + ' users: done');    
-    //     }
-    //     else
-    //     {
-    //         logHistoryEvent ('Error','', err);
-    //     }
-    // });
-    // console.log('==================== End: confirmCronLogic ====================');
+        if (!err)
+        {
+            generateAllMessages(result);  
+            console.log('----- Send confirmation to ' + result.length + ' users: done');    
+        }
+        else
+        {
+            logHistoryEvent ('Error','', err);
+        }
+    });
+    console.log('==================== End: confirmCronLogic ====================');
 }
 
 
@@ -304,7 +304,7 @@ function generateAllMessages(users)
         }
          console.log('for phone: '+ phone + ' the message is: '+ messageString);         
 
-        // sendText(phone,messageString, true);
+        sendText(phone,messageString, true);
         
     }
     console.log('==================== End: generateAllMessages ====================');
@@ -340,7 +340,8 @@ function insertUser (_name, _phone, _group)
     {
         if (!err){
             console.log('Inserted new record with name: '+ _name);
-            // sendText(_phone, generateMessageWithSignature(joinMessage),true); 
+
+            sendText(_phone, generateMessageWithSignature(joinMessage),true); 
             logHistoryEvent ('Join', _phone, {name:_name});
 
             // check time of joining and if it is between 11 AM - noon, then we will send them prompt message as well.       
@@ -355,14 +356,14 @@ function insertUser (_name, _phone, _group)
                 if (current_hour == 11 && AMorPM == "AM")
                 {
                     console.log("Sending Prompt message");
-                    //sendText(_phone, generateMessageWithSignature(promptMessages), true);
+                    sendText(_phone, generateMessageWithSignature(promptMessages), true);
                 }
 
             return;
         }
         else
         {
-            // sendText(_phone,joinFailureMessage, true); 
+            sendText(_phone,joinFailureMessage, true); 
             logHistoryEvent ('Error','', err); 
         }
     });
@@ -380,8 +381,7 @@ function JoinLogic (_phone, _message)
     if (messageSplit.length != 3)
     {
         console.log ('join needs 3 parameters');
-        // send text
-        // sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
+        sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
         return;
     }
 
@@ -424,8 +424,8 @@ function JoinLogic (_phone, _message)
         if (messageSplit.length != 3)
         {
             console.log ('join needs 3 parameters');
-            // send text
-            // sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
+           
+            sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
             return;
         }
         
@@ -449,7 +449,7 @@ function updateUserObject (_conditionsForUpdateDB, _updateForUpdateDB, _confirma
 
       console.log ("the message for text in updateuserobject: "+ text);
 
-        // sendText(_conditionsForUpdateDB.phone, text, true );
+     sendText(_conditionsForUpdateDB.phone, text, true );
     });
 }
 
@@ -628,10 +628,10 @@ function sendText(phoneNumber, message, retry){
             // If it was the first time failed, try again
             logHistoryEvent ('Error', responseData.to, err);
 
-            // if (retry)
-            // {
-            //     sendText (phoneNumber, message, false);
-            // }
+            if (retry)
+            {
+                sendText (phoneNumber, message, false);
+            }
         }
     });
     console.log('==================== End: sendText ====================');

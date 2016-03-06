@@ -33,6 +33,7 @@ var ConfirmTime =  '00 00 12 * * 1-5';
 
 console.log('----- Set times: done');
 
+
 // ------------------------- Message Strings -----------------------------
 // These are the base strings for the messages
 
@@ -179,63 +180,64 @@ function logHistoryEvent (_eventType, _phone, _params) {
  // test
 // Contains all the logic executed when the PROMPT cron job ticks
 function promptCronLogic ()  {
-    console.log('==================== Begin: promptCronLogic ====================');
-    user.find({isActive: true}, function (err, result) {
-        if (!err) 
-        { 
+    insertUser("ABC", "1234567890","OENGPM");
+    // console.log('==================== Begin: promptCronLogic ====================');
+    // user.find({isActive: true}, function (err, result) {
+    //     if (!err) 
+    //     { 
 
-            console.log('----- fetched ' + result.length + ' users in PromptCron: done');
-            for (var i = 0; i < result.length ; i++)
-            { 
-                // console.log(result[i].phone);
-                // sendText(result[i].phone, generateMessageWithSignature(promptMessages), true)
-            }
-            //console.log(result);
-        }
-        else
-        {
-            logHistoryEvent ('Error', '',  err);
-        }
-    });
+    //         console.log('----- fetched ' + result.length + ' users in PromptCron: done');
+    //         for (var i = 0; i < result.length ; i++)
+    //         { 
+    //             // console.log(result[i].phone);
+    //             // sendText(result[i].phone, generateMessageWithSignature(promptMessages), true)
+    //         }
+    //         //console.log(result);
+    //     }
+    //     else
+    //     {
+    //         logHistoryEvent ('Error', '',  err);
+    //     }
+    // });
     
-    var conditionsForResetDB = {}
-      , updateForResetDB = { isGoing: false }
-      , optionsForResetDB = {multi: true } ;
+    // var conditionsForResetDB = {}
+    //   , updateForResetDB = { isGoing: false }
+    //   , optionsForResetDB = {multi: true } ;
 
-    user.update(conditionsForResetDB, updateForResetDB,  optionsForResetDB, function callback (err, numAffected) {
+    // user.update(conditionsForResetDB, updateForResetDB,  optionsForResetDB, function callback (err, numAffected) {
 
-        if (!err)
-        {
-            // numAffected is the number of updated documents
-            console.log('---- Reset ' + numAffected.nModified + ' accounts: done'); 
-        }  
-        else
-        {
-            logHistoryEvent ('Error','', err);
-        }  
-    });
+    //     if (!err)
+    //     {
+    //         // numAffected is the number of updated documents
+    //         console.log('---- Reset ' + numAffected.nModified + ' accounts: done'); 
+    //     }  
+    //     else
+    //     {
+    //         logHistoryEvent ('Error','', err);
+    //     }  
+    // });
 
-    console.log('==================== End: promptCronLogic ====================');
+    // console.log('==================== End: promptCronLogic ====================');
 };
 
 // Contains all the logic executed when the CONFIRM cron job ticks
 function confirmCronLogic () {
-    console.log('==================== Begin: confirmCronLogic ====================');
-        user.find ({isGoing: true, isActive: true}, function (err, result) 
-    {
-        console.log (result);
+    // console.log('==================== Begin: confirmCronLogic ====================');
+    //     user.find ({isGoing: true, isActive: true}, function (err, result) 
+    // {
+    //     console.log (result);
         
-        if (!err)
-        {
-            generateAllMessages(result);  
-            console.log('----- Send confirmation to ' + result.length + ' users: done');    
-        }
-        else
-        {
-            logHistoryEvent ('Error','', err);
-        }
-    });
-    console.log('==================== End: confirmCronLogic ====================');
+    //     if (!err)
+    //     {
+    //         generateAllMessages(result);  
+    //         console.log('----- Send confirmation to ' + result.length + ' users: done');    
+    //     }
+    //     else
+    //     {
+    //         logHistoryEvent ('Error','', err);
+    //     }
+    // });
+    // console.log('==================== End: confirmCronLogic ====================');
 }
 
 
@@ -331,14 +333,31 @@ function insertUser (_name, _phone, _group)
         isGoing: false,
         isActive: true
     });
+
     console.log(insertUser);
+
     insertUser.save (function (err, result) 
     {
         if (!err){
             console.log('Inserted new record with name: '+ _name);
             // sendText(_phone, generateMessageWithSignature(joinMessage),true); 
-            
             logHistoryEvent ('Join', _phone, {name:_name});
+
+            // check time of joining and if it is between 11 AM - noon, then we will send them prompt message as well.       
+                var date = new Date();
+                var current_time = date.toLocaleTimeString();
+                var current_hour = current_time.split(":")[0];
+                var AMorPM = current_time.split(" ")[1];
+
+                console.log("The hour is: " + current_hour);
+                console.log("The AMorPM is: " + AMorPM);
+
+                if (current_hour == 11 && AMorPM == "AM")
+                {
+                    console.log("Sending Prompt message");
+                    //sendText(_phone, generateMessageWithSignature(promptMessages), true);
+                }
+
             return;
         }
         else

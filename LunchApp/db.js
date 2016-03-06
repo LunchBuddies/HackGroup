@@ -27,7 +27,15 @@ db.on('error', function () {
 //     console.log ('db.js: insert into db' );
 // });
 console.log('----- Load DB at ' + nconf.get('db') 
+<<<<<<< HEAD
 	+ ":" + nconf.get('port') 
 	+ "/" + nconf.get('table') + ': done');
 
+=======
+	+ ":" 
+	+ nconf.get('port') 
+	+ "/" 
+	+ nconf.get('table') + ': done');
+//test
+>>>>>>> fbf16567b2994c142d553c73d928627d8d4a9990
 module.exports = db;

@@ -54,11 +54,11 @@ else if (nconf.get('enviornment') == 'prod')
     confirmTime = '00 00 12 * * 1-5';
 }
 
+
 console.log('----- Set times: done');
 
-// ------------------------- Message Strings -----------------------------
 
-var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 31'];
+// ------------------------- Message Strings -----------------------------
 
 //Generates a message from an array of messages and appends the default signature
 function generateMessageWithSignature(messageArray, signature){
@@ -114,6 +114,47 @@ function generateConfirmationMessage(namesString, suggestedCafe, signature){
 
 console.log('----- Created user 2.0 model: done');
 
+
+var cafeSchema = new Schema ({
+    name: String,
+    group: String,
+});
+
+var cafes = mongoose.model('cafes', cafeSchema );
+var cafesList=[];
+
+console.log('----- Created cafes model: done');
+console.log('');
+
+cafes.find(function (err, result) 
+{
+        if (!err) 
+        { 
+            for (var i = 0; i < result.length ; i++)
+            { 
+                cafesList.push(result[i]);
+            }
+        }
+        else
+        {
+            logHistoryEvent ('Error', '',  err);
+        }
+});
+
+// inserting cafes in Mongo DB
+//var listcafe = [' Cafe 16','Cafe 34','Cafe 9','Cafe 31', 'Cafe 4', 'Cafe 31'];
+// for (var i=0;i<listcafe.length;i++)
+// {
+//     var insertCafe = new cafes ({
+//             name:listcafe[i],
+//             group:'OENGPM' 
+//         });
+
+//     insertCafe.save (function (err, result){});
+
+// }
+
+
 // Cron job that prompts users to come to lunch
 new CronJob({
     cronTime: promptTime,
@@ -140,7 +181,7 @@ console.log('----- Start Confirmation cron: done');
  
 // Contains all the logic executed when the PROMPT cron job ticks
 function promptCronLogic ()  {
-    console.log('==================== Begin: promptCronLogic ====================');
+   console.log('==================== Begin: promptCronLogic ====================');
     user.find({isActive: true}, function (err, result) {
         if (!err) 
         { 
@@ -151,7 +192,8 @@ function promptCronLogic ()  {
                 // console.log(result[i].phone);
                 sendText(result[i].phone, generateMessageWithSignature(strings.promptMessages))
             }
-            //console.log(result);
+            
+            console.log(result);
         }
         else
         {
@@ -273,9 +315,10 @@ router.get('/', function(req, res) {
     };
 });
 
-
 function JoinLogic (_phone, _message)
 {
+    console.log('==================== Start: JoinLogic ====================');
+
     var messageSplit = _message.split (' ');
     if (messageSplit[0].toUpperCase() != 'JOIN')
     {
@@ -341,11 +384,23 @@ function JoinLogic (_phone, _message)
         // Actually add the user 
         insertUser (messageSplit[1], _phone, messageSplit[2]);
     });
-} 
 
+    console.log('==================== End: JoinLogic ====================');
+
+} 
 
 // Post function for calls from Twilio
 router.post('/', function(req, res) {
+
+    var date = new Date();
+    var current_time = date.toLocaleTimeString();
+    var current_hour = current_time.split(":")[0];
+    var AMorPM = current_time.split(" ")[1];
+
+    console.log("The hour is: " + current_hour);
+    console.log("The AMorPM is: " + AMorPM);
+
+
     if (req._body) 
     {
         // Log every text we get
@@ -355,13 +410,31 @@ router.post('/', function(req, res) {
         // User sends any variation of yes
         if ((new RegExp("YES")).test(req.body.Body.toUpperCase()))
         {
+            console.log('==================== Start: YES ====================');
+
+            if(current_hour == 11 && AMorPM == "AM")
+            {
+                // Update status of user to 
+                var conditionsForUpdateDB = { phone: req.body.From }
+                  , updateForUpdateDB = { isGoing: true };
+                updateUserObject(conditionsForUpdateDB, updateForUpdateDB, immediateYesResponsesMessages);
+            }
+            else
+            {
+                console.log(req.body.From + 'said Yes after eligible hours');
+
+                sendText(req.body.From,'Sorry, your team has already gone. Try again between 11-12 on any weekday.', true);
+            }     
+
+            console.log('==================== End: YES ====================');
 
             // Update status of user to 
             var conditionsForUpdateDB = { phone: req.body.From }
               , updateForUpdateDB = { isGoing: true };
             updateUserObject(conditionsForUpdateDB, updateForUpdateDB, {}, strings.immediateYesResponsesMessages);
-            
+
         }
+
 
         // User is french
         else if ((new RegExp("OUI")).test(req.body.Body.toUpperCase()))
@@ -372,9 +445,22 @@ router.post('/', function(req, res) {
         // User responsed no
         else if ((new RegExp("NO")).test(req.body.Body.toUpperCase()))
         {
-            // Nothing should happen here
-            console.log('No');
-            sendText(req.body.From,generateMessageWithSignature(strings.immediateNoResponsesMessages));
+            console.log('==================== Start: No ====================');
+
+            if(current_hour == 11 && AMorPM == "AM")
+            {
+                // Nothing should happen here
+                console.log('No');
+                sendText(req.body.From,generateMessageWithSignature(immediateNoResponsesMessages), true);
+            }
+            else
+            {
+                console.log(req.body.From + 'said No after eligible hours');
+
+                sendText(req.body.From,'Confirmation window is between 11-12 on weekdays.');
+            }
+    
+             console.log('==================== End: No ====================');
         }
 
         else if ((new RegExp("JOIN")).test(req.body.Body.toUpperCase()))
@@ -433,6 +519,25 @@ router.post('/', function(req, res) {
             sendText(req.body.From, strings.help);
         }
 
+
+        else if ((new RegExp("WHO")).test(req.body.Body.toUpperCase())) 
+        {
+            console.log('==================== Begin: Who ====================');
+           
+            if (current_hour == 11 && AMorPM == "AM")
+            {
+                console.log("Time between 11 and 12, so Who is eligible");
+                WhoLogic(req.body.From);
+            }
+            else
+            {
+                console.log("Out of Who support time");
+                sendText(_phone, generateMessageWithSignature("Who command can only be used between 11-12 on weekdays."), true);
+            }
+
+            console.log('==================== End: Who ====================');
+        }
+
         // user sent some random message that didnt include the above
         else
         {
@@ -440,6 +545,57 @@ router.post('/', function(req, res) {
         }
     }
 });
+
+function WhoLogic(phoneNumber)
+{
+        console.log('==================== Begin: WhoLogic ====================');
+
+        user.find ({isGoing: true, isActive: true}, function (err, result) 
+            {
+                getList(result,phoneNumber);
+            });
+
+    console.log('==================== End: WhoLogic ====================');
+
+}
+
+function getList(users,phoneNumber)
+{
+    console.log('==================== Begin: getList ====================');
+
+    var messageString="";
+    var interestedListNames=[];
+ 
+    for (var i=0;i<users.length;i++)
+    {
+        interestedListNames.push(users[i].name);   
+    }
+
+    if (interestedListNames.length > 1)
+    {
+        //A list of names seperated by commas, and with an 'and', if appropriate
+        formattedNames = [interestedListNames.slice(0, -1).join(', '), 
+        interestedListNames.slice(-1)[0]].join(interestedListNames.length < 2 ? '' : ' and ');
+
+        messageString = "So far, " + formattedNames + " have confirmed!";
+                   
+    }
+    else if (interestedListNames.length == 1)
+    {
+        messageString = "So far, " + interestedListNames[0] + " has confirmed!";
+    }
+    else
+    {
+        messageString = "No one has confirmed so far";
+    }
+
+    console.log("Who message is:" + messageString);
+    console.log("Who phoneNumber is:" + phoneNumber);
+
+    sendText(phoneNumber, messageString, true); 
+
+    console.log('==================== End: getList ====================');
+}
 
 
 // Some helper functions
@@ -455,7 +611,7 @@ function GetKeyword(body)
 
 //
 function randomCafe (){
-    return cafes[getRandomInt(0, cafes.length-1)];
+    return cafesList[getRandomInt(0, cafesList.length-1)].name;
 }
 
 function getRandomInt(min, max) {

@@ -15,11 +15,6 @@ var mongoose = require('mongoose');
 var assert = require('assert');
 var Schema = mongoose.Schema;
 
-// var userSchema = new Schema({
-//     name: String,
-//     phone: String
-// });
-
 // We are setting prompt time and confirmation time for lunch
 var date = new Date();
 var testPromptTime = new Date();
@@ -64,8 +59,6 @@ var immediateNoResponsesMessages = [
 var onlyOneAttendeeMessages = [
     "Looks like no one else is interested today! Better luck next time."    
 ]
-
-var cafes = ['Cafe 9',' Cafe 16','Cafe 34','Cafe 36','Cafe 31', 'Cafe 4', 'Cafe 31'];
 
 //Generates a message from an array of messages and appends the default signature
 function generateMessageWithSignature(messageArray, signature){
@@ -132,7 +125,49 @@ var userSchema = new Schema ({
 });
 
 var user = mongoose.model('user2', userSchema );
+
 console.log('----- Created user 2.0 model: done');
+
+
+var cafeSchema = new Schema ({
+    name: String,
+    group: String,
+});
+
+var cafes = mongoose.model('cafes', cafeSchema );
+var cafesList=[];
+
+console.log('----- Created cafes model: done');
+console.log('');
+
+cafes.find(function (err, result) 
+{
+        if (!err) 
+        { 
+            for (var i = 0; i < result.length ; i++)
+            { 
+                cafesList.push(result[i]);
+            }
+        }
+        else
+        {
+            logHistoryEvent ('Error', '',  err);
+        }
+});
+
+// inserting cafes in Mongo DB
+//var listcafe = [' Cafe 16','Cafe 34','Cafe 9','Cafe 31', 'Cafe 4', 'Cafe 31'];
+// for (var i=0;i<listcafe.length;i++)
+// {
+//     var insertCafe = new cafes ({
+//             name:listcafe[i],
+//             group:'OENGPM' 
+//         });
+
+//     insertCafe.save (function (err, result){});
+
+// }
+
 
 // Cron job that prompts users to come to lunch
 new CronJob({
@@ -181,8 +216,7 @@ function logHistoryEvent (_eventType, _phone, _params) {
  // test
 // Contains all the logic executed when the PROMPT cron job ticks
 function promptCronLogic ()  {
-
-    console.log('==================== Begin: promptCronLogic ====================');
+   console.log('==================== Begin: promptCronLogic ====================');
     user.find({isActive: true}, function (err, result) {
         if (!err) 
         { 
@@ -761,7 +795,7 @@ function sendText(phoneNumber, message, retry){
 
 //
 function randomCafe (){
-    return cafes[getRandomInt(0, cafes.length-1)];
+    return cafesList[getRandomInt(0, cafesList.length-1)].name;
 }
 
 function getRandomInt(min, max) {

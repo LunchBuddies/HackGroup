@@ -50,15 +50,37 @@ var immediateYesResponsesMessages = [
     "Lunch, lunch, lunchy-lunch lunch. We\'ll text you at noon to let you know who\'s going."
 ]
 
-//Message which 
+//Message which is sent if the user responds 'no'
 var immediateNoResponsesMessages = [
-    "Aww! We\'ll miss you. If you change your mind, don't worry! Just text \'YES\' before noon and we will take care of everything else!"
+    "Aww! We\'ll miss you. If you change your mind, text \'YES\' before noon and we'll get you on the list",
+    "No prob, Bob. If you change your mind, text \'YES\' before noon and we'll get you on the list "
 ]
 
 //Message which will be sent if there is only one attendee
 var onlyOneAttendeeMessages = [
     "Looks like no one else is interested today! Better luck next time."    
 ]
+
+//Message which is sent when we aren't able to add a user
+var joinFailureMessage = ["We didn\'t catch that! To subscribe, text 'JOIN' <YourName> <GroupName>'"];
+
+//Message which is sent when a user sends "LEAVE GROUP"
+var LeaveMessage = ["We're sure your friends will miss you. Thanks for the memories! If you change your mind, text 'JOIN <YourName> <GroupName>' and keep the good times rolling!"];
+
+//Message which is sent when the user is added to a group
+var successfulJoinConfirmation = ["Glad to have you on board! You're all set to receive invites. Happy Lunching!"]
+
+//Message which is sent if the user responds after we've sent the confirmation
+var groupAlreadyLeft = ["Ah, you're a tad late! We've already sent out the list of attendees today. If you hurry you may be able to catch 'em..."]
+
+//Message which is sent if we don't recognize what they said
+var genericUnknownCommandResponse = ["Whoops, we didn\'t recognize that command..."]
+
+//Message which is sent if a user tries to join and they're already in a group
+var alreadyInGroup = ["You can only join one group at a time, and it looks like you're already in one. Text 'LEAVE GROUP' to leave your current group"]
+
+//Message which is sent if someone tries to send "Who" after we've sent the confirmation
+var triedWhoAfterSentConfirmation = ["Oops, you can only use WHO command before noon. "]
 
 //Generates a message from an array of messages and appends the default signature
 function generateMessageWithSignature(messageArray, signature){
@@ -107,17 +129,6 @@ function generateConfirmationMessage(namesString, suggestedCafe, signature){
     }
 }
 
-var joinMessage = [
-'Thanks for joining! Happy Lunching'
-]
-//Message which is sent when we aren't able to add a user
-var joinFailureMessage = ["We didn\'t catch that! To subscribe, text 'JOIN' <YourName> <GroupName>'"];
-
-//Message which is sent when a user sends "LEAVE GROUP"
-var LeaveMessage = ["We're sure your friends will miss you. Thanks for the memories! If you change your mind, text 'JOIN <YourName> <GroupName>' and keep the good times rolling!"];
-
-//Message which is sent when the user is added to a group
-var successfulJoinConfirmation = ["Glad to have you on board! You're all set to receive invites. Happy Lunching! "]
 
 var userSchema = new Schema ({
     name: String,
@@ -382,7 +393,7 @@ function insertUser (_name, _phone, _group)
         if (!err){
             console.log('Inserted new record with name: '+ _name);
 
-            sendText(_phone, generateMessageWithSignature(joinMessage),true); 
+            sendText(_phone, generateMessageWithSignature(successfulJoinConfirmation),true); 
             logHistoryEvent ('Join', _phone, {name:_name});
 
             // check time of joining and if it is between 11 AM - noon, then we will send them prompt message as well.       
@@ -404,7 +415,7 @@ function insertUser (_name, _phone, _group)
         }
         else
         {
-            sendText(_phone,joinFailureMessage, true); 
+            sendText(_phone,generateMessageWithSignature(joinFailureMessage), true); 
             logHistoryEvent ('Error','', err); 
         }
     });
@@ -427,7 +438,7 @@ function JoinLogic (_phone, _message)
     if (messageSplit.length != 3)
     {
         console.log ('join needs 3 parameters');
-        sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
+        sendText(_phone, generateMessageWithSignature(joinFailureMessage), true); 
         return;
     }
 
@@ -445,7 +456,7 @@ function JoinLogic (_phone, _message)
             // If the user is active, they are already in a group
             if (result[0].isActive)
             {
-                sendText(_phone, "You're already in a group! Text 'Leave Group' to leave current group",true);
+                sendText(_phone, generateMessageWithSignature(alreadyInGroup),true);
                 return;
             }
 
@@ -456,7 +467,7 @@ function JoinLogic (_phone, _message)
                 var conditionsForUpdateDB = { 'phone': _phone }
                 , updateForUpdateDB = { 'group': messageSplit[2].toUpperCase(), isActive: true };
                 
-                console.log("send readd message" + successfulJoinConfirmation);
+                console.log("send read message" + successfulJoinConfirmation);
                 
                 updateUserObject(conditionsForUpdateDB, updateForUpdateDB, successfulJoinConfirmation);
 
@@ -471,7 +482,7 @@ function JoinLogic (_phone, _message)
         {
             console.log ('join needs 3 parameters');
            
-            sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
+            sendText(_phone, generateMessageWithSignature(joinFailureMessage), true); 
             return;
         }
         
@@ -542,7 +553,7 @@ router.post('/', function(req, res) {
             {
                 console.log(req.body.From + 'said Yes after eligible hours');
 
-                sendText(req.body.From,'Sorry, your team has already gone. Try again between 11-12 on any weekday.', true);
+                sendText(req.body.From, generateMessageWithSignature(groupAlreadyLeft), true);
             }     
 
             console.log('==================== End: YES ====================');
@@ -553,7 +564,7 @@ router.post('/', function(req, res) {
         // User is french
         else if ((new RegExp("OUI")).test(req.body.Body.toUpperCase()))
         {
-            sendText(req.body.From,'We dont like the french...', true);
+            sendText(req.body.From,'We don\'t like the french...', true);
         }
 
         // User responsed no
@@ -571,7 +582,7 @@ router.post('/', function(req, res) {
             {
                 console.log(req.body.From + 'said No after eligible hours');
 
-                sendText(req.body.From,'Confirmation window is between 11-12 on weekdays.', true);
+                sendText(req.body.From,generateMessageWithSignature(immediateNoResponsesMessages), true);
             }
     
              console.log('==================== End: No ====================');
@@ -660,7 +671,7 @@ router.post('/', function(req, res) {
                     // numAffected is the number of updated documents
                     console.log('---- ' + req.body.From + ' left the group: done'); 
                     logHistoryEvent ('Leave', req.body.From, {});
-                    sendText(req.body.From, LeaveMessage, true); 
+                    sendText(req.body.From, generateMessageWithSignature(LeaveMessage), true); 
                 }  
                 else
                 {
@@ -686,7 +697,7 @@ router.post('/', function(req, res) {
             else
             {
                 console.log("Out of Who support time");
-                sendText(_phone, generateMessageWithSignature("Who command can only be used between 11-12 on weekdays."), true);
+                sendText(_phone, generateMessageWithSignature(triedWhoAfterSentConfirmation), true);
             }
 
             console.log('==================== End: Who ====================');
@@ -695,7 +706,7 @@ router.post('/', function(req, res) {
         // TODO - make sure user can send multiple texts to us
         else
         {
-            sendText(req.body.From,'Say that again? We didn\'t catch it!', true);   
+            sendText(req.body.From, generateMessageWithSignature(genericUnknownCommandResponse), true);   
         }
     }
 });

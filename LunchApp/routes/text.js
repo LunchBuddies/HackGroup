@@ -110,11 +110,14 @@ function generateConfirmationMessage(namesString, suggestedCafe, signature){
 var joinMessage = [
 'Thanks for joining! Happy Lunching'
 ]
-var joinFailureMessage = ['Say that again? We didn\'t catch it! Text: Join <Your Name> to subscribe'];
-var stopMessage = ['Sorry to see you go! Hope you will reconsider'];
-var stopFailureMessage = ['Say that again? We didn\'t catch it! Text: STOP to unsubscribe'];
-var LeaveMessage = ["Your group is going to miss you! Text 'Join <YourName> <GroupName>' to join again!"];
-var readdMessage = ['We have added you to a group'];
+//Message which is sent when we aren't able to add a user
+var joinFailureMessage = ["We didn\'t catch that! To subscribe, text 'JOIN' <YourName> <GroupName>'"];
+
+//Message which is sent when a user sends "LEAVE GROUP"
+var LeaveMessage = ["We're sure your friends will miss you. Thanks for the memories! If you change your mind, text 'JOIN <YourName> <GroupName>' and keep the good times rolling!"];
+
+//Message which is sent when the user is added to a group
+var successfulJoinConfirmation = ["Glad to have you on board! You're all set to receive invites. Happy Lunching! "]
 
 var userSchema = new Schema ({
     name: String,
@@ -453,9 +456,9 @@ function JoinLogic (_phone, _message)
                 var conditionsForUpdateDB = { 'phone': _phone }
                 , updateForUpdateDB = { 'group': messageSplit[2].toUpperCase(), isActive: true };
                 
-                console.log("send readd message" + readdMessage);
+                console.log("send readd message" + successfulJoinConfirmation);
                 
-                updateUserObject(conditionsForUpdateDB, updateForUpdateDB, readdMessage);
+                updateUserObject(conditionsForUpdateDB, updateForUpdateDB, successfulJoinConfirmation);
 
                 return;
             }

@@ -18,7 +18,7 @@ db.on('error', function () {
 	console.warn('---- tried connecting to db at '+ nconf.get('db') 
 	+ ":" + nconf.get('port') 
 	+ "/" + nconf.get('table'));
-  throw new Error('unable to connect to database at ' + config.db);
+  throw new Error('unable to connect to database at ' + conf.get('db'));
 });
 
 // var db = mongoose.connection;

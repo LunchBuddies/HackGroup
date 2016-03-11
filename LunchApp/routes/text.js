@@ -60,6 +60,28 @@ console.log('----- Set times: done');
 
 // ------------------------- Message Strings -----------------------------
 
+
+//Message which is sent when we aren't able to add a user
+var joinFailureMessage = ["We didn\'t catch that! To subscribe, text 'JOIN' <YourName> <GroupName>'"];
+
+//Message which is sent when a user sends "LEAVE GROUP"
+var LeaveMessage = ["We're sure your friends will miss you. Thanks for the memories! If you change your mind, text 'JOIN <YourName> <GroupName>' and keep the good times rolling!"];
+
+//Message which is sent when the user is added to a group
+var successfulJoinConfirmation = ["Glad to have you on board! You're all set to receive invites. Happy Lunching!"]
+
+//Message which is sent if the user responds after we've sent the confirmation
+var groupAlreadyLeft = ["Ah, you're a tad late! We've already sent out the list of attendees today. If you hurry you may be able to catch 'em..."]
+
+//Message which is sent if we don't recognize what they said
+var genericUnknownCommandResponse = ["Whoops, we didn\'t recognize that command..."]
+
+//Message which is sent if a user tries to join and they're already in a group
+var alreadyInGroup = ["You can only join one group at a time, and it looks like you're already in one. Text 'LEAVE GROUP' to leave your current group"]
+
+//Message which is sent if someone tries to send "Who" after we've sent the confirmation
+var triedWhoAfterSentConfirmation = ["Oops, you can only use WHO command before noon. "]
+
 //Generates a message from an array of messages and appends the default signature
 function generateMessageWithSignature(messageArray, signature){
     if (nconf.get('enviornment') == 'dev') {
@@ -328,8 +350,10 @@ function JoinLogic (_phone, _message)
     if (messageSplit.length != 3)
     {
         console.log ('join needs 3 parameters');
+
         // send text
         sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>"); 
+
         return;
     }
 
@@ -349,7 +373,9 @@ function JoinLogic (_phone, _message)
             // If the user is active, they are already in a group
             if (result[0].isActive)
             {
+
                 sendText(_phone, "You're already in a group! Text 'Leave Group' to leave current group");
+
                 return;
             }
 
@@ -360,9 +386,10 @@ function JoinLogic (_phone, _message)
                 var conditionsForUpdateDB = { 'phone': _phone }
                 , updateForUpdateDB = { 'group': messageSplit[2].toUpperCase(), isActive: true };
                 
-                console.log("send readd message" + readdMessage);
-                
+                console.log("send read message" + successfulJoinConfirmation);
+
                 updateUserObject(conditionsForUpdateDB, updateForUpdateDB, {}, readdMessage);
+
 
                 return;
             }
@@ -374,8 +401,9 @@ function JoinLogic (_phone, _message)
         if (messageSplit.length != 3)
         {
             console.log ('join needs 3 parameters');
-            // send text
+
             sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>"); 
+
             return;
         }
         
@@ -423,7 +451,7 @@ router.post('/', function(req, res) {
             {
                 console.log(req.body.From + 'said Yes after eligible hours');
 
-                sendText(req.body.From,'Sorry, your team has already gone. Try again between 11-12 on any weekday.', true);
+                sendText(req.body.From, generateMessageWithSignature(groupAlreadyLeft), true);
             }     
 
             console.log('==================== End: YES ====================');
@@ -439,7 +467,9 @@ router.post('/', function(req, res) {
         // User is french
         else if ((new RegExp("OUI")).test(req.body.Body.toUpperCase()))
         {
+
             sendText(req.body.From,'We dont like the french...');
+
         }
 
         // User responsed no
@@ -458,6 +488,7 @@ router.post('/', function(req, res) {
                 console.log(req.body.From + 'said No after eligible hours');
 
                 sendText(req.body.From,'Confirmation window is between 11-12 on weekdays.');
+
             }
     
              console.log('==================== End: No ====================');
@@ -511,6 +542,7 @@ router.post('/', function(req, res) {
 
             updateUserObject(conditionsForLeaveGroup, updateForLeaveGroup,  optionsForLeaveGroup, strings.leaveMessage);
 
+
             console.log('==================== End: User Leave Group ====================');
         }
 
@@ -532,7 +564,7 @@ router.post('/', function(req, res) {
             else
             {
                 console.log("Out of Who support time");
-                sendText(_phone, generateMessageWithSignature("Who command can only be used between 11-12 on weekdays."), true);
+                sendText(_phone, generateMessageWithSignature(triedWhoAfterSentConfirmation), true);
             }
 
             console.log('==================== End: Who ====================');
@@ -541,7 +573,9 @@ router.post('/', function(req, res) {
         // user sent some random message that didnt include the above
         else
         {
+
             sendText(req.body.From,strings.stopFailureMessage);   
+
         }
     }
 });

@@ -4,7 +4,7 @@ var express = require('express'),
 
 module.exports = function  (_name, _phone, _group) 
 {
-    console.log ('inser user');
+    console.log ('insert user');
     var insertUser = new user ({
         name:_name, 
         phone:_phone,

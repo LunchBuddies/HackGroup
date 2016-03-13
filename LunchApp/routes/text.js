@@ -646,5 +646,8 @@ function randomCafe (){
     return cafesList[getRandomInt(0, cafesList.length-1)].name;
 }
 
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 module.exports = router;

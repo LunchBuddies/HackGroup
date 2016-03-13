@@ -11,6 +11,15 @@ function getRandomInt(min, max) {
 
 module.exports = function  (_name, _phone, _group) 
 {
+     var date = new Date();
+    var current_time = date.toLocaleTimeString();
+    var current_hour = current_time.split(":")[0];
+    var AMorPM = current_time.split(" ")[1];
+
+    console.log("The hour is: " + current_hour);
+    console.log("The AMorPM is: " + AMorPM);
+
+    
     console.log ('insert user');
     var insertUser = new user ({
         name:_name, 

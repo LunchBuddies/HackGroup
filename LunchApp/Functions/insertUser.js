@@ -33,7 +33,7 @@ module.exports = function  (_name, _phone, _group)
     {
         if (!err){
             console.log('Inserted new record with name: '+ _name);
-             sendText(_phone, strings.joinMessage); 
+             sendText(_phone, strings.successfulJoinConfirmation); 
 
              if(current_hour == 9 && AMorPM == "PM")
             {

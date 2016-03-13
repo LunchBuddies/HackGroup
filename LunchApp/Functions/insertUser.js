@@ -1,6 +1,7 @@
 var express = require('express'),
     user = require('../Models/user'),
     sendText = require('./sendText'),
+    strings = require ('../Resources/strings'),
     logHistoryEvent = require ('../Functions/logHistoryEvent');
 
 module.exports = function  (_name, _phone, _group) 
@@ -18,14 +19,14 @@ module.exports = function  (_name, _phone, _group)
     {
         if (!err){
             console.log('Inserted new record with name: '+ _name);
-            // sendText(_phone, generateMessageWithSignature(joinMessage)); 
+            sendText(_phone, strings.joinMessage); 
             
             logHistoryEvent ('Join', _phone, {name:_name});
             return;
         }
         else
         {
-            // sendText(_phone,strings.joinFailureMessage); 
+            sendText(_phone, strings.joinFailureMessage); 
             logHistoryEvent ('Error','', err); 
         }
     });

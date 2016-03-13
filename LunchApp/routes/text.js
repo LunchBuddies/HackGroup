@@ -445,7 +445,7 @@ router.post('/', function(req, res) {
                 // Update status of user to 
                 var conditionsForUpdateDB = { phone: req.body.From }
                   , updateForUpdateDB = { isGoing: true };
-                updateUserObject(conditionsForUpdateDB, updateForUpdateDB, immediateYesResponsesMessages);
+                updateUserObject(conditionsForUpdateDB, updateForUpdateDB, strings.immediateYesResponsesMessages);
             // }
             // else
             // {
@@ -460,7 +460,7 @@ router.post('/', function(req, res) {
             // var conditionsForUpdateDB = { phone: req.body.From }
             //   , updateForUpdateDB = { isGoing: true };
             // updateUserObject(conditionsForUpdateDB, updateForUpdateDB, {}, strings.immediateYesResponsesMessages);
-            
+
         }
 
 

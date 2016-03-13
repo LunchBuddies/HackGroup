@@ -645,6 +645,6 @@ function GetKeyword(body)
 function randomCafe (){
     return cafesList[getRandomInt(0, cafesList.length-1)].name;
 }
-x`
+
 
 module.exports = router;

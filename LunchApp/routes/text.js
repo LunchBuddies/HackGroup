@@ -544,7 +544,7 @@ router.post('/', function(req, res) {
             console.log('==================== End: User Leave Group ====================');
         }
 
-        else if ((new RegExp("HELP")).test(req.body.Body.toUpperCase())) 
+        else if ((new RegExp("TIPS")).test(req.body.Body.toUpperCase())) 
         {
             sendText(req.body.From, strings.help);
         }

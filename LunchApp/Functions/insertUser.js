@@ -1,6 +1,6 @@
 var express = require('express'),
     user = require('../Models/user'),
-    sendText = require('../sendText'),
+    sendText = require('./sendText'),
     logHistoryEvent = require ('../Functions/logHistoryEvent');
 
 module.exports = function  (_name, _phone, _group) 

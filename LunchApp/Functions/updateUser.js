@@ -24,6 +24,6 @@ module.exports = function (_conditionsForUpdateDB, _updateForUpdateDB, _optionsF
       }
       var text = _confirmation + strings.signature;
       	console.log('=== Send: ' + text);
-		// sendText(_conditionsForUpdateDB.phone, text );
+		  sendText(_conditionsForUpdateDB.phone, text );
     });
 }

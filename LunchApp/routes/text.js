@@ -457,10 +457,10 @@ router.post('/', function(req, res) {
             console.log('==================== End: YES ====================');
 
             // Update status of user to 
-            var conditionsForUpdateDB = { phone: req.body.From }
-              , updateForUpdateDB = { isGoing: true };
-            updateUserObject(conditionsForUpdateDB, updateForUpdateDB, {}, strings.immediateYesResponsesMessages);
-
+            // var conditionsForUpdateDB = { phone: req.body.From }
+            //   , updateForUpdateDB = { isGoing: true };
+            // updateUserObject(conditionsForUpdateDB, updateForUpdateDB, {}, strings.immediateYesResponsesMessages);
+            
         }
 
 

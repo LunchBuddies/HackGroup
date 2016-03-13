@@ -16,12 +16,14 @@ module.exports = function (_conditionsForUpdateDB, _updateForUpdateDB, _optionsF
       console.log('updateuserobject: updated status for ' + _conditionsForUpdateDB.phone)
       // console.log(numAffected);
 
-      console.log("the updateuserobject message is: " + _confirmation);
+      
 
-      if (_confirmation != null || _confirmation != '')
+      if (_confirmation == null || _confirmation == '')
       {
+        console.log("exit UpdateUser() with blank confirmation");
       	return;
       }
+      console.log("the updateuserobject message is: " + _confirmation);
       var text = _confirmation + strings.signature;
       	console.log('=== Send: ' + text);
 		  sendText(_conditionsForUpdateDB.phone, text );

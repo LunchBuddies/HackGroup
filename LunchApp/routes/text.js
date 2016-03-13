@@ -443,9 +443,10 @@ router.post('/', function(req, res) {
             // if(current_hour == 6 && AMorPM == "PM")
             // {
                 // Update status of user to 
-                var conditionsForUpdateDB = { phone: req.body.From }
-                  , updateForUpdateDB = { isGoing: true };
-                updateUserObject(conditionsForUpdateDB, 
+                var conditionsForUpdateDB = { phone: req.body.From },
+                    updateForUpdateDB = { isGoing: true };
+                    
+                    updateUserObject(conditionsForUpdateDB, 
                     updateForUpdateDB, 
                     {}, 
                     strings.immediateYesResponsesMessages[getRandomInt(0, strings.immediateYesResponsesMessages.length-1)]);

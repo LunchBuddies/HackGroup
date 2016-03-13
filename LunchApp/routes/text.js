@@ -367,7 +367,7 @@ function JoinLogic (_phone, _message)
         if (result.length >= 1)
         { 
             if (nconf.get('enviornment') == 'dev') {
-                console.log(results);
+                console.log(result);
             }
 
             // If the user is active, they are already in a group

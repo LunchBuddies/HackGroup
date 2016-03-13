@@ -35,9 +35,9 @@ module.exports = function  (_name, _phone, _group)
             console.log('Inserted new record with name: '+ _name);
              sendText(_phone, strings.successfulJoinConfirmation); 
 
-             if(current_hour == 9 && AMorPM == "PM")
+             if(current_hour == 6 && AMorPM == "PM")
             {
-               sendText(_phone,strings.immediateYesResponsesMessages[getRandomInt(0, strings.immediateYesResponsesMessages.length-1)]);
+               sendText(_phone,strings.promptMessages[getRandomInt(0, strings.promptMessages.length-1)]);
 
             }
             

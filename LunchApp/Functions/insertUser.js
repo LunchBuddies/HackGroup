@@ -19,7 +19,7 @@ module.exports = function  (_name, _phone, _group)
     console.log("The hour is: " + current_hour);
     console.log("The AMorPM is: " + AMorPM);
 
-    
+
     console.log ('insert user');
     var insertUser = new user ({
         name:_name, 
@@ -35,7 +35,7 @@ module.exports = function  (_name, _phone, _group)
             console.log('Inserted new record with name: '+ _name);
              sendText(_phone, strings.joinMessage); 
 
-             if(current_hour == 6 && AMorPM == "PM")
+             if(current_hour == 9 && AMorPM == "PM")
             {
                sendText(_phone,strings.immediateYesResponsesMessages[getRandomInt(0, strings.immediateYesResponsesMessages.length-1)]);
 

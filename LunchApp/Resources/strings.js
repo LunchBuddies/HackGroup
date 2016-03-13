@@ -21,7 +21,7 @@ module.exports = {
 	"joinFailureMessage" : ['Say that again? We didn\'t catch it! Text: Join <Your Name> to subscribe'],
 	"stopMessage" : ['Sorry to see you go! Hope you will reconsider'],
 	"stopFailureMessage" : ['Say that again? We didn\'t catch it! Text: STOP to unsubscribe'],
-	"LeaveMessage" : ["Your group is going to miss you! Text 'Join <YourName> <GroupName>' to join again!"],
+	"LeaveMessage" : "Your group is going to miss you! Text 'Join <YourName> <GroupName>' to join again!",
 	"readdMessage" : ['We have added you to a group'],
 	"help": "Possible Responses -\n+ Stop - Stop the service\n+ Join <YourName> <GroupName> - Join a specific group\n+ Leave Group - Leave your group",
 	"successfulJoinConfirmation":"Glad to have you on board! You're all set to receive invites. Happy Lunching!"

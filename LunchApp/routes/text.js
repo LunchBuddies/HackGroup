@@ -538,7 +538,7 @@ router.post('/', function(req, res) {
               , updateForLeaveGroup = { isActive: false, group: undefined }
               , optionsForLeaveGroup = {multi: true } ;
 
-            updateUserObject(conditionsForLeaveGroup, updateForLeaveGroup,  optionsForLeaveGroup, strings.leaveMessage);
+            updateUserObject(conditionsForLeaveGroup, updateForLeaveGroup,  optionsForLeaveGroup, strings.LeaveMessage);
 
 
             console.log('==================== End: User Leave Group ====================');

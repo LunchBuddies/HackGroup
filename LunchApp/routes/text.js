@@ -440,19 +440,19 @@ router.post('/', function(req, res) {
         {
             console.log('==================== Start: YES ====================');
 
-            if(current_hour == 6 && AMorPM == "PM")
-            {
+            // if(current_hour == 6 && AMorPM == "PM")
+            // {
                 // Update status of user to 
                 var conditionsForUpdateDB = { phone: req.body.From }
                   , updateForUpdateDB = { isGoing: true };
                 updateUserObject(conditionsForUpdateDB, updateForUpdateDB, immediateYesResponsesMessages);
-            }
-            else
-            {
-                console.log(req.body.From + 'said Yes after eligible hours');
+            // }
+            // else
+            // {
+            //     console.log(req.body.From + 'said Yes after eligible hours');
 
-                sendText(req.body.From, generateMessageWithSignature(groupAlreadyLeft), true);
-            }     
+            //     sendText(req.body.From, generateMessageWithSignature(groupAlreadyLeft), true);
+            // }     
 
             console.log('==================== End: YES ====================');
 

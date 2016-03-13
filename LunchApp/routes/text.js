@@ -336,6 +336,7 @@ router.get('/', function(req, res) {
     };
 });
 
+
 function JoinLogic (_phone, _message)
 {
     console.log('==================== Start: JoinLogic ====================');
@@ -439,7 +440,7 @@ router.post('/', function(req, res) {
         {
             console.log('==================== Start: YES ====================');
 
-            if(current_hour == 11 && AMorPM == "AM")
+            if(current_hour == 6 && AMorPM == "PM")
             {
                 // Update status of user to 
                 var conditionsForUpdateDB = { phone: req.body.From }
@@ -476,7 +477,7 @@ router.post('/', function(req, res) {
         {
             console.log('==================== Start: No ====================');
 
-            if(current_hour == 11 && AMorPM == "AM")
+            if(current_hour == 6 && AMorPM == "PM")
             {
                 // Nothing should happen here
                 console.log('No');
@@ -555,7 +556,7 @@ router.post('/', function(req, res) {
         {
             console.log('==================== Begin: Who ====================');
            
-            if (current_hour == 11 && AMorPM == "AM")
+            if (current_hour == 6 && AMorPM == "PM")
             {
                 console.log("Time between 11 and 12, so Who is eligible");
                 WhoLogic(req.body.From);

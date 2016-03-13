@@ -1,7 +1,8 @@
 var express = require('express'),
     user = require('../Models/user'),
-	logHistoryEvent = require ('../Functions/logHistoryEvent'),
-	strings = require('../Resources/strings');
+    sendText = require('./sendText'),
+	  logHistoryEvent = require ('../Functions/logHistoryEvent'),
+	  strings = require('../Resources/strings');
 
 // This is done, but needs to import the user model once that has been fixed
 module.exports = function (_conditionsForUpdateDB, _updateForUpdateDB, _optionsForResetDB, _confirmation) 

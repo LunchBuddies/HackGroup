@@ -562,7 +562,7 @@ router.post('/', function(req, res) {
             else
             {
                 console.log("Out of Who support time");
-                sendText(_phone, generateMessageWithSignature(triedWhoAfterSentConfirmation), true);
+                sendText(req.body.From, generateMessageWithSignature(triedWhoAfterSentConfirmation));
             }
 
             console.log('==================== End: Who ====================');

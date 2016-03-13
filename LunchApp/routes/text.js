@@ -388,7 +388,7 @@ function JoinLogic (_phone, _message)
                 
                 console.log("send read message" + successfulJoinConfirmation);
 
-                updateUserObject(conditionsForUpdateDB, updateForUpdateDB, {}, readdMessage);
+                updateUserObject(conditionsForUpdateDB, updateForUpdateDB, {}, strings.readdMessage);
 
 
                 return;

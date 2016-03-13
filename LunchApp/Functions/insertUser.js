@@ -4,6 +4,11 @@ var express = require('express'),
     strings = require ('../Resources/strings'),
     logHistoryEvent = require ('../Functions/logHistoryEvent');
 
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 module.exports = function  (_name, _phone, _group) 
 {
     console.log ('insert user');
@@ -19,7 +24,13 @@ module.exports = function  (_name, _phone, _group)
     {
         if (!err){
             console.log('Inserted new record with name: '+ _name);
-            sendText(_phone, strings.joinMessage); 
+             sendText(_phone, strings.joinMessage); 
+
+             if(current_hour == 6 && AMorPM == "PM")
+            {
+               sendText(_phone,strings.immediateYesResponsesMessages[getRandomInt(0, strings.immediateYesResponsesMessages.length-1)]);
+
+            }
             
             logHistoryEvent ('Join', _phone, {name:_name});
             return;

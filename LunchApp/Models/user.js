@@ -10,7 +10,7 @@ var userSchema = new Schema ({
     isInsider: Boolean
 });
 
-var user = mongoose.model('user2', userSchema );
+var user = mongoose.model('user', userSchema );
 
 console.log('----- Initialize User Collection: done');
 

@@ -554,7 +554,7 @@ router.post('/', function(req, res) {
         {
             console.log('==================== Begin: Who ====================');
            
-            if (current_hour == 9 && AMorPM == "PM")
+            if (current_hour == 6 && AMorPM == "PM")
             {
                 console.log("Time between 11 and 12, so Who is eligible");
                 WhoLogic(req.body.From);

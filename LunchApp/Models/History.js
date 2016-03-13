@@ -1,6 +1,5 @@
-var express = require('express');
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose'),
+	Schema = mongoose.Schema;
 
 var HistorySchema = new Schema ({
     time: Date,
@@ -11,6 +10,6 @@ var HistorySchema = new Schema ({
 
 var historyEvent = mongoose.model('EventLog', HistorySchema );
 
-console.log('----- Initialize History Collection: done');
+console.log('-----Initialize History Collection: done');
 
 module.exports = historyEvent;

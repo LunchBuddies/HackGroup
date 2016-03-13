@@ -1,77 +1,102 @@
 //    Declaration Section    //
-var express = require('express');
-var keys = require ('../Keys');
-var history = require ('../History');
-var client = require('twilio')(keys.TWILIO_ACCOUNT_SID, keys.TWILIO_AUTH_KEY);
-var router = express.Router();
-var CronJob = require('cron').CronJob;
-var database = require('../db');
-var TwilioNumber = '+14693400518';
+var express = require('express'),
+    history = require ('../Models/History'),
+    router = express.Router(),
+    CronJob = require('cron').CronJob,
+    sendText = require('../Functions/sendText'),
+    updateUserObject = require('../Functions/updateUser'),
+    insertUser = require('../Functions/insertUser'),
+    database = require('../db'),
+    nconf = require('nconf'),
+    glob = require('glob'),
+    mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
+    user = require ('../Models/user'),
+    strings = require ('../Resources/strings'),
+    logHistoryEvent = require ('../Functions/logHistoryEvent');
+
+// Grab JSON config files in this order:
+//   1. Arguments passed to node
+//   2. production.js
+//   3. development.js
+nconf.argv().file('prod','./config/production.json' ).file('dev','./config/development.json' );
+
+if (nconf.get('enviornment') == 'dev') 
+{
+    console.log("----- Loaded DEV config");
+}
+else if (nconf.get('enviornment') == 'prod') 
+{
+    console.log("----- Loaded PROD config");
+}
 
 
-// for Mongo
-// var MongoClient = require('mongodb').MongoClient;
-var mongoose = require('mongoose');
-var assert = require('assert');
-var Schema = mongoose.Schema;
+// if nconf is using dev config, set cron to first just after deployed to server
+var promptTime,
+    confirmTime;
+if (nconf.get('enviornment') == 'dev')
+{
+    console.log ('----- Using DEV cron jobs');
+    promptTime = new Date();
+    promptTime.setSeconds(0);
+    promptTime.setMinutes(promptTime.getMinutes()+ 1);
+    
+    confirmTime = new Date();
+    confirmTime.setSeconds(0);
+    confirmTime.setMinutes(confirmTime.getMinutes() + 2);
+}
 
-// We are setting prompt time and confirmation time for lunch
-var date = new Date();
-var testPromptTime = new Date();
-var testConfirmTime = new Date();
-testPromptTime.setSeconds(0);
-testConfirmTime.setSeconds(0);
-//testPromptTime.setSeconds(date.getSeconds()+ 5);
-testPromptTime.setMinutes(date.getMinutes()+ 1);
-testConfirmTime.setMinutes(date.getMinutes() + 2);
-var PromptTime = '00 00 11 * * 1-5';
-var ConfirmTime =  '00 00 12 * * 1-5';
+// If we are in a production enviornment, set to normal cron times
+else if (nconf.get('enviornment') == 'prod')
+{
+    console.log ('----- Using PROD cron jobs');
+    promptTime = '00 00 11 * * 1-5',
+    confirmTime = '00 00 12 * * 1-5';
+}
+
 
 console.log('----- Set times: done');
 
 
 // ------------------------- Message Strings -----------------------------
-// These are the base strings for the messages
 
-//Signature for the end of our messages
-var defaultSignature = '\n - TheLunchBuddies'
 
-//Message which prompts users to respond.
-var promptMessages = [
-    "Interested in lunch? Text \'YES\' by noon and we\'ll let you know who else is interested.",
-    "Free for lunch? Text \'YES\' by noon and we\'ll let you know who else is interested.",
-    "Free for lunch? Come on, you know you want to. Text \'YES\' by noon and we\'ll let you know who else is interested."
-]
+//Message which is sent when we aren't able to add a user
+var joinFailureMessage = ["We didn\'t catch that! To subscribe, text 'JOIN' <YourName> <GroupName>'"];
 
-//Message which sends right after a user confirms.
-var immediateYesResponsesMessages = [
-    "You've never made a better decision. Ever. Good call. Seriously. We\'ll text you at noon to let you know who\'s going.",
-    "Got it! We\'ll text you at noon to let you know who\'s going.",
-    "Lunch, lunch, lunchy-lunch lunch. We\'ll text you at noon to let you know who\'s going."
-]
+//Message which is sent when a user sends "LEAVE GROUP"
+var LeaveMessage = ["We're sure your friends will miss you. Thanks for the memories! If you change your mind, text 'JOIN <YourName> <GroupName>' and keep the good times rolling!"];
 
-//Message which 
-var immediateNoResponsesMessages = [
-    "Aww! We\'ll miss you. If you change your mind, don't worry! Just text \'YES\' before noon and we will take care of everything else!"
-]
+//Message which is sent when the user is added to a group
+var successfulJoinConfirmation = ["Glad to have you on board! You're all set to receive invites. Happy Lunching!"]
 
-//Message which will be sent if there is only one attendee
-var onlyOneAttendeeMessages = [
-    "Looks like no one else is interested today! Better luck next time."    
-]
+//Message which is sent if the user responds after we've sent the confirmation
+var groupAlreadyLeft = ["Ah, you're a tad late! We've already sent out the list of attendees today. If you hurry you may be able to catch 'em..."]
+
+//Message which is sent if we don't recognize what they said
+var genericUnknownCommandResponse = ["Whoops, we didn\'t recognize that command..."]
+
+//Message which is sent if a user tries to join and they're already in a group
+var alreadyInGroup = ["You can only join one group at a time, and it looks like you're already in one. Text 'LEAVE GROUP' to leave your current group"]
+
+//Message which is sent if someone tries to send "Who" after we've sent the confirmation
+var triedWhoAfterSentConfirmation = ["Oops, you can only use WHO command before noon. "]
 
 //Generates a message from an array of messages and appends the default signature
 function generateMessageWithSignature(messageArray, signature){
-    console.log("generateMessageWithSignature has message as: "+ messageArray);
-    
+    if (nconf.get('enviornment') == 'dev') {
+        console.log("generateMessageWithSignature has message as: "+ messageArray);
+    }
+
     if (signature = 'undefined'){
-        signature = defaultSignature;
+        signature = strings.signature;
     }
 
     var text = messageArray[getRandomInt(0, messageArray.length-1)] + signature;
-
-    console.log("the text value in signature is: "+ text);
-
+    if (nconf.get('enviornment') == 'dev')
+    {
+        console.log("the text value in signature is: "+ text);
+    }
     return text;
 }
 
@@ -79,52 +104,35 @@ function generateMessageWithSignature(messageArray, signature){
 //If no signature is provided, the default signature will be used. 
 function generateConfirmationMessage(namesString, suggestedCafe, signature){
     if (signature = 'undefined'){
-        signature = defaultSignature;
+        signature = strings.signature;
     }
+    var optionsListWithoutCafe = [
+        //namesString + ' are free! Have fun you crazy kids!',
+        'Have the time of your life with ' + namesString + '.',
+        'Enjoy lunch with ' + namesString + '.',
+        namesString + ' said they would absolutely love to go.'
+    ]
+    var optionsListWithCafe = [
+        //namesString + ' are free! We suggest ' + suggestedCafe + '. Have fun you crazy kids!',
+        'Have the time of your life with ' + namesString + '. We\'ve heard good things about ' + suggestedCafe + '...',
+        'Enjoy lunch with ' + namesString + '. Might we suggest ' + suggestedCafe + '?',
+        namesString + ' said they would absolutely love to go. We suggest ' + suggestedCafe + '.'
+    ]
 
     if(suggestedCafe != '')
     {
-        var optionsList = [
-            //namesString + ' are free! We suggest ' + suggestedCafe + '. Have fun you crazy kids!',
-            'Have the time of your life with ' + namesString + '. We\'ve heard good things about ' + suggestedCafe + '...',
-            'Enjoy lunch with ' + namesString + '. Might we suggest ' + suggestedCafe + '?',
-            namesString + ' said they would absolutely love to go. We suggest ' + suggestedCafe + '.'
-        ]
-        var randomNumber = getRandomInt(0, optionsList.length-1);
-        return optionsList[randomNumber] + signature;
+        
+        var randomNumber = getRandomInt(0, optionsListWithCafe.length-1);
+        return optionsListWithCafe[randomNumber] + signature;
     }
     else
     {
-         var optionsList = [
-            //namesString + ' are free! Have fun you crazy kids!',
-            'Have the time of your life with ' + namesString + '.',
-            'Enjoy lunch with ' + namesString + '.',
-            namesString + ' said they would absolutely love to go.'
-        ]
+         
 
-        var randomNumber = getRandomInt(0, optionsList.length-1);
-        return optionsList[randomNumber] + signature;
+        var randomNumber = getRandomInt(0, optionsListWithoutCafe.length-1);
+        return optionsListWithoutCafe[randomNumber] + signature;
     }
 }
-
-var joinMessage = [
-'Thanks for joining! Happy Lunching'
-]
-var joinFailureMessage = ['Say that again? We didn\'t catch it! Text: Join <Your Name> to subscribe'];
-var stopMessage = ['Sorry to see you go! Hope you will reconsider'];
-var stopFailureMessage = ['Say that again? We didn\'t catch it! Text: STOP to unsubscribe'];
-var LeaveMessage = ["Your group is going to miss you! Text 'Join <YourName> <GroupName>' to join again!"];
-var readdMessage = ['We have added you to a group'];
-
-var userSchema = new Schema ({
-    name: String,
-    phone: String,
-    group: String,
-    isGoing: Boolean,
-    isActive: Boolean 
-});
-
-var user = mongoose.model('user2', userSchema );
 
 console.log('----- Created user 2.0 model: done');
 
@@ -171,7 +179,7 @@ cafes.find(function (err, result)
 
 // Cron job that prompts users to come to lunch
 new CronJob({
-    cronTime: PromptTime,
+    cronTime: promptTime,
     onTick: function(){
         promptCronLogic ();
     },
@@ -182,7 +190,7 @@ console.log('----- Start prompt cron: done');
 
 // Cron job that confirms to users at lunch time
 new CronJob({
-    cronTime: ConfirmTime, //confirmTime
+    cronTime: confirmTime,
     onTick: function()
     {
         confirmCronLogic();
@@ -192,28 +200,7 @@ new CronJob({
 });
 console.log('----- Start Confirmation cron: done');
 
-
-function logHistoryEvent (_eventType, _phone, _params) {
-    
-    var historyEventToSend = new history ({
-        time: new Date(),
-        event: _eventType,
-        phone: _phone, 
-        params: _params
-    });
-
-    historyEventToSend.save(function(err, thor) {
-        if (err) 
-        {
-            logHistoryEvent ('Error', '',err);
-            return console.error(err);
-        }
-        console.dir("----- logged 1 historical event");
-    });
-}
  
-
- // test
 // Contains all the logic executed when the PROMPT cron job ticks
 function promptCronLogic ()  {
    console.log('==================== Begin: promptCronLogic ====================');
@@ -224,8 +211,8 @@ function promptCronLogic ()  {
             console.log('----- fetched ' + result.length + ' users in PromptCron: done');
             for (var i = 0; i < result.length ; i++)
             { 
-                console.log(result[i].phone);
-                sendText(result[i].phone, generateMessageWithSignature(promptMessages), true)
+                // console.log(result[i].phone);
+                sendText(result[i].phone, generateMessageWithSignature(strings.promptMessages))
             }
             
             console.log(result);
@@ -239,19 +226,7 @@ function promptCronLogic ()  {
     var conditionsForResetDB = {}
       , updateForResetDB = { isGoing: false }
       , optionsForResetDB = {multi: true } ;
-
-    user.update(conditionsForResetDB, updateForResetDB,  optionsForResetDB, function callback (err, numAffected) {
-
-        if (!err)
-        {
-            // numAffected is the number of updated documents
-            console.log('---- Reset ' + numAffected.nModified + ' accounts: done'); 
-        }  
-        else
-        {
-            logHistoryEvent ('Error','', err);
-        }  
-    });
+    updateUserObject(conditionsForResetDB, updateForResetDB, optionsForResetDB, '');
 
     console.log('==================== End: promptCronLogic ====================');
 };
@@ -259,7 +234,7 @@ function promptCronLogic ()  {
 // Contains all the logic executed when the CONFIRM cron job ticks
 function confirmCronLogic () {
     console.log('==================== Begin: confirmCronLogic ====================');
-        user.find ({isGoing: true, isActive: true}, function (err, result) 
+    user.find ({isGoing: true, isActive: true}, function (err, result) 
     {
         console.log (result);
         
@@ -331,16 +306,19 @@ function generateAllMessages(users)
                 }
             else
                 {
-                    messageString = generateMessageWithSignature(onlyOneAttendeeMessages);
+                    messageString = generateMessageWithSignature(strings.onlyOneAttendeeMessages);
                 }
         }
         else
         {
             continue;
         }
-         console.log('for phone: '+ phone + ' the message is: '+ messageString);         
+        if (nconf.get('enviornment') == 'dev'){
 
-        sendText(phone,messageString, true);
+            console.log('for phone: '+ phone + ' the message is: '+ messageString);         
+        }
+
+        sendText (phone,messageString);
         
     }
     console.log('==================== End: generateAllMessages ====================');
@@ -359,57 +337,6 @@ router.get('/', function(req, res) {
     };
 });
 
-function insertUser (_name, _phone, _group) 
-{
-    console.log('==================== Start: insertUser ====================');
-
-    console.log ('inser user');
-    var insertUser = new user ({
-        name:_name, 
-        phone:_phone,
-        group:_group.toUpperCase(), 
-        isGoing: false,
-        isActive: true
-    });
-
-    console.log(insertUser);
-
-    insertUser.save (function (err, result) 
-    {
-        if (!err){
-            console.log('Inserted new record with name: '+ _name);
-
-            sendText(_phone, generateMessageWithSignature(joinMessage),true); 
-            logHistoryEvent ('Join', _phone, {name:_name});
-
-            // check time of joining and if it is between 11 AM - noon, then we will send them prompt message as well.       
-                var date = new Date();
-                var current_time = date.toLocaleTimeString();
-                var current_hour = current_time.split(":")[0];
-                var AMorPM = current_time.split(" ")[1];
-
-                console.log("The hour is: " + current_hour);
-                console.log("The AMorPM is: " + AMorPM);
-
-                if (current_hour == 6 && AMorPM == "PM")
-                {
-                    console.log("Sending Prompt message");
-                    sendText(_phone, generateMessageWithSignature(promptMessages), true);
-                }
-
-            return;
-        }
-        else
-        {
-            sendText(_phone,joinFailureMessage, true); 
-            logHistoryEvent ('Error','', err); 
-        }
-    });
-
-console.log('==================== End: insertUser ====================');
-
-}
-
 
 function JoinLogic (_phone, _message)
 {
@@ -424,7 +351,10 @@ function JoinLogic (_phone, _message)
     if (messageSplit.length != 3)
     {
         console.log ('join needs 3 parameters');
-        sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
+
+        // send text
+        sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>"); 
+
         return;
     }
 
@@ -436,13 +366,17 @@ function JoinLogic (_phone, _message)
         // than one user with the same phone number in the db, thus == should work,
         // but keeping >= just in case.
         if (result.length >= 1)
-        {
-            console.log (result)
+        { 
+            if (nconf.get('enviornment') == 'dev') {
+                console.log(results);
+            }
 
             // If the user is active, they are already in a group
             if (result[0].isActive)
             {
-                sendText(_phone, "You're already in a group! Text 'Leave Group' to leave current group",true);
+
+                sendText(_phone, "You're already in a group! Text 'Leave Group' to leave current group");
+
                 return;
             }
 
@@ -453,9 +387,10 @@ function JoinLogic (_phone, _message)
                 var conditionsForUpdateDB = { 'phone': _phone }
                 , updateForUpdateDB = { 'group': messageSplit[2].toUpperCase(), isActive: true };
                 
-                console.log("send readd message" + readdMessage);
-                
-                updateUserObject(conditionsForUpdateDB, updateForUpdateDB, readdMessage);
+                console.log("send read message" + successfulJoinConfirmation);
+
+                updateUserObject(conditionsForUpdateDB, updateForUpdateDB, {}, readdMessage);
+
 
                 return;
             }
@@ -467,8 +402,9 @@ function JoinLogic (_phone, _message)
         if (messageSplit.length != 3)
         {
             console.log ('join needs 3 parameters');
-           
-            sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>",true); 
+
+            sendText(_phone, "Join requires 3 parameters: Join <YourName> <GroupName>"); 
+
             return;
         }
         
@@ -481,29 +417,6 @@ function JoinLogic (_phone, _message)
     console.log('==================== End: JoinLogic ====================');
 
 } 
-
-function updateUserObject (_conditionsForUpdateDB, _updateForUpdateDB, _confirmation)
-{
-
-    console.log('==================== Start: updateUserObject ====================');
-
-    user.update(_conditionsForUpdateDB, _updateForUpdateDB, function callback (err, numAffected) {
-      // numAffected is the number of updated documents
-      console.log('updateuserobject: updated status for ' + _conditionsForUpdateDB.phone)
-      // console.log(numAffected);
-
-      console.log("the updateuserobject message is: " + _confirmation);
-
-      var text = generateMessageWithSignature(_confirmation);
-
-      console.log ("the message for text in updateuserobject: "+ text);
-
-     sendText(_conditionsForUpdateDB.phone, text, true );
-    });
-
-    console.log('==================== End: updateUserObject ====================');
-}
-
 
 // Post function for calls from Twilio
 router.post('/', function(req, res) {
@@ -539,10 +452,15 @@ router.post('/', function(req, res) {
             {
                 console.log(req.body.From + 'said Yes after eligible hours');
 
-                sendText(req.body.From,'Sorry, your team has already gone. Try again between 11-12 on any weekday.', true);
+                sendText(req.body.From, generateMessageWithSignature(groupAlreadyLeft), true);
             }     
 
             console.log('==================== End: YES ====================');
+
+            // Update status of user to 
+            var conditionsForUpdateDB = { phone: req.body.From }
+              , updateForUpdateDB = { isGoing: true };
+            updateUserObject(conditionsForUpdateDB, updateForUpdateDB, {}, strings.immediateYesResponsesMessages);
 
         }
 
@@ -550,7 +468,9 @@ router.post('/', function(req, res) {
         // User is french
         else if ((new RegExp("OUI")).test(req.body.Body.toUpperCase()))
         {
-            sendText(req.body.From,'We dont like the french...', true);
+
+            sendText(req.body.From,'We dont like the french...');
+
         }
 
         // User responsed no
@@ -568,11 +488,11 @@ router.post('/', function(req, res) {
             {
                 console.log(req.body.From + 'said No after eligible hours');
 
-                sendText(req.body.From,'Confirmation window is between 11-12 on weekdays.', true);
+                sendText(req.body.From,'Confirmation window is between 11-12 on weekdays.');
+
             }
     
              console.log('==================== End: No ====================');
-
         }
 
         else if ((new RegExp("JOIN")).test(req.body.Body.toUpperCase()))
@@ -594,23 +514,8 @@ router.post('/', function(req, res) {
               , updateForDeleteUser = { isActive: false }
               , optionsForDeleteUser = {multi: true } ;
 
-            user.update(conditionsForDeleteUser, updateForDeleteUser,  optionsForDeleteUser, function callback (err, numAffected) {
+            updateUserObject(conditionsForDeleteUser, updateForDeleteUser,  optionsForDeleteUser, null);
 
-                if (!err)
-                {
-                    // numAffected is the number of updated documents
-                    console.log('---- stopped ' + req.body.From + ' account: done'); 
-                    logHistoryEvent ('Stop', req.body.From, {});
-                }  
-                else
-                {
-                    logHistoryEvent ('Error', req.body.From, err);
-                }  
-                    
-              // numAffected is the number of updated documents
-              console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
-
-            });
             console.log('==================== End: User Stop ====================');
         }
 
@@ -623,23 +528,9 @@ router.post('/', function(req, res) {
               , updateForDeleteUser = { isActive: true }
               , optionsForDeleteUser = {multi: true } ;
 
-            user.update(conditionsForDeleteUser, updateForDeleteUser,  optionsForDeleteUser, function callback (err, numAffected) {
+            updateUserObject(conditionsForDeleteUser, updateForDeleteUser,  optionsForDeleteUser, null);
 
-                if (!err)
-                {
-                    // numAffected is the number of updated documents
-                    console.log('---- Started ' + req.body.From + ' account: done'); 
-                    logHistoryEvent ('Start', req.body.From, {});
-                }  
-                else
-                {
-                    logHistoryEvent ('Error', req.body.From, err);
-                }  
-                    
-              // numAffected is the number of updated documents
-              console.log('---- Reset ' + numAffected.nModified + ' accounts: done');
-
-            });
+            
             console.log('==================== End: User Start ====================');
         }
 
@@ -650,26 +541,17 @@ router.post('/', function(req, res) {
               , updateForLeaveGroup = { isActive: false, group: undefined }
               , optionsForLeaveGroup = {multi: true } ;
 
-            user.update(conditionsForLeaveGroup, updateForLeaveGroup,  optionsForLeaveGroup, function callback (err, numAffected) {
+            updateUserObject(conditionsForLeaveGroup, updateForLeaveGroup,  optionsForLeaveGroup, strings.leaveMessage);
 
-                if (!err)
-                {
-                    // numAffected is the number of updated documents
-                    console.log('---- ' + req.body.From + ' left the group: done'); 
-                    logHistoryEvent ('Leave', req.body.From, {});
-                    sendText(req.body.From, LeaveMessage, true); 
-                }  
-                else
-                {
-                    logHistoryEvent ('Error', req.body.From, err);
-                }  
-                    
-              // numAffected is the number of updated documents
-              // console.log('---- ' + numAffected.nModified + ' accounts effected: done');
 
-            });
             console.log('==================== End: User Leave Group ====================');
         }
+
+        else if ((new RegExp("HELP")).test(req.body.Body.toUpperCase())) 
+        {
+            sendText(req.body.From, strings.help);
+        }
+
 
         else if ((new RegExp("WHO")).test(req.body.Body.toUpperCase())) 
         {
@@ -683,16 +565,18 @@ router.post('/', function(req, res) {
             else
             {
                 console.log("Out of Who support time");
-                sendText(_phone, generateMessageWithSignature("Who command can only be used between 11-12 on weekdays."), true);
+                sendText(_phone, generateMessageWithSignature(triedWhoAfterSentConfirmation), true);
             }
 
             console.log('==================== End: Who ====================');
         }
+
         // user sent some random message that didnt include the above
-        // TODO - make sure user can send multiple texts to us
         else
         {
-            sendText(req.body.From,'Say that again? We didn\'t catch it!', true);   
+
+            sendText(req.body.From,strings.stopFailureMessage);   
+
         }
     }
 });
@@ -749,6 +633,7 @@ function getList(users,phoneNumber)
 }
 
 
+// Some helper functions
 function GetUser(body)
 {
     return (body.split(" ")[1]);    
@@ -757,40 +642,6 @@ function GetUser(body)
 function GetKeyword(body)
 {
     return (body.split(" ")[0].toUpperCase());    
-}
-
-// Sends a single message to a given phone number
-function sendText(phoneNumber, message, retry){
-    console.log('==================== Begin: sendText ====================');
-    console.log("----- " + message )
-    
-    client.sendMessage( {
-
-        to: phoneNumber, // Any number Twilio can deliver to
-        from: TwilioNumber, 
-        body: message // body of the SMS message
-
-    }, function(err, responseData) { //this function is executed when a response is received from Twilio
-
-        if (!err) { // "err" is an error received during the request, if any
-
-            // console.log(responseData.from + ' ' + responseData.body); // outputs "+14506667788"
-            // console.log(responseData.body); // outputs "word to your mother."
-            console.log('----- Sent text to ' + responseData.to + ': done')
-            logHistoryEvent ('SendText', responseData.to, {message: message});
-        }
-        else {
-            console.log(err);
-            // If it was the first time failed, try again
-            logHistoryEvent ('Error', responseData.to, err);
-
-            if (retry)
-            {
-                sendText (phoneNumber, message, false);
-            }
-        }
-    });
-    console.log('==================== End: sendText ====================');
 }
 
 //
@@ -803,4 +654,3 @@ function getRandomInt(min, max) {
 }
 
 module.exports = router;
-

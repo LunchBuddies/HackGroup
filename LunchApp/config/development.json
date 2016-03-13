@@ -1,5 +1,7 @@
 {
+	"enviornment":"dev",
 	"db": "anugup-mongo.westus.cloudapp.azure.com",
 	"port":"27018",
-	"table":"test"
+	"table":"test",
+	"root":"./"
 }

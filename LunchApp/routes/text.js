@@ -150,6 +150,7 @@ console.log('');
 
 cafes.find(function (err, result) 
 {
+    console.log('----- Load Cafes: done');
         if (!err) 
         { 
             for (var i = 0; i < result.length ; i++)
@@ -171,9 +172,7 @@ cafes.find(function (err, result)
 //             name:listcafe[i],
 //             group:'OENGPM' 
 //         });
-
 //     insertCafe.save (function (err, result){});
-
 // }
 
 
@@ -585,9 +584,9 @@ function WhoLogic(phoneNumber)
         console.log('==================== Begin: WhoLogic ====================');
 
         user.find ({isGoing: true, isActive: true}, function (err, result) 
-            {
-                getList(result,phoneNumber);
-            });
+        {
+            getList(result,phoneNumber);
+        });
 
     console.log('==================== End: WhoLogic ====================');
 

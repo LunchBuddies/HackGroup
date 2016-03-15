@@ -12,9 +12,10 @@ module.exports = function (_conditionsForUpdateDB, _updateForUpdateDB, _optionsF
 		console.warn ('----- UdateUser: WARN - no updates specified')
 		return;
 	}
-    user.update(_conditionsForUpdateDB, _updateForUpdateDB, function callback (err, numAffected) {
+    user.update(_conditionsForUpdateDB, _updateForUpdateDB, _optionsForResetDB, function callback (err, numAffected) {
       // numAffected is the number of updated documents
-      console.log('updateuserobject: updated status for ' + _conditionsForUpdateDB.phone)
+      // console.log('updateuserobject: updated status for ' + _conditionsForUpdateDB.phone)
+      console.log("----- Updated " + numAffected.nModified + " users");
       // console.log(numAffected);
 
       

@@ -214,7 +214,7 @@ function promptCronLogic ()  {
                 sendText(result[i].phone, generateMessageWithSignature(strings.promptMessages))
             }
             
-            console.log(result);
+            // console.log(result);
         }
         else
         {

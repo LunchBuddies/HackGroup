@@ -190,7 +190,7 @@ cafes.find(function (err, result)
 new CronJob({
     cronTime: promptTime,
     onTick: function(){
-        // promptCronLogic ();
+        promptCronLogic ();
     },
     start: true,
     timeZone: 'America/Los_Angeles'
@@ -202,7 +202,7 @@ new CronJob({
     cronTime: confirmTime,
     onTick: function()
     {
-        // confirmCronLogic();
+        confirmCronLogic();
     },
     start: true,
     timeZone: 'America/Los_Angeles'

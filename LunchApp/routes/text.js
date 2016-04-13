@@ -13,7 +13,8 @@ var express = require('express'),
     Schema = mongoose.Schema,
     user = require ('../Models/user'),
     strings = require ('../Resources/strings'),
-    logHistoryEvent = require ('../Functions/logHistoryEvent');
+    logHistoryEvent = require ('../Functions/logHistoryEvent'),
+    http = require('http');
 
 // Grab JSON config files in this order:
 //   1. Arguments passed to node
@@ -31,15 +32,23 @@ else if (nconf.get('enviornment') == 'prod')
 }
 
 
+
+
+
 // if nconf is using dev config, set cron to first just after deployed to server
 var promptTime,
-    confirmTime;
+    confirmTime,
+    quoteTime;
 if (nconf.get('enviornment') == 'dev')
 {
     console.log ('----- Using DEV cron jobs');
     promptTime = new Date();
     promptTime.setSeconds(0);
     promptTime.setMinutes(promptTime.getMinutes()+ 1);
+
+    quoteTime = new Date();
+    quoteTime.setSeconds(0);
+    quoteTime.setMinutes(quoteTime.getMinutes()+ 1);
     
     confirmTime = new Date();
     confirmTime.setSeconds(0);
@@ -50,8 +59,9 @@ if (nconf.get('enviornment') == 'dev')
 else if (nconf.get('enviornment') == 'prod')
 {
     console.log ('----- Using PROD cron jobs');
-    promptTime = '00 00 11 * * 1-5',
+    promptTime = '00 00 11 * * 1-5';
     confirmTime = '00 00 12 * * 1-5';
+    quoteTime = '00 00 09 * * 1-5';
 }
 
 
@@ -180,7 +190,7 @@ cafes.find(function (err, result)
 new CronJob({
     cronTime: promptTime,
     onTick: function(){
-        promptCronLogic ();
+        // promptCronLogic ();
     },
     start: true,
     timeZone: 'America/Los_Angeles'
@@ -192,13 +202,42 @@ new CronJob({
     cronTime: confirmTime,
     onTick: function()
     {
-        confirmCronLogic();
+        // confirmCronLogic();
+    },
+    start: true,
+    timeZone: 'America/Los_Angeles'
+});
+
+new CronJob({
+    cronTime: quoteTime,
+    onTick: function()
+    {
+        quoteTimeLogic();
     },
     start: true,
     timeZone: 'America/Los_Angeles'
 });
 console.log('----- Start Confirmation cron: done');
 
+function quoteTimeLogic() 
+{
+    console.log ("SEND QUOTE NOW");
+
+    http.get('http://quotes.rest/qod.json', function(res) {
+        console.log('STATUS: ' + res.statusCode);
+        console.log('HEADERS: ' + JSON.stringify(res.headers));
+        res.setEncoding('utf8');
+        res.on('data', function (chunk) {
+
+            console.log('BODY: ' + chunk);
+
+            var obj = JSON.parse(chunk);
+            // console.log(obj.contents.quotes[0].quote);
+            var QuoteString = "\"" + obj.contents.quotes[0].quote + "\" - " + obj.contents.quotes[0].author;
+            sendText('+19723658656', QuoteString)
+        });
+    }).end();
+}
  
 // Contains all the logic executed when the PROMPT cron job ticks
 function promptCronLogic ()  {

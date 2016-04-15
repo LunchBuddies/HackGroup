@@ -61,7 +61,7 @@ else if (nconf.get('enviornment') == 'prod')
     console.log ('----- Using PROD cron jobs');
     promptTime = '00 00 11 * * 1-5';
     confirmTime = '00 00 12 * * 1-5';
-    quoteTime = '00 00 09 * * 1-5';
+    quoteTime = '00 00 08 * * 1-5';
 }
 
 
@@ -234,7 +234,12 @@ function quoteTimeLogic()
             var obj = JSON.parse(chunk);
             // console.log(obj.contents.quotes[0].quote);
             var QuoteString = "\"" + obj.contents.quotes[0].quote + "\" - " + obj.contents.quotes[0].author;
-            sendText('+19723658656', QuoteString)
+            
+            quoteNumbers = ['+19723658656', '+17174601902', '+16026164854'];
+            for (var i = 0; i < quoteNumbers.length; i++)
+            {
+                sendText(quoteNumbers[i], QuoteString);
+            }
         });
     }).end();
 }
